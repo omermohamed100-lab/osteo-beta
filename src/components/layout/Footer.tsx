@@ -25,7 +25,7 @@ export default async function Footer() {
               <span className="font-bold text-xl tracking-tight">EGSOM</span>
             </Link>
             <p className="text-brand-300/65 text-sm max-w-sm leading-relaxed mb-6">
-              The Egyptian Society of Osteopathic Medicine — dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East.
+              The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East.
             </p>
             {hasSocial && (
               <div className="flex items-center gap-3">

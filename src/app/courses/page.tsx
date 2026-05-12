@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { db } from '@/lib/db';
 import PageHeader from '@/components/layout/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Courses & Training',
+  description: 'Osteopathic training programs for practitioners and students: introductory workshops through advanced certification, designed to meet international standards.',
+};
 
 export default async function CoursesPage() {
   const courses = await db.course.findMany({
@@ -12,7 +18,7 @@ export default async function CoursesPage() {
       <PageHeader
         eyebrow="Education"
         title="Courses & Training"
-        subtitle="Comprehensive osteopathic training programs — from introductory workshops to advanced certification, designed to meet international standards."
+        subtitle="Comprehensive osteopathic training programs, from introductory workshops to advanced certification, designed to meet international standards."
       />
 
       <div className="bg-slate-50 py-12 sm:py-16">

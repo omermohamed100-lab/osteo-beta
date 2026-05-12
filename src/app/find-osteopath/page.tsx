@@ -28,33 +28,68 @@ const inputCls =
 export default function FindOsteopathPage() {
   const [osteopaths, setOsteopaths] = useState<Osteopath[]>([]);
   const [isLoading, setIsLoading]   = useState(true);
+  const [loadError, setLoadError]   = useState<string | null>(null);
+  const [specialtyFilter, setSpecialtyFilter] = useState('');
   const [nameFilter,    setNameFilter]    = useState('');
   const [cityFilter,    setCityFilter]    = useState('');
   const [countryFilter, setCountryFilter] = useState('');
 
   useEffect(() => {
     fetch('/api/osteopaths')
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Request failed (${r.status})`);
+        return r.json();
+      })
       .then((data) => { if (Array.isArray(data)) setOsteopaths(data); })
-      .catch(() => {})
+      .catch(() => { setLoadError('We could not load the directory. Please check your connection and try again.'); })
       .finally(() => setIsLoading(false));
   }, []);
 
+  const specialtyOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const o of osteopaths) {
+      if (o.specialty?.trim()) set.add(o.specialty.trim());
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [osteopaths]);
+
   const filtered = useMemo(() => {
+    const s = specialtyFilter.toLowerCase();
     const n = nameFilter.trim().toLowerCase();
     const c = cityFilter.trim().toLowerCase();
     const co = countryFilter.toLowerCase();
-    return osteopaths.filter((o) => {
-      if (n  && !o.name.toLowerCase().includes(n))       return false;
-      if (c  && !o.city.toLowerCase().includes(c))       return false;
-      if (co && !o.country.toLowerCase().includes(co))   return false;
-      return true;
-    });
-  }, [osteopaths, nameFilter, cityFilter, countryFilter]);
+    return osteopaths
+      .filter((o) => {
+        if (s  && o.specialty.toLowerCase() !== s)         return false;
+        if (n  && !o.name.toLowerCase().includes(n))       return false;
+        if (c  && !o.city.toLowerCase().includes(c))       return false;
+        if (co && !o.country.toLowerCase().includes(co))   return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const cityCmp = (a.city || '').localeCompare(b.city || '');
+        if (cityCmp !== 0) return cityCmp;
+        return a.name.localeCompare(b.name);
+      });
+  }, [osteopaths, specialtyFilter, nameFilter, cityFilter, countryFilter]);
 
-  const hasFilters = nameFilter || cityFilter || countryFilter;
+  const grouped = useMemo(() => {
+    const groups: { city: string; country: string; items: Osteopath[] }[] = [];
+    for (const o of filtered) {
+      const last = groups[groups.length - 1];
+      if (last && last.city === o.city && last.country === o.country) {
+        last.items.push(o);
+      } else {
+        groups.push({ city: o.city, country: o.country, items: [o] });
+      }
+    }
+    return groups;
+  }, [filtered]);
+
+  const hasFilters = specialtyFilter || nameFilter || cityFilter || countryFilter;
 
   const clearFilters = () => {
+    setSpecialtyFilter('');
     setNameFilter('');
     setCityFilter('');
     setCountryFilter('');
@@ -65,7 +100,7 @@ export default function FindOsteopathPage() {
       <PageHeader
         eyebrow="Directory"
         title="Find an Osteopath"
-        subtitle="Search our directory of certified practitioners across Egypt and the Middle East — all meeting EGSOM's rigorous standards."
+        subtitle="Search our directory of certified practitioners across Egypt and the Middle East, all meeting EGSOM's rigorous standards."
       />
 
       <div className="bg-slate-50 py-12 sm:py-16">
@@ -73,18 +108,21 @@ export default function FindOsteopathPage() {
 
         {/* Search bar */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
-                Name
+                Specialty
               </label>
-              <input
-                type="text"
-                value={nameFilter}
-                onChange={(e) => setNameFilter(e.target.value)}
-                placeholder="Search by name…"
+              <select
+                value={specialtyFilter}
+                onChange={(e) => setSpecialtyFilter(e.target.value)}
                 className={inputCls}
-              />
+              >
+                <option value="">All specialties</option>
+                {specialtyOptions.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
@@ -94,7 +132,7 @@ export default function FindOsteopathPage() {
                 type="text"
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
-                placeholder="Search by city…"
+                placeholder="e.g. Cairo, Alexandria"
                 className={inputCls}
               />
             </div>
@@ -112,6 +150,18 @@ export default function FindOsteopathPage() {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+                Name
+              </label>
+              <input
+                type="text"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                placeholder="Practitioner name"
+                className={inputCls}
+              />
             </div>
           </div>
           {hasFilters && (
@@ -141,6 +191,22 @@ export default function FindOsteopathPage() {
             </svg>
             Loading directory…
           </div>
+        ) : loadError ? (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 flex items-start gap-4">
+            <svg className="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-red-800 font-semibold text-sm">Directory unavailable</p>
+              <p className="text-red-700 text-sm mt-1">{loadError}</p>
+              <button
+                onClick={() => { setLoadError(null); setIsLoading(true); fetch('/api/osteopaths').then((r) => { if (!r.ok) throw new Error(); return r.json(); }).then((data) => { if (Array.isArray(data)) setOsteopaths(data); }).catch(() => setLoadError('We could not load the directory. Please check your connection and try again.')).finally(() => setIsLoading(false)); }}
+                className="mt-3 text-sm font-medium text-red-700 underline hover:text-red-900"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
             <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,8 +226,20 @@ export default function FindOsteopathPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {filtered.map((o) => (
+          <div className="space-y-10">
+            {grouped.map((group) => (
+              <section key={`${group.city}-${group.country}`}>
+                <header className="flex items-baseline gap-3 mb-5 pb-3 border-b border-gray-200">
+                  <h2 className="font-display text-xl sm:text-2xl font-semibold text-brand-950 tracking-tight">
+                    {group.city || 'Other'}
+                  </h2>
+                  <span className="text-gray-400 text-xs tracking-[0.25em] uppercase">{group.country}</span>
+                  <span className="ml-auto text-gray-400 text-xs">
+                    {group.items.length} practitioner{group.items.length !== 1 ? 's' : ''}
+                  </span>
+                </header>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                  {group.items.map((o) => (
               <div key={o.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col">
                 <div className="flex items-start gap-4 mb-4">
                   {o.profileImage ? (
@@ -211,6 +289,9 @@ export default function FindOsteopathPage() {
                   </div>
                 )}
               </div>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}

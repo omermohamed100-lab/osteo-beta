@@ -1,5 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageHeader from '@/components/layout/PageHeader';
+import { egsomStats } from '@/lib/stats';
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'The Egyptian Society of Osteopathic Medicine: the leading professional body for osteopaths in Egypt and the wider Middle East.',
+};
 
 const values = [
   {
@@ -30,7 +37,7 @@ export default function AboutPage() {
       <PageHeader
         eyebrow="Who We Are"
         title="About EGSOM"
-        subtitle="The Egyptian Society of Osteopathic Medicine — the leading professional body for osteopaths in Egypt and the wider Middle East."
+        subtitle="The Egyptian Society of Osteopathic Medicine: the leading professional body for osteopaths in Egypt and the wider Middle East."
       />
 
       {/* Story section */}
@@ -49,17 +56,12 @@ export default function AboutPage() {
                 EGSOM was founded with a singular purpose: to establish osteopathic medicine as a respected, evidence-based discipline within Egypt's healthcare landscape. Since our founding in Cairo, we have grown into the region's foremost professional association for osteopathic practitioners.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Today, our network spans Egypt and extends across the Middle East, uniting practitioners who share a commitment to holistic, patient-centred care — and to raising the bar for what osteopathic medicine can achieve.
+                Today, our network spans Egypt and extends across the Middle East, uniting practitioners who share a commitment to holistic, patient-centred care, and to raising the bar for what osteopathic medicine can achieve.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-5">
-              {[
-                { num: '500+', label: 'Registered Members' },
-                { num: '15+',  label: 'Years Active' },
-                { num: '40+',  label: 'Courses Delivered' },
-                { num: '12',   label: 'Regional Partners' },
-              ].map((stat) => (
+              {egsomStats.map((stat) => (
                 <div key={stat.label} className="bg-slate-50 rounded-2xl p-5 border border-gray-100">
                   <div className="font-display text-[2.5rem] font-semibold text-brand-600 leading-none mb-2">
                     {stat.num}
@@ -84,7 +86,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Our Mission</h3>
               <p className="text-brand-200/75 leading-relaxed">
-                To integrate osteopathic principles into the wider healthcare system in Egypt, ensuring patients have access to safe, effective, and holistic care — while supporting the ongoing professional development of every member.
+                To integrate osteopathic principles into the wider healthcare system in Egypt, ensuring patients have access to safe, effective, and holistic care, while supporting the ongoing professional development of every member.
               </p>
             </div>
 
@@ -97,7 +99,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-xl font-semibold text-brand-950 mb-3">Our Vision</h3>
               <p className="text-gray-600 leading-relaxed">
-                A future where osteopathic medicine is widely recognised and practised across Egypt and the Middle East — improving health outcomes for millions of patients through evidence-based, holistic treatment.
+                A future where osteopathic medicine is widely recognised and practised across Egypt and the Middle East, improving health outcomes for millions of patients through evidence-based, holistic treatment.
               </p>
             </div>
           </div>

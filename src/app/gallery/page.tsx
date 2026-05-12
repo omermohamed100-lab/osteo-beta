@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { db } from '@/lib/db';
 import PageHeader from '@/components/layout/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Gallery',
+  description: 'Photos and moments from EGSOM\'s past initiatives, training sessions, and community events.',
+};
 
 export default async function GalleryPage() {
   const items = await db.galleryItem.findMany({ orderBy: { createdAt: 'desc' } });

@@ -66,7 +66,7 @@ export default function AnimatedBoxes() {
   const handleClick = (id: string, href: string) => {
     if (expandingId) return;
     setExpandingId(id);
-    setTimeout(() => router.push(href), 480);
+    setTimeout(() => router.push(href), 220);
   };
 
   return (

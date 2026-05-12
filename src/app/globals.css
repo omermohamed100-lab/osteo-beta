@@ -70,10 +70,6 @@
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-400;
-  }
-
   .hero-delay-1 { animation: fadeUp 0.8s ease-out 0.05s both; }
   .hero-delay-2 { animation: fadeUp 0.8s ease-out 0.2s  both; }
   .hero-delay-3 { animation: fadeUp 0.8s ease-out 0.35s both; }

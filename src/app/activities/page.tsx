@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { db } from '@/lib/db';
 import PageHeader from '@/components/layout/PageHeader';
+
+export const metadata: Metadata = {
+  title: 'Activities & Events',
+  description: 'Upcoming workshops, seminars, and community events from the Egyptian Society of Osteopathic Medicine.',
+};
 
 export default async function ActivitiesPage() {
   const activities = await db.activity.findMany({

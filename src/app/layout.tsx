@@ -18,7 +18,10 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'Egyptian Society of Osteopathic Medicine (EGSOM)',
+  title: {
+    default: 'Egyptian Society of Osteopathic Medicine (EGSOM)',
+    template: '%s · EGSOM',
+  },
   description: 'Promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East.',
 };
 

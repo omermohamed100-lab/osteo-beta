@@ -6,6 +6,21 @@ const TICKER_WORDS = [
   'Excellence', 'Cairo', 'Middle East', 'Healthcare', 'Training', 'Certification',
 ];
 
+const OSTEOPATHY_POINTS = [
+  {
+    title: 'Hands-on practice',
+    body: 'Osteopathy is a regulated, manual approach to healthcare. Practitioners use their hands to assess, treat, and prevent disorders of the musculoskeletal and related systems.',
+  },
+  {
+    title: 'Whole-body, evidence-led',
+    body: 'Treatment considers the body as an integrated system. Modern osteopathic practice draws on anatomy, physiology, and a growing evidence base.',
+  },
+  {
+    title: 'Patient-centred',
+    body: 'Sessions begin with assessment and conversation. Care plans are tailored to the person, not the protocol.',
+  },
+];
+
 export default function Home() {
   return (
     <div className="flex flex-col flex-grow">
@@ -32,7 +47,7 @@ export default function Home() {
               <div className="hero-delay-1 flex items-center gap-3 mb-6 sm:mb-10">
                 <div className="h-px w-10 bg-gold" />
                 <span className="text-gold text-[11px] font-medium tracking-[0.35em] uppercase">
-                  Established · Cairo, Egypt
+                  Egyptian Society of Osteopathic Medicine · Cairo
                 </span>
               </div>
 
@@ -55,11 +70,11 @@ export default function Home() {
 
               <p className="hero-delay-4 text-brand-200/60 text-sm sm:text-base max-w-lg mb-8 sm:mb-12 leading-relaxed">
                 Dedicated to promoting excellence in osteopathic education, practice,
-                and research — building a healthier future across the region.
+                and research, building a healthier future across the region.
               </p>
 
               {/* CTAs */}
-              <div className="hero-delay-5 flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="hero-delay-5 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Link
                   href="/courses"
                   className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-brand-900 text-xs sm:text-sm font-semibold tracking-widest uppercase hover:bg-gold hover:text-white transition-colors duration-300"
@@ -75,27 +90,32 @@ export default function Home() {
                 >
                   Find an Osteopath
                 </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-white/70 text-xs sm:text-sm font-medium tracking-widest uppercase hover:text-gold transition-colors duration-300"
+                >
+                  For Practitioners
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
             </div>
 
-            {/* Right — stats */}
+            {/* Right — flagship figure */}
             <div className="hero-delay-3 lg:col-span-4 lg:border-l border-white/10 lg:pl-10">
-              <div className="grid grid-cols-2 gap-5 sm:gap-8">
-                {[
-                  { num: '500+', label: 'Members' },
-                  { num: '15+',  label: 'Years Active' },
-                  { num: '40+',  label: 'Courses' },
-                  { num: '12',   label: 'Partners' },
-                ].map((stat) => (
-                  <div key={stat.label} className="border-t border-white/10 pt-4 sm:pt-5">
-                    <div className="font-display text-[2rem] sm:text-[2.8rem] font-semibold leading-none text-gold">
-                      {stat.num}
-                    </div>
-                    <div className="mt-2 text-brand-300/50 text-[10px] font-medium tracking-[0.3em] uppercase">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
+              <div className="border-t border-white/10 pt-5">
+                <div className="font-display text-[clamp(3.5rem,6vw,5rem)] font-semibold leading-none text-gold">
+                  500<span className="text-gold/60">+</span>
+                </div>
+                <div className="mt-3 text-brand-200/70 text-sm leading-relaxed max-w-[18rem]">
+                  Registered practitioners across <span className="text-white">Egypt and 15 countries</span> of the Middle East and North Africa.
+                </div>
+                <div className="mt-6 flex items-center gap-3 text-brand-300/50 text-[10px] font-medium tracking-[0.3em] uppercase">
+                  <span>Since 2009</span>
+                  <span className="h-px w-6 bg-white/20" />
+                  <span>16 Countries</span>
+                </div>
               </div>
             </div>
 
@@ -121,6 +141,44 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ── What is osteopathy? ───────────────────────────────────────────── */}
+      <section className="py-14 sm:py-20 bg-white border-b border-gray-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            <div className="lg:col-span-4">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-px w-8 bg-brand-600" />
+                <span className="text-brand-600 text-[11px] font-medium tracking-[0.35em] uppercase">
+                  New here?
+                </span>
+              </div>
+              <h2 className="font-display text-[clamp(2rem,4.5vw,3.25rem)] font-light text-brand-950 leading-tight">
+                What is <em>osteopathy</em>?
+              </h2>
+              <p className="mt-5 text-gray-500 text-sm leading-relaxed max-w-sm">
+                A short primer for patients, students, and clinicians who are new to the discipline.
+              </p>
+            </div>
+
+            <div className="lg:col-span-8 grid sm:grid-cols-3 gap-px bg-gray-100 border border-gray-100">
+              {OSTEOPATHY_POINTS.map((point, i) => (
+                <div key={point.title} className="bg-white p-6 sm:p-7 flex flex-col">
+                  <span className="font-display text-brand-600 text-2xl font-semibold leading-none mb-4">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="text-sm font-semibold text-brand-950 tracking-tight mb-2">
+                    {point.title}
+                  </h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">
+                    {point.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── Discover section ─────────────────────────────────────────────── */}
       <section className="py-14 sm:py-20 lg:py-24 bg-slate-50">
@@ -159,7 +217,7 @@ export default function Home() {
           <div className="font-display text-gold/30 text-[8rem] leading-none mb-[-2rem]">&ldquo;</div>
           <p className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-light italic text-brand-100 leading-relaxed">
             Uniting practitioners, advancing education, and building a healthier
-            future — one patient at a time.
+            future, one patient at a time.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <div className="h-px w-14 bg-brand-700" />
