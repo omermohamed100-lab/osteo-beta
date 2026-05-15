@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  instructor  String
+  duration    String
+  startDate   DateTime
+  endDate     DateTime?
+  price       Float?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id        String @id @default("global")
+  phone     String @default("")
+  email     String @default("no-reply@example.com")
+  address   String @default("")
+  facebook  String @default("")
+  instagram String @default("")
+  linkedin  String @default("")
+}
+
+model Osteopath {
+  id           String   @id @default(cuid())
+  name         String
+  specialty    String
+  city         String
+  country      String   @default("Egypt")
+  location     String   @default("")
+  phone        String   @default("")
+  email        String   @default("")
+  bio          String   @default("")
+  profileImage String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String   @default("")
+  category  String   @default("General")
+  createdAt DateTime @default(now())
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
