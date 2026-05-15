@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { db } from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
 
 export const metadata: Metadata = {
