@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { Activity } from '@prisma/client';
 import { db } from '@/lib/db';
 import PageHeader from '@/components/layout/PageHeader';
 
@@ -33,7 +34,7 @@ export default async function ActivitiesPage() {
             </div>
           ) : (
             <div className="space-y-5">
-              {activities.map((activity) => (
+              {activities.map((activity: Activity) => (
                 <div key={activity.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-shadow duration-200">
                   {activity.imageUrl ? (
                     <img
