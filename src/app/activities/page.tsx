@@ -1,15 +1,16 @@
-import type { Metadata } from 'next';
 import type { Activity } from '@prisma/client';
 import { db } from '@/lib/db';
 import { withPublicDataFallback } from '@/lib/public-data';
+import LocalizedText from '@/components/i18n/LocalizedText';
+import LocalizedDate from '@/components/i18n/LocalizedDate';
+import { getLocalizedMetadata } from '@/lib/localized-metadata';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
 
-export const metadata: Metadata = {
-  title: 'Activities & Events',
-  description: 'Upcoming workshops, seminars, and community events from the Egyptian Society of Osteopathic Medicine.',
-};
+export async function generateMetadata() {
+  return getLocalizedMetadata('/activities');
+}
 
 export default async function ActivitiesPage() {
   const activities = await withPublicDataFallback(
@@ -24,8 +25,11 @@ export default async function ActivitiesPage() {
     <div className="flex-grow">
       <PageHeader
         eyebrow="Events"
+        eyebrowAr="الفعاليات"
         title="Activities & Events"
+        titleAr="الأنشطة والفعاليات"
         subtitle="Stay engaged with the osteopathic community through seminars, annual conferences, and community outreach programs."
+        subtitleAr="ابقَ على تواصل مع مجتمع الطب الأوستيوباثي من خلال الندوات والمؤتمرات السنوية وبرامج التواصل المجتمعي."
       />
 
       <div className="bg-slate-50 py-12 sm:py-16">
@@ -35,8 +39,15 @@ export default async function ActivitiesPage() {
               <svg className="w-12 h-12 mx-auto text-gray-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-gray-500 font-medium">No upcoming activities at the moment.</p>
-              <p className="text-gray-400 text-sm mt-1">Check back soon.</p>
+              <p className="text-gray-500 font-medium">
+                <LocalizedText en="No upcoming activities at the moment." ar="لا توجد أنشطة قادمة في الوقت الحالي." />
+              </p>
+              <p className="text-gray-400 text-sm mt-1">
+                <LocalizedText
+                  en="Check back soon."
+                  ar="عُد قريبًا للاطلاع على أحدث الأنشطة."
+                />
+              </p>
             </div>
           ) : (
             <div className="space-y-5">
@@ -58,17 +69,17 @@ export default async function ActivitiesPage() {
                   <div className="p-5 sm:p-7 flex flex-col justify-center flex-1">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-xs font-medium text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
-                        {new Date(activity.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        <LocalizedDate value={activity.date.toISOString()} />
                       </span>
                     </div>
-                    <h2 className="font-bold text-gray-900 text-lg mb-2 leading-snug">{activity.title}</h2>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-4">{activity.description}</p>
+                    <h2 dir="auto" className="font-bold text-gray-900 text-lg mb-2 leading-snug">{activity.title}</h2>
+                    <p dir="auto" className="text-gray-500 text-sm leading-relaxed mb-4">{activity.description}</p>
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      {activity.location}
+                      <span dir="auto">{activity.location}</span>
                     </div>
                   </div>
                 </div>

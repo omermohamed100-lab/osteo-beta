@@ -25,6 +25,11 @@
   to   { transform: translateX(-50%); }
 }
 
+@keyframes tickerRtl {
+  from { transform: translateX(0); }
+  to   { transform: translateX(50%); }
+}
+
 @media (max-width: 640px) {
   :root { --animate-ticker: ticker 12s linear infinite; }
 }
@@ -74,11 +79,39 @@
     color: var(--foreground);
     font-family: var(--font-inter), sans-serif;
   }
+
+  html[dir='rtl'] body {
+    font-family: var(--font-arabic), var(--font-inter), Tahoma, Arial, sans-serif;
+  }
+
+  html[dir='rtl'] :lang(ar) {
+    font-style: normal;
+    letter-spacing: normal;
+    text-transform: none;
+  }
 }
 
 @layer utilities {
   .font-display {
     font-family: var(--font-cormorant), Georgia, serif;
+  }
+
+  .font-display-latin {
+    font-family: var(--font-cormorant), Georgia, serif;
+  }
+
+  .font-arabic {
+    font-family: var(--font-arabic), var(--font-inter), Tahoma, Arial, sans-serif;
+  }
+
+  html[dir='rtl'] .font-display {
+    font-family: var(--font-arabic), var(--font-inter), Tahoma, Arial, sans-serif;
+    font-style: normal;
+    letter-spacing: normal;
+  }
+
+  html[dir='rtl'] .rtl-flip {
+    transform: scaleX(-1);
   }
 
   .glass-panel {
@@ -89,8 +122,24 @@
     animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.08s both;
   }
 
+  .hero-atmosphere {
+    background:
+      radial-gradient(circle at 78% 48%, rgb(14 165 233 / 11%), transparent 32%),
+      linear-gradient(90deg, rgb(8 47 73 / 0%) 46%, rgb(3 105 161 / 8%) 100%);
+  }
+
+  html[dir='rtl'] .hero-atmosphere {
+    background:
+      radial-gradient(circle at 22% 48%, rgb(14 165 233 / 11%), transparent 32%),
+      linear-gradient(270deg, rgb(8 47 73 / 0%) 46%, rgb(3 105 161 / 8%) 100%);
+  }
+
   .animate-ticker {
     will-change: transform;
+  }
+
+  html[dir='rtl'] .animate-ticker {
+    animation-name: tickerRtl;
   }
 
   .hero-remotion-player {

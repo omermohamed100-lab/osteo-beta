@@ -3,18 +3,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import LanguageToggle from '@/components/i18n/LanguageToggle';
+import { useLanguage } from '@/components/i18n/LanguageProvider';
 
 const links = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About Us' },
-  { href: '/courses', label: 'Courses' },
-  { href: '/activities', label: 'Activities' },
-  { href: '/find-osteopath', label: 'Find an Osteopath' },
-  { href: '/gallery', label: 'Gallery' },
+  { href: '/', en: 'Home', ar: 'الرئيسية' },
+  { href: '/about', en: 'About Us', ar: 'من نحن' },
+  { href: '/courses', en: 'Courses', ar: 'الدورات' },
+  { href: '/activities', en: 'Activities', ar: 'الأنشطة' },
+  {
+    href: '/find-osteopath',
+    en: 'Find an Osteopath',
+    ar: 'ابحث عن ممارس أوستيوباثي',
+  },
+  { href: '/gallery', en: 'Gallery', ar: 'معرض الصور' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { isArabic } = useLanguage();
 
   return (
     <nav className="sticky top-0 z-50 w-full glass-panel border-b border-gray-200">
@@ -30,35 +37,41 @@ export default function Navbar() {
                 priority
                 className="h-10 w-10 object-contain sm:h-12 sm:w-12"
               />
-              <span className="font-bold text-lg sm:text-xl text-brand-900">
+              <span
+                lang="en"
+                dir="ltr"
+                className="font-sans text-lg font-bold text-brand-900 sm:text-xl"
+              >
                 EGSOM
               </span>
             </Link>
           </div>
 
-          <div className="hidden md:flex space-x-6 lg:space-x-8">
+          <div className="hidden items-center gap-5 lg:flex xl:gap-7">
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 className="text-gray-700 hover:text-brand-600 px-2 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                {l.label}
+                {isArabic ? l.ar : l.en}
               </Link>
             ))}
             <Link
               href="/contact"
               className="text-brand-600 bg-brand-50 hover:bg-brand-100 px-4 py-2 rounded-md text-sm font-medium transition-colors border border-brand-200"
             >
-              Contact
+              {isArabic ? 'تواصل معنا' : 'Contact'}
             </Link>
+            <LanguageToggle />
           </div>
 
-          <div className="relative flex items-center md:hidden">
+          <div className="relative flex items-center gap-1.5 lg:hidden">
+            <LanguageToggle />
             <details key={pathname} className="group">
               <summary
-                aria-label="Toggle navigation menu"
-                className="-mr-2 cursor-pointer list-none rounded-md p-2 text-gray-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 [&::-webkit-details-marker]:hidden"
+                aria-label={isArabic ? 'فتح قائمة التنقل أو إغلاقها' : 'Toggle navigation menu'}
+                className="-me-2 cursor-pointer list-none rounded-md p-2 text-gray-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 [&::-webkit-details-marker]:hidden"
               >
                 <svg className="h-6 w-6 group-open:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -82,7 +95,7 @@ export default function Navbar() {
                             : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
                         }`}
                       >
-                        {l.label}
+                        {isArabic ? l.ar : l.en}
                       </Link>
                     );
                   })}
@@ -90,7 +103,7 @@ export default function Navbar() {
                     href="/contact"
                     className="mt-2 block rounded-md bg-brand-600 px-3 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-700"
                   >
-                    Contact
+                    {isArabic ? 'تواصل معنا' : 'Contact'}
                   </Link>
                 </div>
               </div>

@@ -1,10 +1,13 @@
-import type { Metadata } from 'next';
+import { getLocalizedMetadata } from '@/lib/localized-metadata';
 
-export const metadata: Metadata = {
-  title: 'Find an Osteopath',
-  description: 'Search EGSOM\'s directory of certified osteopathic practitioners across Egypt and the Middle East by specialty, city, and country.',
-};
+export async function generateMetadata() {
+  return getLocalizedMetadata('/find-osteopath');
+}
 
-export default function FindOsteopathLayout({ children }: { children: React.ReactNode }) {
+export default function FindOsteopathLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return children;
 }

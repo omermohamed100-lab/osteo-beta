@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { SiteSettings } from '@prisma/client';
 import { db } from '@/lib/db';
 import { withPublicDataFallback } from '@/lib/public-data';
+import LocalizedText from '@/components/i18n/LocalizedText';
 
 export default async function Footer() {
   const settings = await withPublicDataFallback<SiteSettings | null>(
@@ -27,10 +28,19 @@ export default async function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-5">
               <img src="/logo-clean.png" alt="EGSOM Logo" className="w-10 h-10 object-contain bg-white rounded-full p-0.5" />
-              <span className="font-bold text-xl tracking-tight">EGSOM</span>
+              <span
+                lang="en"
+                dir="ltr"
+                className="font-sans text-xl font-bold tracking-tight"
+              >
+                EGSOM
+              </span>
             </Link>
             <p className="text-brand-300/65 text-sm max-w-sm leading-relaxed mb-6">
-              The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East.
+              <LocalizedText
+                en="The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East."
+                ar="الجمعية المصرية لطب الأوستيوباثية، مؤسسة مكرسة للارتقاء بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي في مصر والشرق الأوسط."
+              />
             </p>
             {hasSocial && (
               <div className="flex items-center gap-3">
@@ -67,19 +77,21 @@ export default async function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">Quick Links</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
+              <LocalizedText en="Quick Links" ar="روابط سريعة" />
+            </h3>
             <ul className="space-y-2.5">
               {[
-                { href: '/about',          label: 'About Us' },
-                { href: '/courses',        label: 'Courses & Training' },
-                { href: '/activities',     label: 'Activities & Events' },
-                { href: '/find-osteopath', label: 'Find an Osteopath' },
-                { href: '/gallery',        label: 'Gallery' },
-                { href: '/contact',        label: 'Contact Us' },
+                { href: '/about', en: 'About Us', ar: 'من نحن' },
+                { href: '/courses', en: 'Courses & Training', ar: 'الدورات والتدريب' },
+                { href: '/activities', en: 'Activities & Events', ar: 'الأنشطة والفعاليات' },
+                { href: '/find-osteopath', en: 'Find an Osteopath', ar: 'ابحث عن ممارس أوستيوباثي' },
+                { href: '/gallery', en: 'Gallery', ar: 'معرض الصور' },
+                { href: '/contact', en: 'Contact Us', ar: 'تواصل معنا' },
               ].map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-brand-300/65 hover:text-white text-sm transition-colors">
-                    {l.label}
+                    <LocalizedText en={l.en} ar={l.ar} />
                   </Link>
                 </li>
               ))}
@@ -88,7 +100,9 @@ export default async function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">Contact</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
+              <LocalizedText en="Contact" ar="بيانات التواصل" />
+            </h3>
             <ul className="space-y-3 text-sm text-brand-300/65">
               {address && (
                 <li className="flex items-start gap-2">
@@ -96,7 +110,7 @@ export default async function Footer() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  {address}
+                  <span dir="auto">{address}</span>
                 </li>
               )}
               {email && (
@@ -104,7 +118,7 @@ export default async function Footer() {
                   <svg className="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
+                  <a href={`mailto:${email}`} dir="ltr" className="hover:text-white transition-colors">{email}</a>
                 </li>
               )}
               {phone && (
@@ -112,16 +126,21 @@ export default async function Footer() {
                   <svg className="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <a href={`tel:${phone}`} className="hover:text-white transition-colors">{phone}</a>
+                  <a href={`tel:${phone}`} dir="ltr" className="hover:text-white transition-colors">{phone}</a>
                 </li>
               )}
               {!email && !phone && !address && (
-                <li className="text-brand-500 text-xs italic">Contact info not configured yet.</li>
+                <li className="text-brand-500 text-xs italic">
+                  <LocalizedText
+                    en="Contact info not configured yet."
+                    ar="لم تتم إضافة بيانات التواصل بعد."
+                  />
+                </li>
               )}
             </ul>
             <div className="mt-6">
               <Link href="/admin/login" className="text-brand-600 hover:text-brand-400 text-xs transition-colors">
-                Admin Login
+                <LocalizedText en="Admin Login" ar="دخول الإدارة" />
               </Link>
             </div>
           </div>
@@ -129,11 +148,20 @@ export default async function Footer() {
 
         <div className="mt-12 pt-8 border-t border-brand-900 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-brand-500 text-xs">
-            &copy; {new Date().getFullYear()} Egyptian Society of Osteopathic Medicine. All rights reserved.
+            &copy;{' '}
+            <bdi dir="ltr" lang="en" className="font-sans tabular-nums">
+              {new Date().getFullYear()}
+            </bdi>{' '}
+            <LocalizedText
+              en="Egyptian Society of Osteopathic Medicine. All rights reserved."
+              ar="الجمعية المصرية لطب الأوستيوباثية. جميع الحقوق محفوظة."
+            />
           </p>
           <div className="flex items-center gap-1.5">
             <div className="h-px w-6 bg-gold/40" />
-            <span className="text-brand-600 text-[10px] tracking-[0.3em] uppercase">Cairo, Egypt</span>
+            <span className="text-brand-600 text-[10px] tracking-[0.3em] uppercase">
+              <LocalizedText en="Cairo, Egypt" ar="القاهرة، مصر" />
+            </span>
             <div className="h-px w-6 bg-gold/40" />
           </div>
         </div>

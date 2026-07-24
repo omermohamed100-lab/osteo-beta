@@ -132,11 +132,11 @@ export const HeroHandsComposition = ({
           name="Centered EGSOM seal"
           style={{
             position: 'absolute',
-            top: 250,
+            top: 220,
             left: '50%',
             zIndex: 20,
-            width: 370,
-            height: 370,
+            width: 430,
+            height: 430,
             opacity: interpolate(animationFrame, [12, 35], [0, 1], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',
@@ -337,7 +337,11 @@ export default function HeroRemotion() {
       </div>
 
       {!isMobile && (
-        <div className="hero-remotion-player" aria-hidden="true">
+        <div
+          className="hero-remotion-player"
+          dir="ltr"
+          aria-hidden="true"
+        >
           <Player
             component={HeroHandsComposition}
             inputProps={{ reducedMotion }}

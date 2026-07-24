@@ -1,10 +1,22 @@
+import LocalizedText from '@/components/i18n/LocalizedText';
+
 interface Props {
   eyebrow?: string;
+  eyebrowAr?: string;
   title: string;
+  titleAr?: string;
   subtitle?: string;
+  subtitleAr?: string;
 }
 
-export default function PageHeader({ eyebrow, title, subtitle }: Props) {
+export default function PageHeader({
+  eyebrow,
+  eyebrowAr,
+  title,
+  titleAr,
+  subtitle,
+  subtitleAr,
+}: Props) {
   return (
     <div className="bg-brand-950 text-white relative overflow-hidden py-14 sm:py-20">
       {/* Dot-grid texture */}
@@ -13,7 +25,7 @@ export default function PageHeader({ eyebrow, title, subtitle }: Props) {
         style={{ backgroundImage: 'radial-gradient(circle, white 1.5px, transparent 1.5px)', backgroundSize: '36px 36px' }}
       />
       {/* Diagonal accent */}
-      <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-gold/20 to-transparent" />
+      <div className="absolute end-0 top-0 h-full w-px bg-gradient-to-b from-transparent via-gold/20 to-transparent" />
       {/* Bottom rule */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
 
@@ -21,15 +33,17 @@ export default function PageHeader({ eyebrow, title, subtitle }: Props) {
         {eyebrow && (
           <div className="flex items-center gap-3 mb-5">
             <div className="h-px w-8 bg-gold" />
-            <span className="text-gold text-[11px] font-medium tracking-[0.35em] uppercase">{eyebrow}</span>
+            <span className="text-gold text-[11px] font-medium tracking-[0.35em] uppercase">
+              <LocalizedText en={eyebrow} ar={eyebrowAr || eyebrow} />
+            </span>
           </div>
         )}
         <h1 className="font-display text-[clamp(2rem,6vw,4.5rem)] font-light text-white leading-tight mb-3">
-          {title}
+          <LocalizedText en={title} ar={titleAr || title} />
         </h1>
         {subtitle && (
           <p className="text-brand-300/70 text-base sm:text-lg max-w-2xl leading-relaxed">
-            {subtitle}
+            <LocalizedText en={subtitle} ar={subtitleAr || subtitle} />
           </p>
         )}
       </div>

@@ -7,37 +7,38 @@ import AdminSidebar from '@/components/layout/AdminSidebar';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const isLogin = pathname === '/admin/login';
+  const [authorizedPath, setAuthorizedPath] = useState<string | null>(
+    isLogin ? pathname : null,
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (pathname === '/admin/login') {
-      setIsAuthorized(true);
-      setIsLoading(false);
-      return;
-    }
+    if (isLogin) return;
+
     fetch('/api/auth/me')
       .then(res => {
-        if (res.ok) setIsAuthorized(true);
+        if (res.ok) setAuthorizedPath(pathname);
         else router.push('/admin/login');
       })
       .catch(() => router.push('/admin/login'))
-      .finally(() => setIsLoading(false));
-  }, [pathname, router]);
+  }, [isLogin, pathname, router]);
+
+  const isAuthorized = isLogin || authorizedPath === pathname;
+  const isLoading = !isLogin && authorizedPath !== pathname;
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50">Loading...</div>;
+    return <div dir="ltr" lang="en" className="min-h-screen flex items-center justify-center bg-slate-50 font-sans">Loading...</div>;
   }
 
   if (!isAuthorized) return null;
 
-  if (pathname === '/admin/login') {
-    return <div className="min-h-screen bg-slate-50">{children}</div>;
+  if (isLogin) {
+    return <div dir="ltr" lang="en" className="min-h-screen bg-slate-50 font-sans">{children}</div>;
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 lg:flex-row">
+    <div dir="ltr" lang="en" className="flex h-screen flex-col overflow-hidden bg-slate-50 font-sans lg:flex-row">
 
       {/* ── Mobile top bar ── */}
       <header className="lg:hidden flex items-center justify-between h-14 px-4 bg-brand-950 text-white shrink-0 border-b border-brand-900">
