@@ -1,8 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 const links = [
   { href: '/', label: 'Home' },
@@ -14,19 +14,7 @@ const links = [
 ];
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
 
   return (
     <nav className="sticky top-0 z-50 w-full glass-panel border-b border-gray-200">
@@ -34,7 +22,14 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16 sm:h-20">
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="EGSOM Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+              <Image
+                src="/logo-clean.png"
+                alt="EGSOM Logo"
+                width={48}
+                height={48}
+                priority
+                className="h-10 w-10 object-contain sm:h-12 sm:w-12"
+              />
               <span className="font-bold text-lg sm:text-xl text-brand-900">
                 EGSOM
               </span>
@@ -59,54 +54,50 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="md:hidden flex items-center">
-            <button
-              type="button"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              onClick={() => setOpen((o) => !o)}
-              className="text-gray-700 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40 rounded-md p-2 -mr-2"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {open ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6l12 12M6 18L18 6" />
-                ) : (
+          <div className="relative flex items-center md:hidden">
+            <details key={pathname} className="group">
+              <summary
+                aria-label="Toggle navigation menu"
+                className="-mr-2 cursor-pointer list-none rounded-md p-2 text-gray-700 hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 [&::-webkit-details-marker]:hidden"
+              >
+                <svg className="h-6 w-6 group-open:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+                </svg>
+                <svg className="hidden h-6 w-6 group-open:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6l12 12M6 18L18 6" />
+                </svg>
+              </summary>
+
+              <div className="fixed inset-x-0 top-16 z-40 border-t border-gray-200 bg-white/98 shadow-xl backdrop-blur-md sm:top-20">
+                <div className="space-y-1 px-4 py-3">
+                  {links.map((l) => {
+                    const active = pathname === l.href;
+                    return (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        className={`block rounded-md px-3 py-3 text-base font-medium transition-colors ${
+                          active
+                            ? 'bg-brand-50 text-brand-700'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
+                        }`}
+                      >
+                        {l.label}
+                      </Link>
+                    );
+                  })}
+                  <Link
+                    href="/contact"
+                    className="mt-2 block rounded-md bg-brand-600 px-3 py-3 text-center text-base font-semibold text-white transition-colors hover:bg-brand-700"
+                  >
+                    Contact
+                  </Link>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
       </div>
-
-      {open && (
-        <div className="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
-          <div className="px-4 py-3 space-y-1">
-            {links.map((l) => {
-              const active = pathname === l.href;
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={`block px-3 py-3 rounded-md text-base font-medium transition-colors ${
-                    active
-                      ? 'bg-brand-50 text-brand-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              );
-            })}
-            <Link
-              href="/contact"
-              className="block px-3 py-3 rounded-md text-base font-semibold bg-brand-600 text-white hover:bg-brand-700 transition-colors text-center mt-2"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }

@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
 
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="EGSOM" className="w-7 h-7 rounded-full bg-white p-0.5 object-contain" />
+          <img src="/logo-clean.png" alt="EGSOM" className="w-7 h-7 rounded-full bg-white p-0.5 object-contain" />
           <span className="font-bold text-base">Admin Panel</span>
         </div>
 

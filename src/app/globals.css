@@ -16,7 +16,7 @@
   --color-gold: #c9a84c;
   --color-gold-light: #e8d5a0;
 
-  --animate-ticker: ticker 30s linear infinite;
+  --animate-ticker: ticker 26s linear infinite;
   --animate-fade-up: fadeUp 0.7s ease-out both;
 }
 
@@ -26,12 +26,27 @@
 }
 
 @media (max-width: 640px) {
-  :root { --animate-ticker: ticker 10s linear infinite; }
+  :root { --animate-ticker: ticker 12s linear infinite; }
 }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mobileHandsRise {
+  from { opacity: 0.2; transform: translateY(38%) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes mobileSealRise {
+  from { opacity: 0; transform: translate(-50%, 28%) scale(0.84); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes mobileGlowIn {
+  from { opacity: 0; transform: scale(0.78); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @layer base {
@@ -70,9 +85,185 @@
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
   }
 
-  .hero-delay-1 { animation: fadeUp 0.8s ease-out 0.05s both; }
-  .hero-delay-2 { animation: fadeUp 0.8s ease-out 0.2s  both; }
-  .hero-delay-3 { animation: fadeUp 0.8s ease-out 0.35s both; }
-  .hero-delay-4 { animation: fadeUp 0.8s ease-out 0.5s  both; }
-  .hero-delay-5 { animation: fadeUp 0.8s ease-out 0.65s both; }
+  .hero-copy-reveal {
+    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.08s both;
+  }
+
+  .animate-ticker {
+    will-change: transform;
+  }
+
+  .hero-remotion-player {
+    position: absolute;
+    bottom: -12%;
+    left: 50%;
+    z-index: 10;
+    width: min(44rem, 44vw);
+    aspect-ratio: 1;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .hero-mobile-visual {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-remotion-player {
+    bottom: -12%;
+    width: min(38rem, 132vw);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-remotion-player {
+    display: none;
+  }
+
+  .hero-mobile-visual {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    display: block;
+    z-index: 10;
+    width: min(30rem, 118vw);
+    aspect-ratio: 1;
+    overflow: visible;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .hero-mobile-glow {
+    position: absolute;
+    top: 23.5%;
+    left: 17.5%;
+    width: 65%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgb(14 165 233 / 24%) 0%, rgb(2 132 199 / 10%) 46%, rgb(8 47 73 / 0%) 72%);
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .hero-mobile-hands {
+    position: absolute;
+    top: 40.8%;
+    left: 12%;
+    z-index: 3;
+    width: 76%;
+    aspect-ratio: 807 / 836;
+    background: url('/hero-hands-rising.png') center / contain no-repeat;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transform-origin: 50% 100%;
+  }
+
+  .hero-mobile-seal {
+    position: absolute;
+    top: 39%;
+    left: 50%;
+    z-index: 2;
+    width: 34.3%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: url('/logo-clean.png') center / contain no-repeat;
+    filter: drop-shadow(0 12px 20px rgb(2 12 27 / 30%)) drop-shadow(0 0 16px rgb(125 211 252 / 10%));
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .hero-mobile-visual.is-waiting .hero-mobile-glow {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+
+  .hero-mobile-visual.is-waiting .hero-mobile-hands {
+    opacity: 0;
+    transform: translateY(38%) scale(0.96);
+  }
+
+  .hero-mobile-visual.is-waiting .hero-mobile-seal {
+    opacity: 0;
+    transform: translate(-50%, 28%) scale(0.84);
+  }
+
+  .hero-mobile-visual.is-visible .hero-mobile-glow {
+    animation: mobileGlowIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+
+  .hero-mobile-visual.is-visible .hero-mobile-hands {
+    animation: mobileHandsRise 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .hero-mobile-visual.is-visible .hero-mobile-seal {
+    animation: mobileSealRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  }
+
+  .hero-mobile-seal::before,
+  .hero-mobile-seal::after {
+    position: absolute;
+    content: '';
+    border-radius: inherit;
+  }
+
+  .hero-mobile-seal::before {
+    inset: -12%;
+    border: 1px solid rgb(186 230 253 / 20%);
+  }
+
+  .hero-mobile-seal::after {
+    inset: -24%;
+    border: 1px solid rgb(201 168 76 / 24%);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-remotion-player {
+    bottom: -28%;
+    width: 31rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-remotion-player {
+    left: 56%;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ticker-strip:hover .animate-ticker {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy-reveal {
+    animation: none;
+  }
+
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-glow,
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-hands,
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-seal {
+    animation: none;
+  }
+
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-glow {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-hands {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-seal {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .animate-ticker {
+    animation-play-state: paused;
+  }
 }

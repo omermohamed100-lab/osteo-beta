@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { Activity } from '@prisma/client';
 import { db } from '@/lib/db';
+import { withPublicDataFallback } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -11,10 +12,13 @@ export const metadata: Metadata = {
 };
 
 export default async function ActivitiesPage() {
-  const activities = await db.activity.findMany({
-    where: { isActive: true },
-    orderBy: { date: 'desc' },
-  });
+  const activities = await withPublicDataFallback(
+    () => db.activity.findMany({
+      where: { isActive: true },
+      orderBy: { date: 'desc' },
+    }),
+    [],
+  );
 
   return (
     <div className="flex-grow">

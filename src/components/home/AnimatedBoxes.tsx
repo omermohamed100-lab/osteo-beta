@@ -1,8 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Link from 'next/link';
 
 const boxes = [
   {
@@ -49,93 +45,65 @@ const boxes = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-};
-
-const cardVariants = {
-  hidden:  { opacity: 0, y: 22 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' as const } },
-};
-
 export default function AnimatedBoxes() {
-  const router = useRouter();
-  const [expandingId, setExpandingId] = useState<string | null>(null);
-
-  const handleClick = (id: string, href: string) => {
-    if (expandingId) return;
-    setExpandingId(id);
-    setTimeout(() => router.push(href), 220);
-  };
-
   return (
-    <motion.div
+    <div
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border border-gray-200 max-w-6xl mx-auto"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
     >
       {boxes.map((box, index) => {
-        const isExpanding = expandingId === box.id;
-        const isOtherExpanding = expandingId !== null && !isExpanding;
         const num = String(index + 1).padStart(2, '0');
 
         return (
-          <motion.div
+          <Link
             key={box.id}
-            variants={cardVariants}
-            animate={{
-              opacity: isOtherExpanding ? 0.35 : 1,
-              scale:   isExpanding      ? 1.02  : 1,
-            }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            onClick={() => handleClick(box.id, box.href)}
-            className="group relative overflow-hidden bg-white border-r border-b border-gray-200 cursor-pointer p-6 sm:p-8 flex flex-col min-h-[180px] sm:min-h-[220px] hover:bg-brand-950 transition-colors duration-300"
+            href={box.href}
+            className="group relative flex min-h-[180px] touch-manipulation flex-col overflow-hidden border-b border-r border-gray-200 bg-white p-6 transition-[background-color,transform] duration-200 hover:bg-brand-950 active:scale-[0.99] active:bg-brand-950 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset sm:min-h-[220px] sm:p-8"
           >
             {/* Large background number */}
-            <span className="absolute top-3 right-4 sm:right-5 font-display text-[3.75rem] sm:text-[5.5rem] font-semibold leading-none text-gray-100 group-hover:text-white/[0.04] transition-colors duration-300 select-none">
+            <span className="absolute top-3 right-4 sm:right-5 font-display text-[3.75rem] sm:text-[5.5rem] font-semibold leading-none text-gray-100 group-hover:text-white/[0.04] group-active:text-white/[0.04] transition-colors duration-300 select-none">
               {num}
             </span>
 
             <div className="relative z-10 flex flex-col flex-grow">
               {/* Icon */}
-              <div className="w-9 h-9 rounded-full border border-gray-200 group-hover:border-white/15 flex items-center justify-center mb-7 transition-colors duration-300">
+              <div className="w-9 h-9 rounded-full border border-gray-200 group-hover:border-white/15 group-active:border-white/15 flex items-center justify-center mb-7 transition-colors duration-300">
                 <svg
-                  className="w-[18px] h-[18px] text-brand-600 group-hover:text-white/80 transition-colors duration-300"
+                  className="w-[18px] h-[18px] text-brand-600 group-hover:text-white/80 group-active:text-white/80 transition-colors duration-300"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  aria-hidden="true"
                 >
                   {box.icon}
                 </svg>
               </div>
 
               {/* Title */}
-              <h3 className="text-base font-semibold text-gray-900 group-hover:text-white transition-colors duration-300 mb-2 tracking-tight">
+              <h3 className="text-base font-semibold text-gray-900 group-hover:text-white group-active:text-white transition-colors duration-300 mb-2 tracking-tight">
                 {box.title}
               </h3>
 
               {/* Rule */}
-              <div className="h-px w-7 bg-brand-500 group-hover:bg-gold group-hover:w-12 transition-all duration-300 mb-4" />
+              <div className="h-px w-7 bg-brand-500 group-hover:bg-gold group-hover:w-12 group-active:bg-gold group-active:w-12 transition-all duration-300 mb-4" />
 
               {/* Description */}
-              <p className="text-gray-500 group-hover:text-white/60 text-sm leading-relaxed transition-colors duration-300 flex-grow">
+              <p className="text-gray-500 group-hover:text-white/60 group-active:text-white/60 text-sm leading-relaxed transition-colors duration-300 flex-grow">
                 {box.desc}
               </p>
 
               {/* Arrow */}
-              <div className="mt-6 inline-flex items-center gap-2 text-brand-600 group-hover:text-gold transition-colors duration-300 text-[11px] font-medium tracking-[0.25em] uppercase">
+              <div className="mt-6 inline-flex items-center gap-2 text-brand-600 group-hover:text-gold group-active:text-gold transition-colors duration-300 text-[11px] font-medium tracking-[0.25em] uppercase">
                 <span>Explore</span>
                 <svg
-                  className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300"
+                  className="w-3.5 h-3.5 group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-300"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </div>
             </div>
-          </motion.div>
+          </Link>
         );
       })}
-    </motion.div>
+    </div>
   );
 }

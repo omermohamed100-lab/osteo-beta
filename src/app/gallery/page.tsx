@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { db } from '@/lib/db';
+import { withPublicDataFallback } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-  const items = await db.galleryItem.findMany({ orderBy: { createdAt: 'desc' } });
+  const items = await withPublicDataFallback(
+    () => db.galleryItem.findMany({ orderBy: { createdAt: 'desc' } }),
+    [],
+  );
   const categories = Array.from(new Set(items.map((i) => i.category)));
 
   return (

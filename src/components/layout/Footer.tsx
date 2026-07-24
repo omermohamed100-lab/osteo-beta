@@ -1,8 +1,13 @@
 import Link from 'next/link';
+import type { SiteSettings } from '@prisma/client';
 import { db } from '@/lib/db';
+import { withPublicDataFallback } from '@/lib/public-data';
 
 export default async function Footer() {
-  const settings = await db.siteSettings.findUnique({ where: { id: 'global' } });
+  const settings = await withPublicDataFallback<SiteSettings | null>(
+    () => db.siteSettings.findUnique({ where: { id: 'global' } }),
+    null,
+  );
 
   const email   = settings?.email   || null;
   const phone   = settings?.phone   || null;
@@ -21,7 +26,7 @@ export default async function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-5">
-              <img src="/logo.png" alt="EGSOM Logo" className="w-10 h-10 object-contain bg-white rounded-full p-0.5" />
+              <img src="/logo-clean.png" alt="EGSOM Logo" className="w-10 h-10 object-contain bg-white rounded-full p-0.5" />
               <span className="font-bold text-xl tracking-tight">EGSOM</span>
             </Link>
             <p className="text-brand-300/65 text-sm max-w-sm leading-relaxed mb-6">

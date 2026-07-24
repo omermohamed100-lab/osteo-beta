@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { db } from '@/lib/db';
+import { withPublicDataFallback } from '@/lib/public-data';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -10,10 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function CoursesPage() {
-  const courses = await db.course.findMany({
-    where: { isActive: true },
-    orderBy: { startDate: 'asc' },
-  });
+  const courses = await withPublicDataFallback(
+    () => db.course.findMany({
+      where: { isActive: true },
+      orderBy: { startDate: 'asc' },
+    }),
+    [],
+  );
 
   return (
     <div className="flex-grow">

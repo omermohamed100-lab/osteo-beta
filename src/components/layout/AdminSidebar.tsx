@@ -72,7 +72,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
       {/* Logo */}
       <div className="p-5 border-b border-brand-900">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="EGSOM" className="w-8 h-8 rounded-full bg-white p-0.5 object-contain" />
+          <img src="/logo-clean.png" alt="EGSOM" className="w-8 h-8 rounded-full bg-white p-0.5 object-contain" />
           <span className="font-bold text-xl">Admin Panel</span>
         </Link>
       </div>
