@@ -88,7 +88,7 @@ export default function ContactPage() {
   };
 
   const inputCls = (field: keyof FieldErrors) =>
-    `mt-1 block w-full rounded-md shadow-sm p-3 border text-base focus:outline-none focus:ring-2 ${
+    `mt-1 block w-full rounded-lg bg-[rgb(252,254,255)] p-3 border text-base shadow-sm focus:outline-none focus:ring-2 ${
       fieldErrors[field]
         ? 'border-red-400 focus:ring-red-300'
         : 'border-gray-300 focus:border-brand-500 focus:ring-brand-300'
@@ -104,12 +104,12 @@ export default function ContactPage() {
         subtitle="Have questions about membership, upcoming courses, or osteopathic medicine in Egypt? We'd love to hear from you."
         subtitleAr="هل لديك أسئلة حول العضوية أو الدورات القادمة أو الطب الأوستيوباثي في مصر؟ يسعدنا تواصلك معنا."
       />
-      <div className="bg-slate-50 py-12 sm:py-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
+      <div className="bg-slate-50/70 py-8 sm:py-11">
+      <div className="container mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+        <div className="surface-panel p-6 sm:p-9">
 
           {status === 'success' ? (
-            <div className="rounded-lg bg-green-50 border border-green-200 p-6 text-center space-y-2">
+            <div className="space-y-2 rounded-xl border border-green-200 bg-green-50 p-6 text-center">
               <p className="text-green-800 font-semibold text-lg">{copy.sentTitle}</p>
               <p className="text-green-700 text-sm">{copy.sentBody}</p>
               <button
@@ -120,7 +120,7 @@ export default function ContactPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-6 mt-8">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700">{copy.name}</label>
@@ -169,13 +169,13 @@ export default function ContactPage() {
               </div>
 
               {serverError && (
-                <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">{serverError}</p>
+                <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{serverError}</p>
               )}
 
               <button
                 type="submit"
                 disabled={status === 'sending'}
-                className="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="inline-flex justify-center rounded-lg border border-transparent bg-brand-700 px-6 py-3 text-base font-semibold tracking-[0.01em] text-white shadow-sm transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {status === 'sending' ? copy.sending : copy.send}
               </button>

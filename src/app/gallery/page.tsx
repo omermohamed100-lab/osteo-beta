@@ -28,14 +28,14 @@ export default async function GalleryPage() {
         subtitleAr="تصفّح صور جلساتنا التدريبية وورش العمل والمؤتمرات ومبادرات التواصل المجتمعي السابقة."
       />
 
-      <div className="bg-slate-50 py-12 sm:py-16">
+      <div className="bg-slate-50/70 py-9 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           {items.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-              <svg className="w-12 h-12 mx-auto text-gray-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="surface-panel p-10 text-center sm:p-12">
+              <svg className="mx-auto mb-4 h-12 w-12 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-gray-500 font-medium">
+              <p className="font-medium text-slate-600">
                 <LocalizedText en="No gallery images have been added yet." ar="لم تتم إضافة صور إلى المعرض بعد." />
               </p>
             </div>
@@ -47,12 +47,12 @@ export default async function GalleryPage() {
                   <div key={cat}>
                     <div className="flex items-center gap-4 mb-6">
                       <div className="h-px flex-grow bg-gray-200" />
-                      <span dir="auto" className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-2">{cat}</span>
+                      <span dir="auto" className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">{cat}</span>
                       <div className="h-px flex-grow bg-gray-200" />
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {catItems.map((item) => (
-                        <div key={item.id} className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-sm">
+                        <div key={item.id} className="surface-card group relative aspect-square overflow-hidden bg-slate-100">
                           <img
                             src={item.imageUrl}
                             alt={item.caption || cat}

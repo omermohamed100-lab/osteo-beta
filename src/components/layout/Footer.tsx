@@ -36,7 +36,7 @@ export default async function Footer() {
                 EGSOM
               </span>
             </Link>
-            <p className="text-brand-300/65 text-sm max-w-sm leading-relaxed mb-6">
+            <p className="mb-6 max-w-sm text-sm leading-relaxed text-brand-200/78">
               <LocalizedText
                 en="The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East."
                 ar="الجمعية المصرية لطب الأوستيوباثية، مؤسسة مكرسة للارتقاء بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي في مصر والشرق الأوسط."
@@ -45,8 +45,8 @@ export default async function Footer() {
             {hasSocial && (
               <div className="flex items-center gap-3">
                 {facebook && (
-                  <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                    className="w-8 h-8 rounded-full border border-brand-800 flex items-center justify-center text-brand-400 hover:text-white hover:border-white/30 transition-colors">
+                    <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
                     </svg>
@@ -54,7 +54,7 @@ export default async function Footer() {
                 )}
                 {instagram && (
                   <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                    className="w-8 h-8 rounded-full border border-brand-800 flex items-center justify-center text-brand-400 hover:text-white hover:border-white/30 transition-colors">
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                       <circle cx="12" cy="12" r="4" />
@@ -64,7 +64,7 @@ export default async function Footer() {
                 )}
                 {linkedin && (
                   <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                    className="w-8 h-8 rounded-full border border-brand-800 flex items-center justify-center text-brand-400 hover:text-white hover:border-white/30 transition-colors">
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
                       <circle cx="4" cy="4" r="2" />
@@ -90,7 +90,7 @@ export default async function Footer() {
                 { href: '/contact', en: 'Contact Us', ar: 'تواصل معنا' },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-brand-300/65 hover:text-white text-sm transition-colors">
+                  <Link href={l.href} className="text-sm text-brand-200/78 transition-colors hover:text-white">
                     <LocalizedText en={l.en} ar={l.ar} />
                   </Link>
                 </li>
@@ -103,7 +103,7 @@ export default async function Footer() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
               <LocalizedText en="Contact" ar="بيانات التواصل" />
             </h3>
-            <ul className="space-y-3 text-sm text-brand-300/65">
+            <ul className="space-y-3 text-sm text-brand-200/78">
               {address && (
                 <li className="flex items-start gap-2">
                   <svg className="w-4 h-4 text-brand-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,7 +130,7 @@ export default async function Footer() {
                 </li>
               )}
               {!email && !phone && !address && (
-                <li className="text-brand-500 text-xs italic">
+                <li className="text-xs italic text-brand-300/75">
                   <LocalizedText
                     en="Contact info not configured yet."
                     ar="لم تتم إضافة بيانات التواصل بعد."
@@ -147,7 +147,7 @@ export default async function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-brand-900 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-brand-500 text-xs">
+          <p className="text-xs text-brand-300/75">
             &copy;{' '}
             <bdi dir="ltr" lang="en" className="font-sans tabular-nums">
               {new Date().getFullYear()}

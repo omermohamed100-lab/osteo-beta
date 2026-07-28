@@ -21,7 +21,7 @@ export default function LanguageToggle() {
           : 'تغيير لغة الموقع إلى العربية'
       }
       dir="ltr"
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-brand-200 bg-white px-2.5 py-2 text-sm font-semibold text-brand-700 transition-[background-color,border-color,color,transform] hover:border-brand-300 hover:bg-brand-50 active:scale-[0.97] sm:px-3"
+      className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border border-brand-200 bg-[rgb(252,254,255)] px-2.5 py-2 text-sm font-semibold text-brand-700 outline-none transition-[background-color,border-color,color,transform] duration-150 hover:border-brand-300 hover:bg-brand-50 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-brand-500/40 sm:px-3"
     >
       <svg
         className="h-4 w-4"

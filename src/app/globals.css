@@ -56,9 +56,9 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
+    --background: #fbfdff;
     --foreground: #0f172a;
-    --card: #ffffff;
+    --card: #fcfeff;
     --card-foreground: #0f172a;
     --border: #e2e8f0;
     --ring: #2563eb;
@@ -78,6 +78,7 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-inter), sans-serif;
+    text-rendering: optimizeLegibility;
   }
 
   html[dir='rtl'] body {
@@ -116,6 +117,54 @@
 
   .glass-panel {
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  .site-navbar {
+    border-bottom: 1px solid rgb(255 255 255 / 68%);
+    background: rgb(251 253 255 / 82%);
+    box-shadow: 0 1px 0 rgb(8 47 73 / 5%);
+    backdrop-filter: blur(18px) saturate(155%);
+    -webkit-backdrop-filter: blur(18px) saturate(155%);
+    transition:
+      background-color 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .site-navbar.is-scrolled {
+    background: rgb(251 253 255 / 92%);
+    box-shadow:
+      0 1px 0 rgb(8 47 73 / 8%),
+      0 10px 32px rgb(8 47 73 / 8%);
+  }
+
+  .mobile-nav-sheet {
+    background: rgb(252 254 255 / 94%);
+    backdrop-filter: blur(24px) saturate(165%);
+    -webkit-backdrop-filter: blur(24px) saturate(165%);
+  }
+
+  .surface-panel,
+  .surface-card {
+    border: 1px solid rgb(14 116 144 / 10%);
+    border-radius: 0.75rem;
+    background: rgb(252 254 255);
+    box-shadow: 0 1px 2px rgb(8 47 73 / 4%);
+  }
+
+  .surface-card {
+    transition:
+      border-color 180ms ease-out,
+      box-shadow 180ms ease-out,
+      transform 120ms ease-out;
+  }
+
+  .surface-card:hover {
+    border-color: rgb(14 116 144 / 18%);
+    box-shadow: 0 10px 30px rgb(8 47 73 / 7%);
+  }
+
+  .surface-card:active {
+    transform: scale(0.995);
   }
 
   .hero-copy-reveal {
@@ -172,11 +221,11 @@
 
   .hero-mobile-visual {
     position: absolute;
-    bottom: 10%;
+    bottom: -3%;
     left: 50%;
     display: block;
     z-index: 10;
-    width: min(30rem, 118vw);
+    width: min(26rem, 108vw);
     aspect-ratio: 1;
     overflow: visible;
     pointer-events: none;
@@ -314,5 +363,37 @@
 
   .animate-ticker {
     animation-play-state: paused;
+  }
+
+  .site-navbar,
+  .site-navbar *,
+  .surface-card {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .site-navbar,
+  .site-navbar.is-scrolled,
+  .mobile-nav-sheet {
+    background: rgb(251 253 255);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .site-navbar,
+  .mobile-nav-sheet,
+  .surface-panel,
+  .surface-card {
+    border-color: rgb(8 47 73 / 48%);
+    background: rgb(251 253 255);
+  }
+
+  .hero-support-copy,
+  .page-header-copy {
+    color: rgb(240 249 255 / 94%);
   }
 }

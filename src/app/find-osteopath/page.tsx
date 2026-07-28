@@ -184,14 +184,14 @@ export default function FindOsteopathPage() {
         subtitleAr="ابحث في دليل الممارسين المعتمدين في مصر والشرق الأوسط، وجميعهم يستوفون المعايير المهنية الصارمة للجمعية."
       />
 
-      <div className="bg-slate-50 py-12 sm:py-16">
+      <div className="bg-slate-50/70 py-9 sm:py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
 
         {/* Search bar */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
+        <div className="surface-panel mb-6 p-4 sm:mb-8 sm:p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label htmlFor="specialty-filter" className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="specialty-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.specialty}
               </label>
               <select
@@ -208,7 +208,7 @@ export default function FindOsteopathPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="city-filter" className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="city-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.city}
               </label>
               <input
@@ -222,7 +222,7 @@ export default function FindOsteopathPage() {
               />
             </div>
             <div>
-              <label htmlFor="country-filter" className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="country-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.country}
               </label>
               <select
@@ -239,7 +239,7 @@ export default function FindOsteopathPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="name-filter" className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
+              <label htmlFor="name-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.name}
               </label>
               <input
@@ -255,7 +255,7 @@ export default function FindOsteopathPage() {
           </div>
           {hasFilters && (
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-slate-600">
                 {isArabic
                   ? formatArabicResults(filtered.length)
                   : `${filtered.length} result${filtered.length !== 1 ? 's' : ''} found`}
@@ -276,7 +276,7 @@ export default function FindOsteopathPage() {
 
         {/* Results */}
         {isLoading ? (
-          <div className="text-center py-20 text-gray-400">
+          <div className="py-20 text-center text-slate-500">
             <svg className="w-8 h-8 mx-auto mb-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
@@ -284,7 +284,7 @@ export default function FindOsteopathPage() {
             {copy.loading}
           </div>
         ) : loadError ? (
-          <div role="alert" className="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 flex items-start gap-4">
+          <div role="alert" className="flex items-start gap-4 rounded-xl border border-red-200 bg-red-50 p-6 sm:p-8">
             <svg className="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
@@ -301,13 +301,13 @@ export default function FindOsteopathPage() {
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+          <div className="surface-panel py-16 text-center sm:py-20">
             <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p className="text-gray-500 font-medium">{copy.noResults}</p>
+            <p className="font-medium text-slate-600">{copy.noResults}</p>
             {hasFilters && (
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="mt-1 text-sm text-slate-500">
                 {copy.adjustFilters}{' '}
                 <button type="button" onClick={clearFilters} className="text-brand-600 hover:underline">
                   {copy.clearAll}
@@ -315,7 +315,7 @@ export default function FindOsteopathPage() {
               </p>
             )}
             {!hasFilters && osteopaths.length === 0 && (
-              <p className="text-sm text-gray-400 mt-1">{copy.noPractitioners}</p>
+              <p className="mt-1 text-sm text-slate-500">{copy.noPractitioners}</p>
             )}
           </div>
         ) : (
@@ -326,8 +326,8 @@ export default function FindOsteopathPage() {
                   <h2 className="font-display text-xl sm:text-2xl font-semibold text-brand-950 tracking-tight">
                     <span dir="auto">{group.city || copy.other}</span>
                   </h2>
-                  <span dir="auto" className="text-gray-400 text-xs tracking-[0.25em] uppercase">{group.country}</span>
-                  <span className="ms-auto text-gray-400 text-xs">
+                  <span dir="auto" className="text-xs uppercase tracking-[0.22em] text-slate-500">{group.country}</span>
+                  <span className="ms-auto text-xs text-slate-500">
                     {isArabic
                       ? formatArabicPractitioners(group.items.length)
                       : `${group.items.length} practitioner${group.items.length !== 1 ? 's' : ''}`}
@@ -335,7 +335,7 @@ export default function FindOsteopathPage() {
                 </header>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                   {group.items.map((o) => (
-              <div key={o.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col">
+              <div key={o.id} className="surface-card flex flex-col p-6">
                 <div className="flex items-start gap-4 mb-4">
                   {o.profileImage ? (
                     <img
@@ -351,14 +351,14 @@ export default function FindOsteopathPage() {
                   <div className="min-w-0">
                     <h3 dir="auto" className="font-semibold text-gray-900 text-base leading-tight">{o.name}</h3>
                     <p dir="auto" className="text-brand-600 text-sm font-medium mt-0.5">{o.specialty}</p>
-                    <p dir="auto" className="text-gray-400 text-xs mt-1">
+                    <p dir="auto" className="mt-1 text-xs text-slate-500">
                       {o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{o.country}
                     </p>
                   </div>
                 </div>
 
                 {o.bio && (
-                  <p dir="auto" className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4 flex-grow">
+                  <p dir="auto" className="mb-4 line-clamp-3 flex-grow text-sm leading-relaxed text-slate-600">
                     {o.bio}
                   </p>
                 )}
@@ -366,7 +366,7 @@ export default function FindOsteopathPage() {
                 {(o.phone || o.email) && (
                   <div className="border-t border-gray-100 pt-4 mt-auto space-y-1.5">
                     {o.phone && (
-                      <a href={`tel:${o.phone}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-gray-600 hover:text-brand-600 transition-colors">
+                      <a href={`tel:${o.phone}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
@@ -374,7 +374,7 @@ export default function FindOsteopathPage() {
                       </a>
                     )}
                     {o.email && (
-                      <a href={`mailto:${o.email}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-gray-600 hover:text-brand-600 transition-colors">
+                      <a href={`mailto:${o.email}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>

@@ -18,7 +18,7 @@ export default function PageHeader({
   subtitleAr,
 }: Props) {
   return (
-    <div className="bg-brand-950 text-white relative overflow-hidden py-14 sm:py-20">
+    <div className="relative overflow-hidden bg-brand-950 py-10 text-white sm:py-14 lg:py-16">
       {/* Dot-grid texture */}
       <div
         className="absolute inset-0 opacity-[0.035]"
@@ -31,18 +31,18 @@ export default function PageHeader({
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {eyebrow && (
-          <div className="flex items-center gap-3 mb-5">
+          <div className="mb-4 flex items-center gap-3 sm:mb-5">
             <div className="h-px w-8 bg-gold" />
-            <span className="text-gold text-[11px] font-medium tracking-[0.35em] uppercase">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-light">
               <LocalizedText en={eyebrow} ar={eyebrowAr || eyebrow} />
             </span>
           </div>
         )}
-        <h1 className="font-display text-[clamp(2rem,6vw,4.5rem)] font-light text-white leading-tight mb-3">
+        <h1 className="mb-3 font-display text-[clamp(2rem,5.4vw,4rem)] font-light leading-[1.04] tracking-[-0.018em] text-white">
           <LocalizedText en={title} ar={titleAr || title} />
         </h1>
         {subtitle && (
-          <p className="text-brand-300/70 text-base sm:text-lg max-w-2xl leading-relaxed">
+          <p className="page-header-copy max-w-2xl text-base leading-relaxed text-brand-100/82 sm:text-lg">
             <LocalizedText en={subtitle} ar={subtitleAr || subtitle} />
           </p>
         )}

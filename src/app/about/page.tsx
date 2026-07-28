@@ -68,13 +68,13 @@ export default function AboutPage() {
                   ar="نرتقي بالرعاية الصحية في أنحاء المنطقة"
                 />
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-4">
+              <p className="mb-4 leading-relaxed text-slate-600">
                 <LocalizedText
                   en="EGSOM was founded with a singular purpose: to establish osteopathic medicine as a respected, evidence-based discipline within Egypt's healthcare landscape. Since our founding in Cairo, we have grown into the region's foremost professional association for osteopathic practitioners."
                   ar="تأسست الجمعية بهدف واضح، وهو ترسيخ الطب الأوستيوباثي كتخصص مهني محترم قائم على الدليل ضمن منظومة الرعاية الصحية في مصر. ومنذ انطلاقنا في القاهرة، أصبحنا من أبرز الجمعيات المهنية لممارسي هذا التخصص في المنطقة."
                 />
               </p>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="leading-relaxed text-slate-600">
                 <LocalizedText
                   en="Today, our network spans Egypt and extends across the Middle East, uniting practitioners who share a commitment to holistic, patient-centred care, and to raising the bar for what osteopathic medicine can achieve."
                   ar="تمتد شبكتنا اليوم عبر مصر والشرق الأوسط، وتجمع ممارسين يلتزمون برعاية شاملة تتمحور حول المريض وبالارتقاء بما يمكن أن يقدمه الطب الأوستيوباثي."
@@ -84,7 +84,7 @@ export default function AboutPage() {
 
             <div className="grid grid-cols-2 gap-5">
               {egsomStats.map((stat) => (
-                <div key={stat.label} className="bg-slate-50 rounded-2xl p-5 border border-gray-100">
+                <div key={stat.label} className="surface-panel bg-slate-50/70 p-5">
                   <div className="font-display text-[2.5rem] font-semibold text-brand-600 leading-none mb-2">
                     <bdi
                       dir="ltr"
@@ -94,7 +94,7 @@ export default function AboutPage() {
                       {stat.num}
                     </bdi>
                   </div>
-                  <div className="text-gray-500 text-sm">
+                  <div className="text-sm text-slate-600">
                     <LocalizedText en={stat.label} ar={stat.labelAr} />
                   </div>
                 </div>
@@ -108,7 +108,7 @@ export default function AboutPage() {
       <section className="py-14 sm:py-20 bg-slate-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-brand-950 text-white rounded-2xl p-8 sm:p-10">
+            <div className="rounded-xl bg-brand-950 p-8 text-white sm:p-10">
               <div className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center mb-6">
                 <svg className="w-5 h-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -125,7 +125,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 sm:p-10 border border-gray-100 shadow-sm">
+            <div className="surface-panel p-8 sm:p-10">
               <div className="w-10 h-10 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center mb-6">
                 <svg className="w-5 h-5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -135,7 +135,7 @@ export default function AboutPage() {
               <h3 className="text-xl font-semibold text-brand-950 mb-3">
                 <LocalizedText en="Our Vision" ar="رؤيتنا" />
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="leading-relaxed text-slate-600">
                 <LocalizedText
                   en="A future where osteopathic medicine is widely recognised and practised across Egypt and the Middle East, improving health outcomes for millions of patients through evidence-based, holistic treatment."
                   ar="مستقبل يحظى فيه الطب الأوستيوباثي بالاعتراف والممارسة الواسعة في مصر والشرق الأوسط، ويسهم في تحسين صحة ملايين المرضى من خلال علاج شامل قائم على الدليل."
@@ -164,7 +164,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {values.map((v) => (
-              <div key={v.title} className="group flex gap-5 p-6 rounded-2xl border border-gray-100 hover:border-brand-200 hover:bg-brand-50/30 transition-colors">
+              <div key={v.title} className="surface-card group flex gap-5 p-6 hover:border-brand-200 hover:bg-brand-50/35">
                 <div className="w-10 h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0 group-hover:bg-brand-600 group-hover:text-white transition-colors">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={v.icon} />
@@ -174,7 +174,7 @@ export default function AboutPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">
                     <LocalizedText en={v.title} ar={v.titleAr} />
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed text-slate-600">
                     <LocalizedText en={v.desc} ar={v.descAr} />
                   </p>
                 </div>
@@ -203,13 +203,13 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-brand-900 text-sm font-semibold tracking-widest uppercase hover:bg-gold hover:text-white transition-colors duration-300"
+              className="inline-flex items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold tracking-[0.01em] text-brand-900 transition-[background-color,color,transform] duration-200 hover:bg-gold hover:text-brand-950 active:scale-[0.98]"
             >
               <LocalizedText en="Get in Touch" ar="تواصل معنا" />
             </Link>
             <Link
               href="/courses"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/20 text-white text-sm font-medium tracking-widest uppercase hover:border-white/60 hover:bg-white/5 transition-colors duration-300"
+              className="inline-flex items-center justify-center gap-2 border border-white/28 px-8 py-3.5 text-sm font-semibold tracking-[0.01em] text-white transition-[background-color,border-color,transform] duration-200 hover:border-white/60 hover:bg-white/8 active:scale-[0.98]"
             >
               <LocalizedText en="View Courses" ar="عرض الدورات" />
             </Link>

@@ -29,15 +29,15 @@ export default function HeroTitle() {
     <h1
       lang="en"
       dir="ltr"
-      className="mb-6 font-display leading-[0.92] tracking-tight sm:mb-8 sm:leading-[0.88]"
+      className="mb-5 font-display leading-[0.92] tracking-[-0.02em] sm:mb-8 sm:leading-[0.88]"
     >
-      <span className="block text-[clamp(2.25rem,7.5vw,6.5rem)] font-light italic text-white/50">
+      <span className="block text-[clamp(1.95rem,9vw,2.45rem)] font-light italic text-white/58 sm:text-[clamp(3rem,7.5vw,6.5rem)]">
         Advancing
       </span>
-      <span className="block text-[clamp(2.75rem,9vw,8rem)] font-semibold text-white">
+      <span className="block text-[clamp(2.35rem,11vw,2.9rem)] font-semibold text-white sm:text-[clamp(3.25rem,9vw,8rem)]">
         Osteopathic
       </span>
-      <span className="block text-[clamp(2.25rem,7vw,6rem)] font-light italic text-gold">
+      <span className="block text-[clamp(2rem,9vw,2.5rem)] font-light italic text-gold sm:text-[clamp(3rem,7vw,6rem)]">
         Healthcare
       </span>
     </h1>

@@ -31,17 +31,17 @@ export default async function CoursesPage() {
         subtitleAr="برامج تدريبية متكاملة في الطب الأوستيوباثي، من ورش العمل التمهيدية إلى الاعتماد المتقدم، ومصممة وفق المعايير الدولية."
       />
 
-      <div className="bg-slate-50 py-12 sm:py-16">
+      <div className="bg-slate-50/70 py-9 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           {courses.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-              <svg className="w-12 h-12 mx-auto text-gray-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="surface-panel p-10 text-center sm:p-12">
+              <svg className="mx-auto mb-4 h-12 w-12 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <p className="text-gray-500 font-medium">
+              <p className="font-medium text-slate-600">
                 <LocalizedText en="No courses are currently scheduled." ar="لا توجد دورات مجدولة حاليًا." />
               </p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="mt-1 text-sm text-slate-500">
                 <LocalizedText
                   en="Check back soon for upcoming programs."
                   ar="عُد قريبًا للاطلاع على البرامج القادمة."
@@ -51,7 +51,7 @@ export default async function CoursesPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {courses.map((course) => (
-                <div key={course.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200">
+                <div key={course.id} className="surface-card flex flex-col overflow-hidden">
                   {course.imageUrl ? (
                     <img src={course.imageUrl} alt={course.title} className="w-full h-44 object-cover" />
                   ) : (
@@ -72,8 +72,8 @@ export default async function CoursesPage() {
                         </span>
                       )}
                     </div>
-                    <p dir="auto" className="text-gray-500 text-sm leading-relaxed flex-grow mb-5">{course.description}</p>
-                    <div className="border-t border-gray-100 pt-4 space-y-2 text-xs text-gray-400">
+                    <p dir="auto" className="mb-5 flex-grow text-sm leading-relaxed text-slate-600">{course.description}</p>
+                    <div className="space-y-2 border-t border-brand-100/70 pt-4 text-xs text-slate-500">
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

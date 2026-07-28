@@ -49,7 +49,7 @@ export default function Home() {
     <div className="flex flex-col flex-grow">
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[calc(100svh-6.5rem)] flex-col justify-center overflow-hidden bg-brand-950 text-white">
+      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-brand-950 text-white sm:min-h-[calc(100svh-5rem)]">
         {/* Quiet dot-grid texture from the original hero */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.035]"
@@ -65,10 +65,10 @@ export default function Home() {
           aria-hidden="true"
         />
 
-        <div className="container relative z-10 mx-auto px-4 py-12 sm:px-6 sm:py-16 md:py-10 lg:px-8">
-          <div className="grid items-center gap-8 md:gap-5 lg:min-h-[calc(100svh-11.5rem)] lg:grid-cols-12 lg:gap-4">
+        <div className="container relative z-10 mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-10 lg:px-8">
+          <div className="grid items-center gap-0 md:gap-5 lg:min-h-[calc(100svh-11.5rem)] lg:grid-cols-12 lg:gap-4">
             <div className="hero-copy-reveal relative z-20 lg:col-span-7">
-              <div className="mb-7 flex items-center gap-3 sm:mb-9">
+              <div className="mb-5 flex items-center gap-3 sm:mb-8">
                 <div className="h-px w-10 bg-gold" />
                 <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-gold sm:text-[11px] sm:tracking-[0.35em]">
                   <LocalizedText
@@ -80,11 +80,11 @@ export default function Home() {
 
               <HeroTitle />
 
-              <p className="mb-3 font-display text-[clamp(1.2rem,2.2vw,1.75rem)] font-light italic text-brand-300/70 sm:mb-4">
+              <p className="hero-support-copy mb-3 font-display text-[clamp(1.12rem,2.2vw,1.75rem)] font-light italic text-brand-200/88 sm:mb-4">
                 <LocalizedText en="in Egypt & the Middle East" ar="في مصر والشرق الأوسط" />
               </p>
 
-              <p className="mb-8 max-w-lg text-sm leading-relaxed text-brand-200/75 sm:mb-10 sm:text-base">
+              <p className="hero-support-copy mb-6 max-w-lg text-sm leading-relaxed text-brand-100/82 sm:mb-9 sm:text-base">
                 <LocalizedText
                   en="Dedicated to promoting excellence in osteopathic education, practice, and research, building a healthier future across the region."
                   ar="نكرّس جهودنا للارتقاء بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي، لبناء مستقبل صحي أفضل في المنطقة."
@@ -94,7 +94,7 @@ export default function Home() {
               <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:gap-4">
                 <Link
                   href="/courses"
-                  className="inline-flex items-center justify-center gap-2 bg-white px-6 py-3.5 text-xs font-semibold uppercase tracking-widest text-brand-900 transition-[background-color,color,transform] duration-200 hover:bg-gold hover:text-brand-950 active:scale-[0.97] sm:px-8 sm:py-4 sm:text-sm"
+                  className="inline-flex items-center justify-center gap-2 bg-white px-6 py-3.5 text-sm font-semibold tracking-[0.01em] text-brand-900 transition-[background-color,color,transform] duration-200 hover:bg-gold hover:text-brand-950 active:scale-[0.97] sm:px-8 sm:py-4"
                 >
                   <LocalizedText en="Explore Courses" ar="استكشف الدورات" />
                   <svg className="rtl-flip h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -103,14 +103,14 @@ export default function Home() {
                 </Link>
                 <Link
                   href="/find-osteopath"
-                  className="inline-flex items-center justify-center gap-2 border border-white/20 px-6 py-3.5 text-xs font-medium uppercase tracking-widest text-white transition-[background-color,border-color,transform] duration-200 hover:border-white/60 hover:bg-white/5 active:scale-[0.97] sm:px-8 sm:py-4 sm:text-sm"
+                  className="inline-flex items-center justify-center gap-2 border border-white/28 px-6 py-3.5 text-sm font-semibold tracking-[0.01em] text-white transition-[background-color,border-color,transform] duration-200 hover:border-white/60 hover:bg-white/8 active:scale-[0.97] sm:px-8 sm:py-4"
                 >
                   <LocalizedText en="Find an Osteopath" ar="ابحث عن ممارس أوستيوباثي" />
                 </Link>
               </div>
             </div>
 
-            <div className="relative min-h-[24rem] sm:min-h-[34rem] md:min-h-[22rem] lg:col-span-5 lg:min-h-[calc(100svh-11.5rem)]">
+            <div className="relative min-h-[18rem] sm:min-h-[30rem] md:min-h-[22rem] lg:col-span-5 lg:min-h-[calc(100svh-11.5rem)]">
               <div
                 className="pointer-events-none absolute bottom-[13%] start-0 top-[13%] hidden w-px bg-gradient-to-b from-transparent via-white/10 to-transparent lg:block"
                 aria-hidden="true"
@@ -186,7 +186,7 @@ export default function Home() {
                   ar="ما هو الطب الأوستيوباثي؟"
                 />
               </h2>
-              <p className="mt-5 text-gray-500 text-sm leading-relaxed max-w-sm">
+              <p className="mt-5 max-w-sm text-sm leading-relaxed text-slate-600">
                 <LocalizedText
                   en="A short primer for patients, students, and clinicians who are new to the discipline."
                   ar="مقدمة موجزة للمرضى والطلاب والممارسين الصحيين الراغبين في التعرّف إلى هذا التخصص."
@@ -203,7 +203,7 @@ export default function Home() {
                   <h3 className="text-sm font-semibold text-brand-950 tracking-tight mb-2">
                     <LocalizedText en={point.title} ar={point.titleAr} />
                   </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed text-slate-600">
                     <LocalizedText en={point.body} ar={point.bodyAr} />
                   </p>
                 </div>
@@ -233,7 +233,7 @@ export default function Home() {
                 />
               </h2>
             </div>
-            <p className="hidden lg:block text-gray-400 max-w-xs text-sm leading-relaxed text-end">
+            <p className="hidden max-w-xs text-end text-sm leading-relaxed text-slate-500 lg:block">
               <LocalizedText
                 en="Explore our initiatives, learn about our history, or find a certified practitioner near you."
                 ar="استكشف مبادراتنا وتعرّف على تاريخنا أو ابحث عن ممارس معتمد بالقرب منك."
@@ -269,7 +269,7 @@ export default function Home() {
           <div className="mt-10">
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 text-gold text-sm font-medium tracking-widest uppercase hover:gap-3 transition-all duration-200"
+              className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.01em] text-gold transition-all duration-200 hover:gap-3"
             >
               <LocalizedText en="Our Story" ar="قصتنا" />
               <svg className="rtl-flip w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

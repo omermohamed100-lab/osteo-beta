@@ -61,7 +61,7 @@ const boxes = [
 export default function AnimatedBoxes() {
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border border-gray-200 max-w-6xl mx-auto"
+      className="mx-auto grid max-w-6xl grid-cols-1 border border-brand-100/80 sm:grid-cols-2 lg:grid-cols-3"
     >
       {boxes.map((box, index) => {
         const num = String(index + 1).padStart(2, '0');
@@ -70,18 +70,18 @@ export default function AnimatedBoxes() {
           <Link
             key={box.id}
             href={box.href}
-            className="group relative flex min-h-[180px] touch-manipulation flex-col overflow-hidden border-b border-r border-gray-200 bg-white p-6 transition-[background-color,transform] duration-200 hover:bg-brand-950 active:scale-[0.99] active:bg-brand-950 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset sm:min-h-[220px] sm:p-8"
+            className="group relative flex min-h-[180px] touch-manipulation flex-col overflow-hidden border-b border-r border-brand-100/80 bg-[rgb(252,254,255)] p-6 transition-[background-color,transform] duration-200 hover:bg-brand-950 active:scale-[0.99] active:bg-brand-950 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset sm:min-h-[220px] sm:p-8"
           >
             {/* Large background number */}
-            <span className="absolute end-4 top-3 select-none font-display text-[3.75rem] font-semibold leading-none text-gray-100 transition-colors duration-300 group-hover:text-white/[0.04] group-active:text-white/[0.04] sm:end-5 sm:text-[5.5rem]">
+            <span className="absolute end-4 top-3 select-none font-display text-[3.75rem] font-semibold leading-none text-brand-950/[0.075] transition-colors duration-300 group-hover:text-white/[0.055] group-active:text-white/[0.055] sm:end-5 sm:text-[5.5rem]">
               {num}
             </span>
 
             <div className="relative z-10 flex flex-col flex-grow">
               {/* Icon */}
-              <div className="w-9 h-9 rounded-full border border-gray-200 group-hover:border-white/15 group-active:border-white/15 flex items-center justify-center mb-7 transition-colors duration-300">
+              <div className="mb-7 flex h-10 w-10 items-center justify-center rounded-full border border-brand-100 bg-brand-50/70 transition-colors duration-300 group-hover:border-white/18 group-hover:bg-white/5 group-active:border-white/18 group-active:bg-white/5">
                 <svg
-                  className="w-[18px] h-[18px] text-brand-600 group-hover:text-white/80 group-active:text-white/80 transition-colors duration-300"
+                  className="h-5 w-5 text-brand-700 transition-colors duration-300 group-hover:text-white/85 group-active:text-white/85"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
                   aria-hidden="true"
                 >
@@ -98,7 +98,7 @@ export default function AnimatedBoxes() {
               <div className="h-px w-7 bg-brand-500 group-hover:bg-gold group-hover:w-12 group-active:bg-gold group-active:w-12 transition-all duration-300 mb-4" />
 
               {/* Description */}
-              <p className="text-gray-500 group-hover:text-white/60 group-active:text-white/60 text-sm leading-relaxed transition-colors duration-300 flex-grow">
+              <p className="flex-grow text-sm leading-relaxed text-slate-600 transition-colors duration-300 group-hover:text-white/72 group-active:text-white/72">
                 <LocalizedText en={box.desc} ar={box.descAr} />
               </p>
 
