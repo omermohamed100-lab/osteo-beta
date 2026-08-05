@@ -52,14 +52,16 @@ export default async function GalleryPage() {
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {catItems.map((item) => (
-                        <div key={item.id} className="surface-card group relative aspect-square overflow-hidden bg-slate-100">
+                        <div key={item.id} className="gallery-card surface-card relative aspect-square overflow-hidden bg-slate-100">
+                          {/* CMS images may be hosted on arbitrary approved domains. */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.imageUrl}
                             alt={item.caption || cat}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="gallery-image h-full w-full object-cover"
                           />
                           {item.caption && (
-                            <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 transition-transform duration-300 sm:translate-y-full sm:group-hover:translate-y-0">
+                            <div className="gallery-caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
                               <p dir="auto" className="text-white text-xs leading-snug">{item.caption}</p>
                             </div>
                           )}

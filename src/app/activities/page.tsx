@@ -54,6 +54,8 @@ export default async function ActivitiesPage() {
               {activities.map((activity: Activity) => (
                 <div key={activity.id} className="surface-card flex flex-col overflow-hidden sm:flex-row">
                   {activity.imageUrl ? (
+                    // CMS images may be hosted on practitioner-selected domains.
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={activity.imageUrl}
                       alt={activity.title}

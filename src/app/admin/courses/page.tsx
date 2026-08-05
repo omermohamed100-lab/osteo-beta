@@ -64,7 +64,7 @@ export default function AdminCoursesPage() {
       } else {
         alert('Failed to save course');
       }
-    } catch (error) {
+    } catch {
       alert('Error saving course');
     }
   };
@@ -77,7 +77,7 @@ export default function AdminCoursesPage() {
       if (res.ok) {
         fetchCourses();
       }
-    } catch (error) {
+    } catch {
       alert('Error deleting course');
     }
   };

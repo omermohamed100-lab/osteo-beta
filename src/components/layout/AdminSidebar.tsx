@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -72,7 +73,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
       {/* Logo */}
       <div className="p-5 border-b border-brand-900">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo-clean.png" alt="EGSOM" className="w-8 h-8 rounded-full bg-white p-0.5 object-contain" />
+          <Image src="/logo-clean.png" alt="EGSOM" width={32} height={32} className="h-8 w-8 rounded-full bg-white object-contain p-0.5" />
           <span className="font-bold text-xl">Admin Panel</span>
         </Link>
       </div>

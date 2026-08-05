@@ -18,7 +18,7 @@ export async function GET() {
       where: { id: 'global' },
     });
     return NextResponse.json(settings);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

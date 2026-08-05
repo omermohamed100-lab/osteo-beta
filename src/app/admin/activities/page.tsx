@@ -38,7 +38,23 @@ export default function AdminActivitiesPage() {
     } finally { setIsLoading(false); }
   };
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch('/api/activities')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setItems(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (a: Activity) => {

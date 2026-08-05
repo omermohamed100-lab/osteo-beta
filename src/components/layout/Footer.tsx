@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { SiteSettings } from '@prisma/client';
 import { db } from '@/lib/db';
 import { withPublicDataFallback } from '@/lib/public-data';
@@ -26,8 +27,8 @@ export default async function Footer() {
 
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-5">
-              <img src="/logo-clean.png" alt="EGSOM Logo" className="w-10 h-10 object-contain bg-white rounded-full p-0.5" />
+            <Link href="/" className="mb-5 flex min-h-11 items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-gold">
+              <Image src="/logo-clean.png" alt="EGSOM Logo" width={40} height={40} className="h-10 w-10 rounded-full bg-white object-contain p-0.5" />
               <span
                 lang="en"
                 dir="ltr"
@@ -46,7 +47,7 @@ export default async function Footer() {
               <div className="flex items-center gap-3">
                 {facebook && (
                     <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
                     </svg>
@@ -54,7 +55,7 @@ export default async function Footer() {
                 )}
                 {instagram && (
                   <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                       <circle cx="12" cy="12" r="4" />
@@ -64,7 +65,7 @@ export default async function Footer() {
                 )}
                 {linkedin && (
                   <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-700 text-brand-300 transition-colors hover:border-white/40 hover:text-white">
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
                       <circle cx="4" cy="4" r="2" />
@@ -80,7 +81,7 @@ export default async function Footer() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
               <LocalizedText en="Quick Links" ar="روابط سريعة" />
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-0.5">
               {[
                 { href: '/about', en: 'About Us', ar: 'من نحن' },
                 { href: '/courses', en: 'Courses & Training', ar: 'الدورات والتدريب' },
@@ -90,7 +91,7 @@ export default async function Footer() {
                 { href: '/contact', en: 'Contact Us', ar: 'تواصل معنا' },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-brand-200/78 transition-colors hover:text-white">
+                  <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-brand-200/78 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <LocalizedText en={l.en} ar={l.ar} />
                   </Link>
                 </li>
@@ -118,7 +119,7 @@ export default async function Footer() {
                   <svg className="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  <a href={`mailto:${email}`} dir="ltr" className="hover:text-white transition-colors">{email}</a>
+                  <a href={`mailto:${email}`} dir="ltr" className="inline-flex min-h-11 items-center outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">{email}</a>
                 </li>
               )}
               {phone && (
@@ -126,7 +127,7 @@ export default async function Footer() {
                   <svg className="w-4 h-4 text-brand-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <a href={`tel:${phone}`} dir="ltr" className="hover:text-white transition-colors">{phone}</a>
+                  <a href={`tel:${phone}`} dir="ltr" className="inline-flex min-h-11 items-center outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">{phone}</a>
                 </li>
               )}
               {!email && !phone && !address && (
@@ -139,7 +140,7 @@ export default async function Footer() {
               )}
             </ul>
             <div className="mt-6">
-              <Link href="/admin/login" className="text-brand-600 hover:text-brand-400 text-xs transition-colors">
+              <Link href="/admin/login" className="inline-flex min-h-11 items-center text-xs text-brand-600 outline-none transition-colors hover:text-brand-400 focus-visible:ring-2 focus-visible:ring-gold">
                 <LocalizedText en="Admin Login" ar="دخول الإدارة" />
               </Link>
             </div>

@@ -29,7 +29,7 @@ export async function PUT(
 
     // Remove undefined values
     const updateData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v !== undefined)
+      Object.entries(data).filter(([, value]) => value !== undefined)
     );
 
     const course = await db.course.update({
@@ -60,7 +60,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

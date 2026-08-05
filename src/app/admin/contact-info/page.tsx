@@ -52,7 +52,7 @@ export default function ContactInfoSettingsPage() {
       } else {
         setMessage('Failed to save settings.');
       }
-    } catch (error) {
+    } catch {
       setMessage('Error saving settings.');
     } finally {
       setIsSaving(false);

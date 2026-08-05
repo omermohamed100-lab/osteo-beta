@@ -40,7 +40,7 @@ export const HeroHandsComposition = ({
           height: 700,
           borderRadius: '50%',
           background:
-            'radial-gradient(circle, rgba(14, 165, 233, 0.24) 0%, rgba(2, 132, 199, 0.10) 46%, rgba(8, 47, 73, 0) 72%)',
+            'radial-gradient(circle, rgba(255, 252, 245, 0.96) 0%, rgba(205, 168, 82, 0.12) 48%, rgba(205, 168, 82, 0) 72%)',
           opacity: interpolate(animationFrame, [14, 44], [0, 1], {
             extrapolateLeft: 'clamp',
             extrapolateRight: 'clamp',
@@ -176,7 +176,7 @@ export const HeroHandsComposition = ({
             style={{
               position: 'absolute',
               inset: -14,
-              border: '1px solid rgba(186, 230, 253, 0.20)',
+              border: '1px solid rgba(205, 168, 82, 0.18)',
               borderRadius: '50%',
               opacity: interpolate(animationFrame, [27, 52], [0, 1], {
                 extrapolateLeft: 'clamp',
@@ -199,7 +199,7 @@ export const HeroHandsComposition = ({
               height: '100%',
               objectFit: 'contain',
               filter:
-                'drop-shadow(0 24px 34px rgba(2, 12, 27, 0.30)) drop-shadow(0 0 24px rgba(125, 211, 252, 0.10))',
+                'drop-shadow(0 24px 34px rgba(2, 12, 27, 0.28))',
             }}
           />
         </Interactive.Div>
@@ -345,6 +345,7 @@ export default function HeroRemotion() {
           <Player
             component={HeroHandsComposition}
             inputProps={{ reducedMotion }}
+            acknowledgeRemotionLicense
             durationInFrames={HERO_DURATION_IN_FRAMES}
             compositionWidth={1080}
             compositionHeight={1080}

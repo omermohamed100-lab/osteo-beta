@@ -5,3 +5,23 @@ node_modules/
 out/
 *.tsbuildinfo
 fullstack-developer/
+.claude/
+
+# Local design-generation source files and superseded exports
+public/hero-hands-spine.png
+public/hero-hand-right.png
+public/hero-hand-left.png
+public/closing-emblem-gold-source.png
+public/closing-emblem-gold.png
+public/closing-emblem-ankh-gold-source.png
+public/closing-emblem-ankh-gold.png
+public/closing-emblem-ankh-two-snakes-source.png
+public/closing-egypt-skyline-gold-source.png
+public/closing-banner-exact.png
+public/path-practitioner-emblem-source.png
+public/path-practitioner-exact.png
+public/path-student-exact.png
+public/path-patient-exact.png
+public/hero-stone-architecture.png
+public/path-study-pillar-v2.png
+public/hero-stone-relief.webp

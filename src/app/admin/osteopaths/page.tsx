@@ -46,7 +46,23 @@ export default function AdminOsteopathsPage() {
     }
   };
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch('/api/osteopaths')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setItems(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (o: Osteopath) => {
@@ -111,6 +127,8 @@ export default function AdminOsteopathsPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       {o.profileImage ? (
+                        // Admin-entered profile URLs may use arbitrary hosts.
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={o.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-bold">

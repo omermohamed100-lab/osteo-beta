@@ -33,7 +33,23 @@ export default function AdminGalleryPage() {
     } finally { setIsLoading(false); }
   };
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch('/api/gallery')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setItems(data);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (item: GalleryItem) => {
@@ -91,6 +107,8 @@ export default function AdminGalleryPage() {
               {items.map((item) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    {/* Admin-entered image URLs may use arbitrary hosts. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.imageUrl} alt={item.caption} className="w-16 h-12 object-cover rounded-md bg-gray-100" />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">{item.caption || '—'}</td>
@@ -126,6 +144,8 @@ export default function AdminGalleryPage() {
                 <label className={labelCls}>Image URL *</label>
                 <input required type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
                 {formData.imageUrl && (
+                  // The preview must support arbitrary URLs before saving.
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={formData.imageUrl} alt="preview" className="mt-2 w-full h-32 object-cover rounded-md bg-gray-100" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 )}
               </div>

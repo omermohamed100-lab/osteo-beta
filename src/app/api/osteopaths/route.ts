@@ -17,6 +17,8 @@ const osteopathSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
+  const publicRequest = request.nextUrl.searchParams.get('public') === '1';
+
   try {
     const { searchParams } = new URL(request.url);
     const name    = searchParams.get('name')    ?? '';
@@ -34,6 +36,12 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.json(osteopaths);
   } catch {
+    if (publicRequest) {
+      return NextResponse.json([], {
+        headers: { 'X-EGSOM-Data-Status': 'unavailable' },
+      });
+    }
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

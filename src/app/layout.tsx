@@ -10,6 +10,7 @@ import LanguageProvider, {
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
+import LocalizedText from '@/components/i18n/LocalizedText';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,15 +59,22 @@ export default async function RootLayout({
     <html
       lang={initialLanguage}
       dir={initialLanguage === 'ar' ? 'rtl' : 'ltr'}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} ${cormorant.variable} ${notoArabic.variable} font-sans min-h-screen flex flex-col bg-slate-50`}>
+      <body className={`${inter.variable} ${cormorant.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-bone font-sans`}>
         <LanguageProvider
           initialLanguage={initialLanguage}
           hasLanguageCookie={hasLanguageCookie}
         >
+          <a href="#main-content" className="skip-link">
+            <LocalizedText
+              en="Skip to main content"
+              ar="انتقل إلى المحتوى الرئيسي"
+            />
+          </a>
           <Navbar />
-          <main className="flex-grow flex flex-col">
+          <main id="main-content" className="flex flex-grow flex-col" tabIndex={-1}>
             {children}
           </main>
           <Footer />

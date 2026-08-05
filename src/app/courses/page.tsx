@@ -53,6 +53,8 @@ export default async function CoursesPage() {
               {courses.map((course) => (
                 <div key={course.id} className="surface-card flex flex-col overflow-hidden">
                   {course.imageUrl ? (
+                    // CMS images may be hosted on education-provider domains.
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={course.imageUrl} alt={course.title} className="w-full h-44 object-cover" />
                   ) : (
                     <div className="w-full h-44 bg-brand-950 flex items-center justify-center">

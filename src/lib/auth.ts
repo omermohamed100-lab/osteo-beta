@@ -1,10 +1,10 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import { NextRequest } from 'next/server';
 
 const secretKey = process.env.JWT_SECRET || 'super-secret-key-change-in-production';
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function signJWT(payload: any) {
+export async function signJWT(payload: JWTPayload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -16,7 +16,7 @@ export async function verifyJWT(token: string) {
   try {
     const { payload } = await jwtVerify(token, encodedKey);
     return payload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

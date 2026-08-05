@@ -17,16 +17,23 @@ export default function AdminMessagesPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const fetchMessages = () => {
-    setIsLoading(true);
+  useEffect(() => {
+    let cancelled = false;
+
     fetch('/api/contact')
       .then((res) => res.json())
-      .then((data) => { if (Array.isArray(data)) setMessages(data); })
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setMessages(data);
+      })
       .catch(() => {})
-      .finally(() => setIsLoading(false));
-  };
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
 
-  useEffect(() => { fetchMessages(); }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this message? This cannot be undone.')) return;

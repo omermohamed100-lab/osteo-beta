@@ -76,6 +76,7 @@ export default function FindOsteopathPage() {
         loading: 'جارٍ تحميل الدليل…',
         unavailable: 'الدليل غير متاح',
         loadError: 'تعذر تحميل الدليل. تحقق من اتصالك وحاول مرة أخرى.',
+        temporaryUnavailable: 'بيانات الدليل غير متاحة مؤقتًا. يمكنك متابعة تصفح الموقع والمحاولة مرة أخرى بعد قليل.',
         retry: 'حاول مرة أخرى',
         noResults: 'لم يتم العثور على ممارسين',
         adjustFilters: 'جرّب تعديل عوامل البحث أو',
@@ -96,6 +97,7 @@ export default function FindOsteopathPage() {
         loading: 'Loading directory…',
         unavailable: 'Directory unavailable',
         loadError: 'We could not load the directory. Please check your connection and try again.',
+        temporaryUnavailable: 'Directory data is temporarily unavailable. You can continue browsing the site and try again shortly.',
         retry: 'Try again',
         noResults: 'No osteopaths found',
         adjustFilters: 'Try adjusting your filters or',
@@ -107,20 +109,36 @@ export default function FindOsteopathPage() {
   const [osteopaths, setOsteopaths] = useState<Osteopath[]>([]);
   const [isLoading, setIsLoading]   = useState(true);
   const [loadError, setLoadError]   = useState(false);
+  const [dataUnavailable, setDataUnavailable] = useState(false);
   const [specialtyFilter, setSpecialtyFilter] = useState('');
   const [nameFilter,    setNameFilter]    = useState('');
   const [cityFilter,    setCityFilter]    = useState('');
   const [countryFilter, setCountryFilter] = useState('');
 
   useEffect(() => {
-    fetch('/api/osteopaths')
+    let cancelled = false;
+
+    fetch('/api/osteopaths?public=1')
       .then((r) => {
         if (!r.ok) throw new Error(`Request failed (${r.status})`);
-        return r.json();
+        const unavailable = r.headers.get('x-egsom-data-status') === 'unavailable';
+        return r.json().then((data) => ({ data, unavailable }));
       })
-      .then((data) => { if (Array.isArray(data)) setOsteopaths(data); })
-      .catch(() => { setLoadError(true); })
-      .finally(() => setIsLoading(false));
+      .then(({ data, unavailable }) => {
+        if (cancelled) return;
+        if (Array.isArray(data)) setOsteopaths(data);
+        setDataUnavailable(unavailable);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const specialtyOptions = useMemo(() => {
@@ -171,6 +189,27 @@ export default function FindOsteopathPage() {
     setNameFilter('');
     setCityFilter('');
     setCountryFilter('');
+  };
+
+  const retryDirectory = async () => {
+    setLoadError(false);
+    setDataUnavailable(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/osteopaths?public=1');
+      if (!response.ok) throw new Error(`Request failed (${response.status})`);
+
+      const data = await response.json();
+      if (Array.isArray(data)) setOsteopaths(data);
+      setDataUnavailable(
+        response.headers.get('x-egsom-data-status') === 'unavailable',
+      );
+    } catch {
+      setLoadError(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -263,7 +302,7 @@ export default function FindOsteopathPage() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-sm text-brand-600 hover:text-brand-800 font-medium inline-flex items-center gap-1.5 transition-colors"
+                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-brand-600 transition-colors hover:text-brand-800"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -283,6 +322,23 @@ export default function FindOsteopathPage() {
             </svg>
             {copy.loading}
           </div>
+        ) : dataUnavailable ? (
+          <div role="status" className="flex items-start gap-4 rounded-xl border border-gold/35 bg-gold-soft/45 p-6 sm:p-8">
+            <svg className="mt-0.5 h-6 w-6 shrink-0 text-gold-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.25 9.75h1.5v6h-1.5v-6zm0-3h1.5v1.5h-1.5v-1.5zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-brand-950">{copy.unavailable}</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-muted">{copy.temporaryUnavailable}</p>
+              <button
+                type="button"
+                onClick={retryDirectory}
+                className="mt-2 inline-flex min-h-11 items-center font-medium text-brand-700 underline decoration-gold/70 underline-offset-4 transition-colors hover:text-brand-950"
+              >
+                {copy.retry}
+              </button>
+            </div>
+          </div>
         ) : loadError ? (
           <div role="alert" className="flex items-start gap-4 rounded-xl border border-red-200 bg-red-50 p-6 sm:p-8">
             <svg className="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -293,8 +349,8 @@ export default function FindOsteopathPage() {
               <p className="text-red-700 text-sm mt-1">{copy.loadError}</p>
               <button
                 type="button"
-                onClick={() => { setLoadError(false); setIsLoading(true); fetch('/api/osteopaths').then((r) => { if (!r.ok) throw new Error(); return r.json(); }).then((data) => { if (Array.isArray(data)) setOsteopaths(data); }).catch(() => setLoadError(true)).finally(() => setIsLoading(false)); }}
-                className="mt-3 text-sm font-medium text-red-700 underline hover:text-red-900"
+                onClick={retryDirectory}
+                className="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-red-700 underline underline-offset-4 hover:text-red-900"
               >
                 {copy.retry}
               </button>
@@ -309,7 +365,7 @@ export default function FindOsteopathPage() {
             {hasFilters && (
               <p className="mt-1 text-sm text-slate-500">
                 {copy.adjustFilters}{' '}
-                <button type="button" onClick={clearFilters} className="text-brand-600 hover:underline">
+                <button type="button" onClick={clearFilters} className="inline-flex min-h-11 items-center text-brand-600 hover:underline">
                   {copy.clearAll}
                 </button>
               </p>
@@ -338,6 +394,8 @@ export default function FindOsteopathPage() {
               <div key={o.id} className="surface-card flex flex-col p-6">
                 <div className="flex items-start gap-4 mb-4">
                   {o.profileImage ? (
+                    // Directory profile images may be hosted on arbitrary approved domains.
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={o.profileImage}
                       alt={o.name}
