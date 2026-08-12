@@ -16,13 +16,16 @@ type HeroHandsCompositionProps = {
   reducedMotion: boolean;
 };
 
-export const HERO_DURATION_IN_FRAMES = 70;
+export const HERO_DURATION_IN_FRAMES = 30;
+const HERO_FINAL_FRAME = 69;
 
 export const HeroHandsComposition = ({
   reducedMotion,
 }: HeroHandsCompositionProps) => {
   const frame = useCurrentFrame();
-  const animationFrame = reducedMotion ? HERO_DURATION_IN_FRAMES - 1 : frame;
+  const animationFrame = reducedMotion
+    ? HERO_FINAL_FRAME
+    : (frame * HERO_FINAL_FRAME) / (HERO_DURATION_IN_FRAMES - 1);
 
   return (
     <AbsoluteFill
@@ -269,57 +272,18 @@ export default function HeroRemotion() {
   }, []);
 
   useEffect(() => {
-    if (!isMobile || reducedMotion || mobileAnimationStarted) {
+    if (!isMobile || reducedMotion) {
       return;
     }
 
-    let touchStartY: number | null = null;
-
-    const revealMobileVisual = () => {
+    const timer = window.setTimeout(() => {
       setMobileAnimationStarted(true);
-    };
-
-    const startAfterScroll = () => {
-      const scrollTop = Math.max(
-        window.scrollY,
-        document.documentElement.scrollTop,
-        document.body.scrollTop,
-      );
-
-      if (scrollTop >= 12) {
-        revealMobileVisual();
-      }
-    };
-
-    const rememberTouchStart = (event: TouchEvent) => {
-      touchStartY = event.touches[0]?.clientY ?? null;
-    };
-
-    const startAfterTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY;
-
-      if (
-        touchStartY !== null &&
-        currentY !== undefined &&
-        touchStartY - currentY >= 10
-      ) {
-        revealMobileVisual();
-      }
-    };
-
-    window.addEventListener('scroll', startAfterScroll, { passive: true });
-    window.addEventListener('touchstart', rememberTouchStart, { passive: true });
-    window.addEventListener('touchmove', startAfterTouchMove, { passive: true });
-
-    const frame = window.requestAnimationFrame(startAfterScroll);
+    }, 180);
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', startAfterScroll);
-      window.removeEventListener('touchstart', rememberTouchStart);
-      window.removeEventListener('touchmove', startAfterTouchMove);
+      window.clearTimeout(timer);
     };
-  }, [isMobile, mobileAnimationStarted, reducedMotion]);
+  }, [isMobile, reducedMotion]);
 
   const mobileVisualIsVisible = reducedMotion || mobileAnimationStarted;
 

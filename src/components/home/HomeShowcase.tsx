@@ -179,9 +179,9 @@ export function PathwaysShowcase() {
   const { ref, visible } = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className={`pathways-section bg-paper py-20 sm:py-24 lg:py-28 ${visible ? 'is-visible' : ''}`} aria-labelledby="choose-path">
+    <section ref={ref} className={`pathways-section bg-paper py-16 sm:py-24 lg:py-28 ${visible ? 'is-visible' : ''}`} aria-labelledby="choose-path">
       <div className="mx-auto max-w-[90rem] px-5 sm:px-8 lg:px-12 xl:px-16">
-        <div className="path-heading-lockup mx-auto mb-12 max-w-2xl text-center sm:mb-14">
+        <div className="path-heading-lockup mx-auto mb-9 max-w-2xl text-center sm:mb-14">
           <div className="mb-5 flex items-center justify-center gap-4 text-gold-deep" aria-hidden="true">
             <span className="h-px w-20 bg-gold/70" />
             <span className="text-xl leading-none">✦</span>
@@ -202,7 +202,7 @@ export function PathwaysShowcase() {
                 key={path.title}
                 href={path.href}
                 style={{ '--path-index': index } as CSSProperties}
-                className={`path-panel path-panel--${path.tone} group relative flex min-h-[34rem] flex-col overflow-hidden border-b border-brand-950/18 px-8 pb-8 pt-9 outline-none last:border-b-0 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold sm:px-10 sm:pb-10 sm:pt-10 lg:h-[35.5rem] lg:min-h-0 lg:border-b-0 lg:border-e lg:last:border-e-0`}
+                className={`path-panel path-panel--${path.tone} group relative flex min-h-[27rem] flex-col overflow-hidden border-b border-brand-950/18 px-6 pb-7 pt-8 outline-none last:border-b-0 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold sm:min-h-[32rem] sm:px-10 sm:pb-10 sm:pt-10 lg:h-[35.5rem] lg:min-h-0 lg:border-b-0 lg:border-e lg:last:border-e-0`}
               >
                 <div className="path-panel-content relative z-10">
                   <Icon />
@@ -215,7 +215,7 @@ export function PathwaysShowcase() {
                   </p>
                 </div>
 
-                <span className={`path-panel-action relative z-20 inline-flex items-center gap-3 text-[0.88rem] font-semibold ${path.tone === 'light' ? 'mt-24' : 'mb-16 mt-auto pt-12'}`}>
+                <span className={`path-panel-action relative z-20 mt-auto inline-flex items-center gap-3 pt-8 text-[0.88rem] font-semibold sm:pt-10 lg:pt-12 ${path.tone === 'light' ? 'lg:mt-16' : 'mb-10 sm:mb-16'}`}>
                   <LocalizedText en={path.action} ar={path.actionAr} />
                   <span className="path-arrow" aria-hidden="true">→</span>
                 </span>
@@ -233,22 +233,24 @@ export function ClosingStatement() {
   const { ref, visible } = useReveal<HTMLElement>();
 
   return (
-    <section ref={ref} className={`closing-section relative z-20 -mt-10 bg-transparent px-5 pb-20 sm:px-8 sm:pb-24 lg:-mt-14 lg:px-12 lg:pb-28 xl:px-16 ${visible ? 'is-visible' : ''}`}>
-      <Link href="/about" className="closing-statement group relative mx-auto grid min-h-[27rem] max-w-[90rem] overflow-hidden px-7 py-9 text-bone outline-none sm:min-h-[25rem] sm:px-10 md:min-h-[21rem] md:grid-cols-[7rem_minmax(15rem,0.9fr)_1.1fr] md:items-center md:gap-7 md:px-8 md:py-7 lg:min-h-[18rem] lg:grid-cols-[9rem_minmax(21rem,0.82fr)_1.4fr] lg:gap-10 lg:px-12 lg:py-8 xl:grid-cols-[9rem_minmax(28rem,1fr)_1.25fr] xl:px-14 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-paper">
+    <section ref={ref} className={`closing-section relative z-20 -mt-10 bg-transparent pb-20 sm:pb-24 lg:-mt-14 lg:pb-28 ${visible ? 'is-visible' : ''}`}>
+      <div className="mx-auto max-w-[90rem] px-5 sm:px-8 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
+        <Link href="/about" className="closing-statement group relative grid min-h-[22rem] w-full overflow-hidden px-7 py-8 text-center text-bone outline-none sm:min-h-[21rem] sm:px-10 md:min-h-[17rem] md:grid-cols-[7rem_minmax(15rem,0.9fr)_1.1fr] md:items-center md:gap-7 md:px-8 md:py-6 md:text-start lg:min-h-[14rem] lg:grid-cols-[8rem_minmax(21rem,1fr)_minmax(17rem,1.15fr)] lg:gap-10 lg:px-12 lg:py-6 xl:grid-cols-[8rem_minmax(28rem,1fr)_minmax(24rem,1.05fr)] xl:px-14 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-paper">
         <ClosingEmblemArtwork />
-        <div className="closing-copy relative z-10 mt-5 lg:mt-0">
-          <h2 className="font-display text-[clamp(2.25rem,3.25vw,3.45rem)] font-medium leading-[1.02] tracking-[-0.025em]">
-            <span className="block"><LocalizedText en="Osteopathy for people." ar="الأوستيوباثي للناس." /></span>
-            <span className="block"><LocalizedText en="A profession for Egypt." ar="ومهنة من أجل مصر." /></span>
+        <div className="closing-copy relative z-10 mt-4 md:mt-0">
+          <h2 className="font-display text-[clamp(2.25rem,3.25vw,3.45rem)] font-medium leading-[1.02] tracking-[-0.025em] max-md:text-[clamp(2rem,9vw,2.45rem)] max-md:leading-[1.04] lg:text-[clamp(2.25rem,3vw,3.3rem)]">
+            <span className="block lg:whitespace-nowrap"><LocalizedText en="Osteopathy for people." ar="الأوستيوباثي للناس." /></span>
+            <span className="block lg:whitespace-nowrap"><LocalizedText en="A profession for Egypt." ar="ومهنة من أجل مصر." /></span>
           </h2>
-          <span className="mt-4 block h-px w-16 bg-gold" aria-hidden="true" />
-          <span className="closing-action mt-4 inline-flex items-center gap-3 text-sm font-semibold">
+          <span className="mx-auto mt-4 block h-px w-16 bg-gold md:mx-0" aria-hidden="true" />
+          <span className="closing-action mt-4 inline-flex items-center justify-center gap-3 text-sm font-semibold md:justify-start">
             <LocalizedText en="Discover our vision and mission" ar="اكتشف رؤيتنا ورسالتنا" />
             <span className="path-arrow" aria-hidden="true">→</span>
           </span>
         </div>
         <EgyptSkylineArtwork />
-      </Link>
+        </Link>
+      </div>
     </section>
   );
 }

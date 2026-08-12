@@ -139,7 +139,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
 
       {/* ── Mobile backdrop ── */}
       <div
-        className={`lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`admin-mobile-backdrop lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -147,14 +147,14 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
 
       {/* ── Mobile drawer ── */}
       <div
-        className={`lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-brand-950 text-white flex flex-col border-r border-brand-900 transition-transform duration-300 ease-in-out ${
+        className={`admin-mobile-drawer lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-brand-950 text-white flex flex-col border-r border-brand-900 transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-brand-400 hover:text-white p-1"
+          className="absolute right-4 top-4 p-1 text-brand-400 transition-[color,transform] duration-150 active:scale-[0.96] hover:text-white"
           aria-label="Close menu"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

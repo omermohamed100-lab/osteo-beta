@@ -89,14 +89,14 @@ export default function Navbar() {
 
   const menuTransition = reduceMotion
     ? { duration: 0.1 }
-    : { duration: 0.28, ease: [0.16, 1, 0.3, 1] as const };
+    : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
 
   return (
     <nav
       className={`site-navbar sticky top-0 z-50 w-full ${isScrolled ? 'is-scrolled' : ''}`}
       aria-label={isArabic ? 'التنقل الرئيسي' : 'Main navigation'}
     >
-      <div className="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-12 xl:px-16">
+      <div className="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
         <div className="flex h-[4.5rem] items-center justify-between xl:h-24">
           <Link
             href="/"
@@ -110,7 +110,7 @@ export default function Navbar() {
               priority
               className="h-12 w-12 object-contain xl:h-[4.25rem] xl:w-[4.25rem]"
             />
-            <span className="flex flex-col text-bone">
+            <span className="flex flex-col text-bone max-[374px]:hidden">
               <span className="font-display text-[1.1rem] font-medium leading-[0.92] tracking-[-0.015em] xl:text-[1.27rem]">
                 {isArabic ? 'الجمعية المصرية' : 'Egyptian Society'}
               </span>
@@ -195,7 +195,7 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: reduceMotion ? 0.08 : 0.18 }}
+              transition={menuTransition}
               onClick={closeMenuAndRestoreFocus}
             />
 

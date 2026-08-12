@@ -23,42 +23,31 @@
   --color-gold-deep: oklch(52% 0.08 82);
   --color-gold-soft: oklch(92% 0.035 82);
 
-  --animate-ticker: ticker 26s linear infinite;
-  --animate-fade-up: fadeUp 0.7s ease-out both;
-}
-
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-@keyframes tickerRtl {
-  from { transform: translateX(0); }
-  to   { transform: translateX(50%); }
-}
-
-@media (max-width: 640px) {
-  :root { --animate-ticker: ticker 12s linear infinite; }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes mobileHandsRise {
-  from { opacity: 0.2; transform: translateY(38%) scale(0.96); }
+  from { opacity: 0.2; transform: translateY(22%) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes mobileSealRise {
-  from { opacity: 0; transform: translate(-50%, 28%) scale(0.84); }
+  from { opacity: 0; transform: translate(-50%, 18%) scale(0.92); }
   to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 
 @keyframes mobileGlowIn {
-  from { opacity: 0; transform: scale(0.78); }
+  from { opacity: 0; transform: scale(0.9); }
   to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes directoryCardIn {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes directoryPortraitFloatIn {
+  from { opacity: 0; transform: translateY(1.5rem) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @layer base {
@@ -172,7 +161,6 @@
   .surface-card {
     transition:
       border-color 180ms ease-out,
-      box-shadow 180ms ease-out,
       transform 120ms ease-out;
   }
 
@@ -185,8 +173,41 @@
     transform: scale(0.995);
   }
 
-  .hero-copy-reveal {
-    animation: fadeUp 0.72s var(--ease-out-expo) 0.04s both;
+  .directory-practitioner-content {
+    min-height: 0;
+  }
+
+  .directory-practitioner-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 8.75rem;
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .directory-practitioner-intro,
+  .directory-practitioner-bio {
+    width: auto;
+  }
+
+  .directory-portrait-float {
+    aspect-ratio: 4 / 5;
+    pointer-events: none;
+  }
+
+  .directory-portrait-subject {
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 18px 20px rgb(8 47 73 / 14%));
+  }
+
+  .directory-practitioner-card {
+    animation: directoryCardIn 360ms var(--ease-out-expo) both;
+    animation-delay: var(--directory-delay, 0ms);
+  }
+
+  .directory-practitioner-card .directory-portrait-float {
+    animation: directoryPortraitFloatIn 460ms var(--ease-out-expo) both;
+    animation-delay: calc(var(--directory-delay, 0ms) + 70ms);
   }
 
   .skip-link {
@@ -380,18 +401,12 @@
     line-height: 1.24;
   }
 
-  .path-heading-lockup,
-  .path-panel,
-  .closing-statement {
-    will-change: transform, opacity;
-  }
-
   .pathways-section .path-heading-lockup {
     opacity: 0;
     transform: translateY(12px);
     transition:
-      opacity 560ms var(--ease-out-expo),
-      transform 680ms var(--ease-out-expo);
+      opacity 220ms var(--ease-out-expo),
+      transform 240ms var(--ease-out-expo);
   }
 
   .pathways-section.is-visible .path-heading-lockup {
@@ -403,9 +418,8 @@
     --path-index: 0;
     isolation: isolate;
     transition:
-      transform 150ms var(--ease-out-quart),
-      background-color 220ms ease,
-      box-shadow 220ms ease;
+      transform 120ms var(--ease-out-quart),
+      background-color 180ms ease;
   }
 
   .path-panel-content,
@@ -413,13 +427,13 @@
     opacity: 0;
     transform: translateY(12px);
     transition:
-      opacity 560ms var(--ease-out-expo),
-      transform 650ms var(--ease-out-expo);
-    transition-delay: calc(var(--path-index) * 65ms);
+      opacity 220ms var(--ease-out-expo),
+      transform 240ms var(--ease-out-expo);
+    transition-delay: calc(var(--path-index) * 40ms);
   }
 
   .path-panel-action {
-    transition-delay: calc(100ms + var(--path-index) * 65ms);
+    transition-delay: calc(60ms + var(--path-index) * 40ms);
   }
 
   .pathways-section.is-visible .path-panel-content,
@@ -498,8 +512,8 @@
     z-index: 0;
     pointer-events: none;
     transition:
-      opacity 240ms ease,
-      transform 480ms var(--ease-out-expo);
+      opacity 180ms ease,
+      transform 240ms var(--ease-out-expo);
     shape-rendering: geometricPrecision;
   }
 
@@ -512,30 +526,10 @@
     filter: saturate(0.55) brightness(1.4);
   }
 
-  .brand-emblem-lines path {
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-    shape-rendering: geometricPrecision;
-  }
-
-  .brand-emblem-eye {
-    fill: currentColor;
-    opacity: 0;
-    transition: opacity 280ms ease-out 620ms;
-  }
-
-  .pathways-section.is-visible .path-logo-emblem .brand-emblem-eye,
-  .closing-section.is-visible .closing-logo-emblem .brand-emblem-eye {
-    opacity: 1;
-  }
-
-.path-column-raster {
-  inset-inline-start: 0;
-  bottom: -5rem;
-  width: 100%;
+  .path-column-raster {
+    inset-inline-start: 0;
+    bottom: -5rem;
+    width: 100%;
     height: auto;
     opacity: 1;
     filter: drop-shadow(0 12px 12px rgb(72 61 52 / 18%));
@@ -549,7 +543,7 @@
   .pathways-section.is-visible .path-column-raster {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: calc(180ms + var(--path-index) * 65ms);
+    transition-delay: calc(80ms + var(--path-index) * 40ms);
   }
 
   .pathways-section:not(.is-visible) .path-care-hands-raster {
@@ -560,7 +554,7 @@
   .pathways-section.is-visible .path-care-hands-raster {
     opacity: 0.34;
     transform: translateY(0);
-    transition-delay: 180ms;
+    transition-delay: 80ms;
   }
 
   .path-logo-emblem {
@@ -579,38 +573,8 @@
   .pathways-section.is-visible .path-practitioner-emblem {
     opacity: 0.32;
     transform: translateY(0);
-    transition-delay: calc(180ms + var(--path-index) * 65ms);
+    transition-delay: calc(80ms + var(--path-index) * 40ms);
   }
-
-  .draw-line path,
-  .draw-line ellipse,
-  .closing-skyline-lines path {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-  }
-
-  .pathways-section.is-visible .draw-line path,
-  .pathways-section.is-visible .draw-line ellipse,
-  .closing-section.is-visible .draw-line path,
-  .closing-section.is-visible .draw-line ellipse,
-  .closing-section.is-visible .closing-skyline-lines path {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 920ms var(--ease-out-expo);
-    transition-delay: calc(180ms + var(--path-index, 0) * 65ms);
-  }
-
-  .draw-line path:nth-child(2),
-  .closing-skyline-lines path:nth-child(2) { transition-delay: calc(225ms + var(--path-index, 0) * 65ms); }
-  .draw-line path:nth-child(3),
-  .closing-skyline-lines path:nth-child(3) { transition-delay: calc(270ms + var(--path-index, 0) * 65ms); }
-  .draw-line path:nth-child(4),
-  .closing-skyline-lines path:nth-child(4) { transition-delay: calc(315ms + var(--path-index, 0) * 65ms); }
-  .draw-line path:nth-child(5),
-  .closing-skyline-lines path:nth-child(5) { transition-delay: calc(360ms + var(--path-index, 0) * 65ms); }
-  .draw-line path:nth-child(6),
-  .closing-skyline-lines path:nth-child(6) { transition-delay: calc(405ms + var(--path-index, 0) * 65ms); }
-  .draw-line path:nth-child(n+7),
-  .closing-skyline-lines path:nth-child(n+7) { transition-delay: calc(450ms + var(--path-index, 0) * 65ms); }
 
   .closing-statement {
     --path-index: 0;
@@ -623,9 +587,8 @@
     box-shadow: 0 30px 80px oklch(17.5% 0.038 238 / 22%);
     transform: translateY(16px);
     transition:
-      opacity 560ms var(--ease-out-expo),
-      transform 680ms var(--ease-out-expo),
-      box-shadow 220ms ease;
+      opacity 220ms var(--ease-out-expo),
+      transform 240ms var(--ease-out-expo);
   }
 
   .closing-section.is-visible .closing-statement {
@@ -683,14 +646,6 @@
       linear-gradient(270deg, rgb(8 47 73 / 0%) 46%, rgb(3 105 161 / 8%) 100%);
   }
 
-  .animate-ticker {
-    will-change: transform;
-  }
-
-  html[dir='rtl'] .animate-ticker {
-    animation-name: tickerRtl;
-  }
-
   .hero-remotion-player {
     position: absolute;
     bottom: -15%;
@@ -731,6 +686,20 @@
     background: linear-gradient(180deg, oklch(97.3% 0.011 84) 0 52%, oklch(95.8% 0.009 78) 100%);
   }
 
+  .directory-practitioner-content {
+    min-height: 0;
+  }
+
+  .directory-practitioner-header {
+    grid-template-columns: minmax(0, 1fr) 7.5rem;
+    gap: 0.75rem;
+  }
+
+  .directory-practitioner-intro,
+  .directory-practitioner-bio {
+    width: auto;
+  }
+
   .hero-architecture,
   html[dir='rtl'] .hero-architecture {
     inset: auto -1px -1px;
@@ -751,11 +720,11 @@
 
   .hero-mobile-visual {
     position: absolute;
-    bottom: 9%;
-    left: 59%;
+    bottom: -2%;
+    left: 54%;
     display: block;
     z-index: 10;
-    width: min(31rem, 118vw);
+    width: min(23.5rem, 104vw);
     aspect-ratio: 1;
     overflow: visible;
     pointer-events: none;
@@ -817,15 +786,15 @@
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-glow {
-    animation: mobileGlowIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    animation: mobileGlowIn 700ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-hands {
-    animation: mobileHandsRise 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: mobileHandsRise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-seal {
-    animation: mobileSealRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    animation: mobileSealRise 800ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
   }
 
   .hero-mobile-seal::before,
@@ -854,7 +823,7 @@
   }
 
   .path-panel {
-    min-height: 34rem;
+    min-height: 27rem;
   }
 
   .path-column-raster {
@@ -868,18 +837,21 @@
   }
 
   .closing-statement {
-    min-height: 25rem;
+    min-height: 0;
+    align-content: center;
+    padding-block: 1.5rem;
   }
 
   .closing-logo-emblem {
-    width: 8rem;
-    justify-self: start;
+    width: 6.5rem;
+    justify-self: center;
   }
 
   .closing-skyline {
     align-self: end;
-    margin-top: 2rem;
-    width: 112%;
+    justify-self: center;
+    margin-top: 1rem;
+    width: 92%;
   }
 }
 
@@ -888,6 +860,20 @@
     bottom: -5%;
     left: 59%;
     width: 44rem;
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .hero-copy-reveal {
+    padding-block: 2rem;
+  }
+
+  .hero-copy-reveal h1 {
+    font-size: clamp(2.25rem, 7vw, 3.1rem);
+  }
+
+  .hero-visual-column {
+    min-height: 18rem;
   }
 }
 
@@ -919,21 +905,17 @@
 
 .gallery-image,
 .gallery-caption {
-  transition: transform 200ms var(--ease-out-quart);
+  transition: transform 150ms var(--ease-out-quart);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .ticker-strip:hover .animate-ticker {
-    animation-play-state: paused;
-  }
-
   @media (min-width: 640px) {
     .gallery-caption {
       transform: translateY(100%);
     }
 
     .gallery-card:hover .gallery-image {
-      transform: scale(1.035);
+      transform: scale(1.018);
     }
 
     .gallery-card:hover .gallery-caption {
@@ -967,7 +949,6 @@
   }
 
   .closing-section.is-visible .closing-statement:hover {
-    box-shadow: 0 36px 92px oklch(17.5% 0.038 238 / 27%);
     transform: translateY(-0.25rem);
   }
 
@@ -979,10 +960,6 @@
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .hero-copy-reveal {
-    animation: none;
   }
 
   .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-glow,
@@ -1006,10 +983,6 @@
     transform: translate(-50%, 0) scale(1);
   }
 
-  .animate-ticker {
-    animation-play-state: paused;
-  }
-
   .pathways-section .path-heading-lockup,
   .path-panel,
   .path-panel-content,
@@ -1022,18 +995,6 @@
     transform: none;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
-  }
-
-  .draw-line path,
-  .draw-line ellipse,
-  .closing-skyline-lines path {
-    stroke-dashoffset: 0;
-    transition: none !important;
-  }
-
-  .brand-emblem-eye {
-    opacity: 1 !important;
-    transition: none !important;
   }
 
   .path-panel:hover .path-care-hands-raster,
@@ -1052,6 +1013,13 @@
   .gallery-caption {
     scroll-behavior: auto;
     transition-duration: 0.01ms !important;
+  }
+
+  .directory-practitioner-card,
+  .directory-practitioner-card .directory-portrait-float {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 
   .gallery-card:hover .gallery-image,

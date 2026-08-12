@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getSession } from '@/lib/auth';
+import { approvedOsteopaths } from '@/data/approved-osteopaths';
 import { z } from 'zod';
 
 const osteopathSchema = z.object({
@@ -34,12 +35,19 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { name: 'asc' },
     });
+    if (publicRequest) {
+      const listedEmails = new Set(osteopaths.map((osteopath) => osteopath.email.toLowerCase()));
+      return NextResponse.json([
+        ...osteopaths,
+        ...approvedOsteopaths.filter((osteopath) => !listedEmails.has(osteopath.email.toLowerCase())),
+      ]);
+    }
+
     return NextResponse.json(osteopaths);
   } catch {
     if (publicRequest) {
-      return NextResponse.json([], {
-        headers: { 'X-EGSOM-Data-Status': 'unavailable' },
-      });
+      // Keep the approved public directory available during a database outage.
+      return NextResponse.json(approvedOsteopaths);
     }
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -95,7 +95,7 @@ export default function AnimatedBoxes() {
               </h3>
 
               {/* Rule */}
-              <div className="h-px w-7 bg-brand-500 group-hover:bg-gold group-hover:w-12 group-active:bg-gold group-active:w-12 transition-all duration-300 mb-4" />
+              <div className="mb-4 h-px w-7 origin-left bg-brand-500 transition-[background-color,transform] duration-150 group-hover:scale-x-[1.7] group-hover:bg-gold group-active:scale-x-[1.7] group-active:bg-gold" />
 
               {/* Description */}
               <p className="flex-grow text-sm leading-relaxed text-slate-600 transition-colors duration-300 group-hover:text-white/72 group-active:text-white/72">

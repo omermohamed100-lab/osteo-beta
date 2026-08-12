@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, type CSSProperties } from 'react';
+import Image from 'next/image';
 import PageHeader from '@/components/layout/PageHeader';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 
@@ -15,6 +16,7 @@ type Osteopath = {
   email: string;
   bio: string;
   profileImage: string | null;
+  directoryCities?: string[];
 };
 
 const COUNTRIES = [
@@ -40,6 +42,44 @@ const inputCls =
   'w-full border border-gray-300 rounded-lg px-4 py-2.5 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white';
 
 const arabicNumber = new Intl.NumberFormat('ar-EG');
+
+function DirectoryPortrait({ osteopath }: { osteopath: Osteopath }) {
+  const alt = `Professional portrait of ${osteopath.name}, ${osteopath.specialty}`;
+  const isDirectoryCutout = osteopath.profileImage?.endsWith('-cutout.png');
+
+  if (osteopath.profileImage?.startsWith('/images/osteopaths/')) {
+    return (
+      <Image
+        src={osteopath.profileImage}
+        alt={alt}
+        fill
+        sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) calc(50vw - 2.5rem), 360px"
+        quality={75}
+        className={isDirectoryCutout ? 'directory-portrait-subject' : 'object-cover object-center'}
+      />
+    );
+  }
+
+  if (osteopath.profileImage) {
+    return (
+      // Directory profile images may be hosted on arbitrary approved domains.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={osteopath.profileImage}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-cover object-center"
+      />
+    );
+  }
+
+  return (
+    <div aria-hidden="true" className="flex h-full w-full items-center justify-center bg-brand-100 text-4xl font-bold text-brand-600">
+      {osteopath.name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
 
 function formatArabicResults(count: number) {
   if (count === 0) return 'لم يتم العثور على نتائج';
@@ -158,7 +198,8 @@ export default function FindOsteopathPage() {
       .filter((o) => {
         if (s  && o.specialty.toLowerCase() !== s)         return false;
         if (n  && !o.name.toLowerCase().includes(n))       return false;
-        if (c  && !o.city.toLowerCase().includes(c))       return false;
+        const serviceCities = o.directoryCities?.length ? o.directoryCities : [o.city];
+        if (c && !serviceCities.some((city) => city.toLowerCase().includes(c))) return false;
         if (co && !o.country.toLowerCase().includes(co))   return false;
         return true;
       })
@@ -171,7 +212,18 @@ export default function FindOsteopathPage() {
 
   const grouped = useMemo(() => {
     const groups: { city: string; country: string; items: Osteopath[] }[] = [];
-    for (const o of filtered) {
+    const directoryItems = filtered.flatMap((o) =>
+      (o.directoryCities?.length ? o.directoryCities : [o.city]).map((city) => ({ ...o, city })),
+    );
+    directoryItems.sort((a, b) => {
+      const countryCompare = a.country.localeCompare(b.country);
+      if (countryCompare !== 0) return countryCompare;
+      const cityCompare = a.city.localeCompare(b.city);
+      if (cityCompare !== 0) return cityCompare;
+      return a.name.localeCompare(b.name);
+    });
+
+    for (const o of directoryItems) {
       const last = groups[groups.length - 1];
       if (last && last.city === o.city && last.country === o.country) {
         last.items.push(o);
@@ -390,41 +442,46 @@ export default function FindOsteopathPage() {
                   </span>
                 </header>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                  {group.items.map((o) => (
-              <div key={o.id} className="surface-card flex flex-col p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  {o.profileImage ? (
-                    // Directory profile images may be hosted on arbitrary approved domains.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={o.profileImage}
-                      alt={o.name}
-                      className="w-14 h-14 rounded-full object-cover shrink-0 border border-gray-100"
-                    />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xl font-bold shrink-0">
-                      {o.name.charAt(0).toUpperCase()}
+                  {group.items.map((o, index) => (
+              <article
+                key={o.id}
+                className="surface-card directory-practitioner-card group flex h-full flex-col overflow-hidden p-0"
+                style={{ '--directory-delay': `${Math.min(index, 6) * 45}ms` } as CSSProperties}
+              >
+                <div className="directory-practitioner-content flex flex-grow flex-col p-5 sm:p-6">
+                  <div className="directory-practitioner-header">
+                    <div className="directory-practitioner-intro min-w-0 pt-1">
+                      <p dir="auto" className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{o.specialty}</p>
+                      <h3 dir="auto" className="mt-1.5 font-display text-xl font-semibold leading-tight tracking-tight text-brand-950">{o.name}</h3>
+                      <p dir="auto" className="mt-2 text-sm text-slate-500">
+                        {o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{o.country}
+                      </p>
                     </div>
-                  )}
-                  <div className="min-w-0">
-                    <h3 dir="auto" className="font-semibold text-gray-900 text-base leading-tight">{o.name}</h3>
-                    <p dir="auto" className="text-brand-600 text-sm font-medium mt-0.5">{o.specialty}</p>
-                    <p dir="auto" className="mt-1 text-xs text-slate-500">
-                      {o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{o.country}
-                    </p>
+                    <div className="directory-portrait-float relative">
+                      <DirectoryPortrait osteopath={o} />
+                    </div>
                   </div>
-                </div>
 
-                {o.bio && (
-                  <p dir="auto" className="mb-4 line-clamp-3 flex-grow text-sm leading-relaxed text-slate-600">
-                    {o.bio}
-                  </p>
-                )}
+                  {o.bio && (
+                    <p dir="auto" className="directory-practitioner-bio mt-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                      {o.bio}
+                    </p>
+                  )}
 
-                {(o.phone || o.email) && (
-                  <div className="border-t border-gray-100 pt-4 mt-auto space-y-1.5">
+                  {o.location && (
+                    <p dir="auto" title={o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
+                      <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21s7-5.52 7-12A7 7 0 105 9c0 6.48 7 12 7 12z" />
+                        <circle cx="12" cy="9" r="2.25" strokeWidth={1.5} />
+                      </svg>
+                      <span>{o.location}</span>
+                    </p>
+                  )}
+
+                  {(o.phone || o.email) && (
+                    <div className="mt-auto space-y-1.5 border-t border-gray-100 pt-4">
                     {o.phone && (
-                      <a href={`tel:${o.phone}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
+                      <a href={`tel:${o.phone.replace(/[^+\d]/g, '')}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
@@ -439,9 +496,10 @@ export default function FindOsteopathPage() {
                         {o.email}
                       </a>
                     )}
-                  </div>
-                )}
-              </div>
+                    </div>
+                  )}
+                </div>
+              </article>
                   ))}
                 </div>
               </section>

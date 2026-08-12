@@ -38,9 +38,9 @@ export default function Home() {
     <div className="home-concept flex flex-col bg-bone text-ink">
       <section className="hero-stage relative isolate overflow-hidden border-b border-brand-950/10">
         <div className="hero-architecture" aria-hidden="true" />
-        <div className="mx-auto grid min-h-[calc(100svh-4.5rem)] max-w-[90rem] items-stretch px-5 sm:px-8 lg:grid-cols-12 lg:px-12 xl:min-h-[calc(100svh-6rem)] xl:px-16">
-          <div className="hero-copy-reveal relative z-20 flex flex-col justify-center py-14 sm:py-20 lg:col-span-6 lg:pe-12 lg:py-16 xl:col-span-5 xl:pe-8">
-            <h1 className="max-w-[14ch] text-balance font-sans text-[clamp(3rem,4.25vw,4.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950">
+        <div className="mx-auto grid min-h-0 max-w-[90rem] items-stretch px-5 sm:px-8 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-12 lg:px-12 xl:min-h-[calc(100svh-6rem)] xl:px-16 min-[2200px]:min-h-[min(calc(100svh-6rem),60rem)] min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
+          <div className="hero-copy-reveal relative z-20 flex flex-col justify-center py-8 min-[375px]:py-10 sm:py-16 lg:col-span-6 lg:pe-12 lg:py-16 xl:col-span-5 xl:pe-8">
+            <h1 className="max-w-[14ch] text-balance font-sans text-[clamp(2.5rem,11vw,3.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950 sm:text-[clamp(3rem,4.25vw,4.65rem)]">
               <LocalizedText
                 en="Care, education and standards for osteopathy in Egypt"
                 ar="رعاية وتعليم ومعايير للأوستيوباثي في مصر"
@@ -74,7 +74,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hero-visual-column relative min-h-[32rem] sm:min-h-[40rem] lg:col-span-6 lg:min-h-0 xl:col-span-7">
+          <div className="hero-visual-column relative min-h-[19rem] min-[375px]:min-h-[23rem] sm:min-h-[34rem] lg:col-span-6 lg:min-h-0 xl:col-span-7">
             <div className="hero-stone-disc" aria-hidden="true" />
             <HeroRemotion />
           </div>
@@ -83,8 +83,8 @@ export default function Home() {
 
       <PathwaysShowcase />
 
-      <section id="standards" className="bg-bone py-20 sm:py-24 lg:py-32" aria-labelledby="standards-heading">
-        <div className="mx-auto grid max-w-[82rem] gap-14 px-5 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-20 lg:px-12">
+      <section id="standards" className="bg-bone py-16 sm:py-24 lg:py-32" aria-labelledby="standards-heading">
+        <div className="mx-auto grid max-w-[82rem] gap-10 px-5 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-20 lg:px-12">
           <div className="lg:py-4">
             <h2 id="standards-heading" className="max-w-[13ch] font-display text-[clamp(2.8rem,4.5vw,5rem)] font-medium leading-[0.98] tracking-[-0.03em] text-brand-950">
               <LocalizedText en="Rooted in standards." ar="راسخون في المعايير." />
@@ -104,13 +104,13 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="standards-list border-t border-brand-950/18 lg:border-s lg:border-t-0 lg:ps-16">
+          <div className="standards-list mt-2 border-t border-brand-950/18 pt-7 lg:mt-0 lg:border-s lg:border-t-0 lg:pt-8 lg:ps-16">
             {STANDARDS.map((item) => {
               const Icon = item.icon;
               return (
-                <article key={item.title} className="grid grid-cols-[4.5rem_1fr] gap-5 border-b border-brand-950/14 py-8 first:pt-0 lg:py-9 lg:first:pt-1">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-gold/65 text-gold-deep">
-                    <Icon className="h-6 w-6 stroke-[1.35]" aria-hidden="true" />
+                <article key={item.title} className="grid grid-cols-[3.5rem_1fr] gap-4 border-b border-brand-950/14 py-6 first:pt-0 sm:grid-cols-[4.5rem_1fr] sm:gap-5 sm:py-8 lg:py-9 lg:first:pt-1">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/65 text-gold-deep sm:h-14 sm:w-14 lg:self-center">
+                    <Icon className="h-5 w-5 stroke-[1.35] sm:h-6 sm:w-6" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold tracking-[-0.02em] text-brand-950 sm:text-xl">

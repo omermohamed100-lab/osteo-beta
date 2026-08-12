@@ -31,7 +31,7 @@ export default function PageHeader({
         }}
       />
 
-      <div className="relative z-10 mx-auto grid max-w-[90rem] gap-8 px-5 sm:px-8 lg:grid-cols-12 lg:px-12 xl:px-16">
+      <div className="relative z-10 mx-auto grid max-w-[90rem] gap-8 px-5 sm:px-8 lg:grid-cols-12 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
         <div className="lg:col-span-8">
           {eyebrow && (
             <div className="mb-6 flex items-center gap-4">
