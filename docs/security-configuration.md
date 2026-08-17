@@ -21,7 +21,7 @@ The schema migration is additive and was intentionally not applied as part of lo
 
 1. Configure strong `JWT_SECRET` and `RATE_LIMIT_SECRET` values.
 2. Confirm the database provider's recovery/backup protection is active.
-3. Deploy through Vercel. Its `build:vercel` command records the idempotent original-schema baseline, then applies `20260814030000_session_revocation_rate_limits` and every later additive migration before compiling the application.
+3. Deploy through Vercel. Its guarded migration runner first attempts a normal deployment. Only when Prisma reports `P3005` for the known pre-migration schema does it record the idempotent original-schema baseline, then retry and apply `20260814030000_session_revocation_rate_limits` and every later additive migration before compiling the application.
 4. Vercel aborts the new deployment if migration or build verification fails, leaving the previous production deployment active.
 
 This order is required because the application fails closed until the new columns and rate-limit table exist.

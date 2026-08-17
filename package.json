@@ -6,7 +6,7 @@
     "dev": "next dev --hostname 127.0.0.1",
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "prisma generate && next build",
-    "build:vercel": "prisma migrate deploy && npm run build",
+    "build:vercel": "node scripts/deploy-migrations.mjs && npm run build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

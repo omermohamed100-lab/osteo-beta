@@ -3,14 +3,18 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 test('Vercel applies additive migrations before building the production release', async () => {
-  const [packageSource, vercelSource] = await Promise.all([
+  const [packageSource, vercelSource, migrationRunner] = await Promise.all([
     readFile('package.json', 'utf8'),
     readFile('vercel.json', 'utf8'),
+    readFile('scripts/deploy-migrations.mjs', 'utf8'),
   ]);
   const packageJson = JSON.parse(packageSource);
   const vercelJson = JSON.parse(vercelSource);
-  assert.equal(packageJson.scripts['build:vercel'], 'prisma migrate deploy && npm run build');
+  assert.equal(packageJson.scripts['build:vercel'], 'node scripts/deploy-migrations.mjs && npm run build');
   assert.equal(vercelJson.buildCommand, 'npm run build:vercel');
+  assert.match(migrationRunner, /output\.includes\('P3005'\)/);
+  assert.match(migrationRunner, /migrate', 'resolve', '--applied', baseline/);
+  assert.match(migrationRunner, /deployment = runPrisma\(\['migrate', 'deploy'\]\)/);
 });
 
 test('migration history includes an idempotent baseline for the pre-migration production schema', async () => {
