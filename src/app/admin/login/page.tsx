@@ -43,7 +43,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 glass-panel p-6 sm:p-10 rounded-2xl">
         <div>
           <div className="flex justify-center">
-            <Image src="/logo-clean.png" alt="EGSOM Logo" width={80} height={80} priority className="h-20 w-20 rounded-full bg-white object-contain p-2 shadow-sm" />
+            <Image src="/logo-clean.webp" alt="EGSOM Logo" width={80} height={80} priority className="h-20 w-20 rounded-full bg-white object-contain p-2 shadow-sm" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-900">
             Admin Portal

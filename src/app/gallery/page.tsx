@@ -1,7 +1,8 @@
 import { db } from '@/lib/db';
-import { withPublicDataFallback } from '@/lib/public-data';
+import { getPublicData } from '@/lib/public-data';
 import LocalizedText from '@/components/i18n/LocalizedText';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
+import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -11,7 +12,7 @@ export async function generateMetadata() {
 }
 
 export default async function GalleryPage() {
-  const items = await withPublicDataFallback(
+  const { data: items, unavailable: dataUnavailable } = await getPublicData(
     () => db.galleryItem.findMany({ orderBy: { createdAt: 'desc' } }),
     [],
   );
@@ -30,7 +31,15 @@ export default async function GalleryPage() {
 
       <div className="bg-slate-50/70 py-9 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          {items.length === 0 ? (
+          {dataUnavailable ? (
+            <PublicDataUnavailable
+              title={{ en: 'Gallery temporarily unavailable', ar: 'معرض الصور غير متاح مؤقتًا' }}
+              description={{
+                en: 'Gallery images are temporarily unavailable. Please try again shortly.',
+                ar: 'صور المعرض غير متاحة مؤقتًا. يُرجى المحاولة مرة أخرى بعد قليل.',
+              }}
+            />
+          ) : items.length === 0 ? (
             <div className="surface-panel p-10 text-center sm:p-12">
               <svg className="mx-auto mb-4 h-12 w-12 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -43,32 +52,35 @@ export default async function GalleryPage() {
             <div className="space-y-14">
               {categories.map((cat) => {
                 const catItems = items.filter((i) => i.category === cat);
+                const headingId = `gallery-category-${catItems[0]?.id ?? 'uncategorized'}`;
                 return (
-                  <div key={cat}>
+                  <section key={cat} aria-labelledby={headingId}>
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="h-px flex-grow bg-gray-200" />
-                      <span dir="auto" className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">{cat}</span>
-                      <div className="h-px flex-grow bg-gray-200" />
+                      <div aria-hidden="true" className="h-px flex-grow bg-gray-200" />
+                      <h2 id={headingId} dir="auto" className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+                        <LocalizedText en={cat} ar={catItems[0]?.categoryAr || cat} />
+                      </h2>
+                      <div aria-hidden="true" className="h-px flex-grow bg-gray-200" />
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {catItems.map((item) => (
-                        <div key={item.id} className="gallery-card surface-card relative aspect-square overflow-hidden bg-slate-100">
+                        <figure key={item.id} className="gallery-card surface-card relative aspect-square overflow-hidden bg-slate-100">
                           {/* CMS images may be hosted on arbitrary approved domains. */}
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.imageUrl}
-                            alt={item.caption || cat}
+                            alt={item.caption || item.captionAr || cat}
                             className="gallery-image h-full w-full object-cover"
                           />
-                          {item.caption && (
-                            <div className="gallery-caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
-                              <p dir="auto" className="text-white text-xs leading-snug">{item.caption}</p>
-                            </div>
+                          {(item.caption || item.captionAr) && (
+                            <figcaption className="gallery-caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
+                              <p dir="auto" className="text-white text-xs leading-snug"><LocalizedText en={item.caption} ar={item.captionAr || item.caption} /></p>
+                            </figcaption>
                           )}
-                        </div>
+                        </figure>
                       ))}
                     </div>
-                  </div>
+                  </section>
                 );
               })}
             </div>

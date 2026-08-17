@@ -8,8 +8,27 @@ type Message = {
   email: string;
   subject: string;
   message: string;
+  notificationStatus: 'pending' | 'sent' | 'failed';
+  notificationAttempts: number;
+  notificationLastAttemptedAt: string | null;
+  notificationSentAt: string | null;
   createdAt: string;
 };
+
+const notificationPresentation = {
+  sent: {
+    label: 'Notification sent',
+    className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+  },
+  failed: {
+    label: 'Notification failed',
+    className: 'border-amber-200 bg-amber-50 text-amber-800',
+  },
+  pending: {
+    label: 'Notification pending',
+    className: 'border-slate-200 bg-slate-50 text-slate-600',
+  },
+} as const;
 
 export default function AdminMessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -91,6 +110,14 @@ export default function AdminMessagesPage() {
                       >
                         {msg.email}
                       </a>
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${notificationPresentation[msg.notificationStatus]?.className ?? notificationPresentation.pending.className}`}
+                        title={msg.notificationLastAttemptedAt
+                          ? `Last notification attempt: ${new Date(msg.notificationLastAttemptedAt).toLocaleString()}`
+                          : undefined}
+                      >
+                        {notificationPresentation[msg.notificationStatus]?.label ?? notificationPresentation.pending.label}
+                      </span>
                       <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">
                         {new Date(msg.createdAt).toLocaleDateString(undefined, {
                           year: 'numeric', month: 'short', day: 'numeric',

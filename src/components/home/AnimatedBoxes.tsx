@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import LocalizedText from '@/components/i18n/LocalizedText';
 
 const boxes = [
@@ -15,8 +15,8 @@ const boxes = [
     id: 'courses',
     title: 'Courses',
     titleAr: 'الدورات',
-    desc: 'Explore our comprehensive training programs and certification courses.',
-    descAr: 'استكشف برامجنا التدريبية المتكاملة ودورات الاعتماد المهني.',
+    desc: 'Explore published training and professional-development opportunities.',
+    descAr: 'استكشف فرص التدريب والتطوير المهني المنشورة.',
     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />,
     href: '/courses',
   },
@@ -33,8 +33,8 @@ const boxes = [
     id: 'find-osteopath',
     title: 'Find an Osteopath',
     titleAr: 'ابحث عن ممارس أوستيوباثي',
-    desc: 'Search our directory of certified osteopathic practitioners near you.',
-    descAr: 'ابحث في دليل الممارسين الأوستيوباثيين المعتمدين بالقرب منك.',
+    desc: 'Search our directory of listed osteopathic practitioners.',
+    descAr: 'ابحث في دليل ممارسي الأوستيوباثي المدرجين.',
     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />,
     href: '/find-osteopath',
   },
@@ -95,7 +95,7 @@ export default function AnimatedBoxes() {
               </h3>
 
               {/* Rule */}
-              <div className="mb-4 h-px w-7 origin-left bg-brand-500 transition-[background-color,transform] duration-150 group-hover:scale-x-[1.7] group-hover:bg-gold group-active:scale-x-[1.7] group-active:bg-gold" />
+              <div className="animated-box-rule mb-4 h-px w-7 origin-left bg-brand-500 transition-[background-color,transform] duration-150 group-hover:bg-gold group-active:scale-x-[1.7] group-active:bg-gold" />
 
               {/* Description */}
               <p className="flex-grow text-sm leading-relaxed text-slate-600 transition-colors duration-300 group-hover:text-white/72 group-active:text-white/72">
@@ -106,7 +106,7 @@ export default function AnimatedBoxes() {
               <div className="mt-6 inline-flex items-center gap-2 text-brand-600 group-hover:text-gold group-active:text-gold transition-colors duration-300 text-[11px] font-medium tracking-[0.25em] uppercase">
                 <LocalizedText en="Explore" ar="استكشف" />
                 <svg
-                  className="rtl-flip w-3.5 h-3.5 group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-300"
+                  className="animated-box-arrow rtl-flip h-3.5 w-3.5 transition-transform duration-150 group-active:translate-x-1"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor"
                   aria-hidden="true"
                 >

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { mediaUrlSchema } from '@/lib/url-security';
 import { z } from 'zod';
 
 const updateSchema = z.object({
-  imageUrl: z.string().url().optional(),
+  imageUrl: mediaUrlSchema.optional(),
   caption:  z.string().optional(),
+  captionAr: z.string().optional(),
   category: z.string().optional(),
+  categoryAr: z.string().optional(),
 });
 
 export async function PUT(
@@ -14,9 +18,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
     const { id } = await params;
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = updateSchema.parse(body);
@@ -37,9 +44,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const rejected = enforceMutationRequest(request, { requireJson: false });
+    if (rejected) return rejected;
+
     const { id } = await params;
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     await db.galleryItem.delete({ where: { id } });
     return NextResponse.json({ success: true });

@@ -1,19 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { mediaUrlSchema } from '@/lib/url-security';
 import { z } from 'zod';
 
 const updateSchema = z.object({
   name:         z.string().min(2).optional(),
   specialty:    z.string().min(2).optional(),
+  specialtyAr:  z.string().optional(),
   city:         z.string().min(1).optional(),
   country:      z.string().min(1).optional(),
   location:     z.string().optional(),
+  locationAr:   z.string().optional(),
   phone:        z.string().optional(),
   email:        z.string().optional(),
   bio:          z.string().optional(),
-  profileImage: z.string().url().optional().or(z.literal('')),
+  bioAr:        z.string().optional(),
+  profileImage: mediaUrlSchema.optional().or(z.literal('')),
+  credentialType: z.string().optional(),
+  credentialNumber: z.string().optional(),
+  credentialIssuer: z.string().optional(),
+  credentialStatus: z.enum(['unverified', 'verified', 'expired']).optional(),
+  credentialVerifiedAt: z.string().optional().transform((value) => value === undefined ? undefined : value ? new Date(value) : null),
+  credentialExpiresAt: z.string().optional().transform((value) => value === undefined ? undefined : value ? new Date(value) : null),
+  profileReviewedAt: z.string().optional().transform((value) => value === undefined ? undefined : value ? new Date(value) : null),
   isActive:     z.boolean().optional(),
+}).superRefine((data, context) => {
+  if (data.credentialStatus !== 'verified') return;
+  for (const field of ['credentialType', 'credentialNumber', 'credentialIssuer'] as const) {
+    if (!data[field]?.trim()) {
+      context.addIssue({ code: 'custom', path: [field], message: 'Required for a verified credential' });
+    }
+  }
+  if (!data.credentialVerifiedAt || Number.isNaN(data.credentialVerifiedAt.getTime())) {
+    context.addIssue({ code: 'custom', path: ['credentialVerifiedAt'], message: 'A valid verification date is required' });
+  }
 });
 
 export async function PUT(
@@ -21,9 +43,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
     const { id } = await params;
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = updateSchema.parse(body);
@@ -44,9 +69,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const rejected = enforceMutationRequest(request, { requireJson: false });
+    if (rejected) return rejected;
+
     const { id } = await params;
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     await db.osteopath.delete({ where: { id } });
     return NextResponse.json({ success: true });

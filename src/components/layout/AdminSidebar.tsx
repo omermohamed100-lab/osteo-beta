@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const navItems = [
@@ -32,6 +32,11 @@ const navItems = [
     icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
   },
   {
+    name: 'Statistics',
+    href: '/admin/statistics',
+    icon: 'M4 19h16M6 16v-5m6 5V5m6 11V8',
+  },
+  {
     name: 'Messages',
     href: '/admin/messages',
     icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
@@ -56,7 +61,24 @@ interface Props {
 
 export default function AdminSidebar({ isOpen, onClose }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const [userName, setUserName] = useState('');
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST' });
+      if (response.ok) {
+        router.replace('/admin/login');
+        router.refresh();
+      }
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   // Close drawer on navigation
   useEffect(() => { onClose(); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -73,7 +95,7 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
       {/* Logo */}
       <div className="p-5 border-b border-brand-900">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo-clean.png" alt="EGSOM" width={32} height={32} className="h-8 w-8 rounded-full bg-white object-contain p-0.5" />
+          <Image src="/logo-clean.webp" alt="EGSOM" width={32} height={32} className="h-8 w-8 rounded-full bg-white object-contain p-0.5" />
           <span className="font-bold text-xl">Admin Panel</span>
         </Link>
       </div>
@@ -116,13 +138,12 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-medium truncate">{userName || 'Admin'}</span>
             <button
-              onClick={() => {
-                document.cookie = 'token=; Max-Age=0; path=/;';
-                window.location.href = '/admin/login';
-              }}
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
               className="text-xs text-brand-400 hover:text-white text-left transition-colors"
             >
-              Logout
+              {isLoggingOut ? 'Logging out…' : 'Logout'}
             </button>
           </div>
         </div>

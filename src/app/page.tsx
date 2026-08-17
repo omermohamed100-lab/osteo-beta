@@ -4,8 +4,8 @@ import {
   ShieldCheck,
   UsersRound,
 } from 'lucide-react';
-import Link from 'next/link';
-import HeroRemotion from '@/components/home/HeroRemotion';
+import Link from '@/components/i18n/LocalizedLink';
+import HeroVisual from '@/components/home/HeroVisual';
 import { ClosingStatement, PathwaysShowcase } from '@/components/home/HomeShowcase';
 import LocalizedText from '@/components/i18n/LocalizedText';
 
@@ -51,8 +51,8 @@ export default function Home() {
 
             <p className="mt-6 max-w-[32rem] text-pretty text-[0.96rem] leading-7 text-ink-muted sm:text-base sm:leading-7">
               <LocalizedText
-                en="EGSOM advances safe, effective, and ethical osteopathic care through education, standards, and support for professionals and the public."
-                ar="تعمل الجمعية على تطوير رعاية أوستيوباثية آمنة وفعّالة وأخلاقية من خلال التعليم والمعايير ودعم المتخصصين والجمهور."
+                en="EGSOM supports responsible osteopathic practice through education, professional standards, and clear information for practitioners and the public."
+                ar="تدعم الجمعية الممارسة المسؤولة للأوستيوباثي من خلال التعليم والمعايير المهنية والمعلومات الواضحة للممارسين والجمهور."
               />
             </p>
 
@@ -61,22 +61,22 @@ export default function Home() {
                 href="/find-osteopath"
                 className="group inline-flex min-h-13 items-center justify-between gap-5 bg-brand-950 px-6 py-3.5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-200 ease-out hover:bg-brand-800 active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
-                <LocalizedText en="Find a qualified osteopath" ar="ابحث عن ممارس مؤهل" />
-                <ArrowUpRight className="rtl-flip h-4 w-4 text-gold transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                <LocalizedText en="Browse practitioner profiles" ar="تصفّح ملفات الممارسين" />
+                <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold" aria-hidden="true" />
               </Link>
               <Link
                 href="/courses"
                 className="group inline-flex min-h-13 items-center justify-between gap-5 border border-brand-950/55 bg-bone/82 px-6 py-3.5 text-sm font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-200 ease-out hover:border-brand-950 hover:bg-paper active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
                 <LocalizedText en="View education and training" ar="استكشف التعليم والتدريب" />
-                <ArrowUpRight className="rtl-flip h-4 w-4 text-gold-deep transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+                <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold-deep" aria-hidden="true" />
               </Link>
             </div>
           </div>
 
           <div className="hero-visual-column relative min-h-[19rem] min-[375px]:min-h-[23rem] sm:min-h-[34rem] lg:col-span-6 lg:min-h-0 xl:col-span-7">
             <div className="hero-stone-disc" aria-hidden="true" />
-            <HeroRemotion />
+            <HeroVisual />
           </div>
         </div>
       </section>
@@ -100,7 +100,7 @@ export default function Home() {
             </p>
             <Link href="/about" className="group mt-9 inline-flex min-h-11 items-center gap-3 text-sm font-semibold text-brand-950 outline-none transition-colors hover:text-brand-700 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-bone">
               <LocalizedText en="Learn more about EGSOM" ar="تعرّف أكثر على الجمعية" />
-              <ArrowUpRight className="rtl-flip h-4 w-4 text-gold-deep transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+              <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold-deep" aria-hidden="true" />
             </Link>
           </div>
 

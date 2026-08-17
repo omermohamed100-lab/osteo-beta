@@ -1,25 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
-import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession(request);
+    const user = await requireAdmin(request);
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({
-      where: { id: session.id as string },
-      select: { id: true, email: true, name: true, role: true }
+    return NextResponse.json({
+      user: { id: user.id, email: user.email, name: user.name, role: user.role },
     });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({ user });
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

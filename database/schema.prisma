@@ -8,24 +8,45 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("admin")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           String   @default("admin")
+  isActive       Boolean  @default(true)
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model RateLimitBucket {
+  id          String   @id
+  scope       String
+  keyHash     String
+  windowStart DateTime
+  expiresAt   DateTime
+  count       Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@index([scope, keyHash])
 }
 
 model Course {
   id          String    @id @default(cuid())
   title       String
+  titleAr     String    @default("")
   description String
+  descriptionAr String  @default("")
   instructor  String
+  instructorAr String   @default("")
   duration    String
+  durationAr  String    @default("")
   startDate   DateTime
   endDate     DateTime?
   price       Float?
+  priceCurrency String @default("")
   imageUrl    String?
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
@@ -33,19 +54,35 @@ model Course {
 }
 
 model ContactSubmission {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  subject   String
-  message   String
-  createdAt DateTime @default(now())
+  id                          String                   @id @default(cuid())
+  name                        String
+  email                       String
+  subject                     String
+  message                     String
+  notificationStatus          String                   @default("pending")
+  notificationAttempts        Int                      @default(0)
+  notificationLastAttemptedAt DateTime?
+  notificationSentAt          DateTime?
+  createdAt                   DateTime                 @default(now())
+  dedupeReservation           ContactSubmissionDedupe?
+}
+
+model ContactSubmissionDedupe {
+  keyHash      String            @id
+  submissionId String            @unique
+  expiresAt    DateTime
+  createdAt    DateTime          @default(now())
+  submission   ContactSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
 }
 
 model SiteSettings {
   id        String @id @default("global")
   phone     String @default("")
-  email     String @default("no-reply@example.com")
+  email     String @default("")
   address   String @default("")
+  addressAr String @default("")
   facebook  String @default("")
   instagram String @default("")
   linkedin  String @default("")
@@ -55,13 +92,23 @@ model Osteopath {
   id           String   @id @default(cuid())
   name         String
   specialty    String
+  specialtyAr  String   @default("")
   city         String
   country      String   @default("Egypt")
   location     String   @default("")
+  locationAr   String   @default("")
   phone        String   @default("")
   email        String   @default("")
   bio          String   @default("")
+  bioAr        String   @default("")
   profileImage String?
+  credentialType       String   @default("")
+  credentialNumber     String   @default("")
+  credentialIssuer     String   @default("")
+  credentialStatus     String   @default("unverified")
+  credentialVerifiedAt DateTime?
+  credentialExpiresAt  DateTime?
+  profileReviewedAt    DateTime?
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -71,18 +118,39 @@ model GalleryItem {
   id        String   @id @default(cuid())
   imageUrl  String
   caption   String   @default("")
+  captionAr String   @default("")
   category  String   @default("General")
+  categoryAr String  @default("")
   createdAt DateTime @default(now())
 }
 
 model Activity {
   id          String   @id @default(cuid())
   title       String
+  titleAr     String   @default("")
   description String
+  descriptionAr String @default("")
   date        DateTime
   location    String
+  locationAr  String   @default("")
   imageUrl    String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PublicStatistic {
+  id             String   @id @default(cuid())
+  value          String
+  label          String
+  labelAr        String
+  sourceLabel    String
+  sourceUrl      String?
+  lastVerifiedAt DateTime
+  isPublished    Boolean  @default(false)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
 }

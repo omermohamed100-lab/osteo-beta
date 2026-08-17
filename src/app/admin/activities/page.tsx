@@ -5,16 +5,19 @@ import { useState, useEffect } from 'react';
 type Activity = {
   id: string;
   title: string;
+  titleAr: string;
   description: string;
+  descriptionAr: string;
   date: string;
   location: string;
+  locationAr: string;
   imageUrl: string | null;
   isActive: boolean;
 };
 
 const EMPTY_FORM = {
-  title: '', description: '', date: new Date().toISOString().split('T')[0],
-  location: '', imageUrl: '', isActive: true,
+  title: '', titleAr: '', description: '', descriptionAr: '', date: new Date().toISOString().split('T')[0],
+  location: '', locationAr: '', imageUrl: '', isActive: true,
 };
 const inputCls = 'w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-brand-500 focus:border-brand-500';
 const labelCls = 'block text-sm font-medium text-gray-700 mb-1';
@@ -33,7 +36,7 @@ export default function AdminActivitiesPage() {
   const fetchItems = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/activities');
+      const res = await fetch('/api/activities?admin=1');
       if (res.ok) setItems(await res.json());
     } finally { setIsLoading(false); }
   };
@@ -41,7 +44,7 @@ export default function AdminActivitiesPage() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch('/api/activities')
+    fetch('/api/activities?admin=1')
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (!cancelled && Array.isArray(data)) setItems(data);
@@ -59,9 +62,9 @@ export default function AdminActivitiesPage() {
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (a: Activity) => {
     setFormData({
-      title: a.title, description: a.description,
+      title: a.title, titleAr: a.titleAr, description: a.description, descriptionAr: a.descriptionAr,
       date: new Date(a.date).toISOString().split('T')[0],
-      location: a.location, imageUrl: a.imageUrl ?? '', isActive: a.isActive,
+      location: a.location, locationAr: a.locationAr, imageUrl: a.imageUrl ?? '', isActive: a.isActive,
     });
     setEditingId(a.id);
     setIsModalOpen(true);
@@ -155,10 +158,12 @@ export default function AdminActivitiesPage() {
                 <label className={labelCls}>Title *</label>
                 <input required type="text" value={formData.title} onChange={e => set({ title: e.target.value })} className={inputCls} />
               </div>
+              <div><label className={labelCls}>Title (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.titleAr} onChange={e => set({ titleAr: e.target.value })} className={inputCls} /></div>
               <div>
                 <label className={labelCls}>Description *</label>
                 <textarea required rows={3} value={formData.description} onChange={e => set({ description: e.target.value })} className={inputCls} />
               </div>
+              <div><label className={labelCls}>Description (Arabic)</label><textarea dir="rtl" lang="ar" rows={3} value={formData.descriptionAr} onChange={e => set({ descriptionAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>Date *</label>
@@ -169,6 +174,7 @@ export default function AdminActivitiesPage() {
                   <input required type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} />
                 </div>
               </div>
+              <div><label className={labelCls}>Location (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
               <div>
                 <label className={labelCls}>Image URL</label>
                 <input type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />

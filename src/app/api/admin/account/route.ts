@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
-import { getSession } from '@/lib/auth';
+import { requireAdmin, setAdminSessionCookie, signJWT } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
 import { z } from 'zod';
 
 const updateSchema = z.object({
@@ -14,14 +15,17 @@ const updateSchema = z.object({
 }, { message: 'Current password is required to set a new password' });
 
 export async function PATCH(request: NextRequest) {
-  const session = await getSession(request);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
     const data = updateSchema.parse(body);
 
-    const user = await db.user.findUnique({ where: { id: session.id as string } });
+    const user = await db.user.findUnique({ where: { id: admin.id } });
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     if (data.newPassword) {
@@ -34,11 +38,32 @@ export async function PATCH(request: NextRequest) {
       data: {
         ...(data.name && { name: data.name }),
         ...(data.newPassword && { password: await bcrypt.hash(data.newPassword, 10) }),
+        ...(data.newPassword && { sessionVersion: { increment: 1 } }),
       },
-      select: { id: true, name: true, email: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        sessionVersion: true,
+      },
     });
 
-    return NextResponse.json({ user: updated });
+    const response = NextResponse.json({
+      user: { id: updated.id, name: updated.name, email: updated.email },
+    });
+
+    if (data.newPassword) {
+      const token = await signJWT({
+        id: updated.id,
+        email: updated.email,
+        role: updated.role,
+        sessionVersion: updated.sessionVersion,
+      });
+      setAdminSessionCookie(response, token);
+    }
+
+    return response;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues[0].message }, { status: 400 });

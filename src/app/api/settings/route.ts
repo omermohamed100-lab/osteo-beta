@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { socialUrlSchema } from '@/lib/url-security';
 import { z } from 'zod';
 
 const settingsSchema = z.object({
   phone: z.string().optional(),
-  email: z.string().email().optional(),
+  email: z.union([z.literal(''), z.string().email()]).optional(),
   address: z.string().optional(),
-  facebook: z.string().optional(),
-  instagram: z.string().optional(),
-  linkedin: z.string().optional(),
+  addressAr: z.string().optional(),
+  facebook: socialUrlSchema(['facebook.com']).optional(),
+  instagram: socialUrlSchema(['instagram.com']).optional(),
+  linkedin: socialUrlSchema(['linkedin.com']).optional(),
 });
 
 export async function GET() {
@@ -25,8 +28,11 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = settingsSchema.parse(body);

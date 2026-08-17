@@ -1,8 +1,10 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import PageHeader from '@/components/layout/PageHeader';
-import { egsomStats } from '@/lib/stats';
 import LocalizedText from '@/components/i18n/LocalizedText';
+import LocalizedDate from '@/components/i18n/LocalizedDate';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
+import { db } from '@/lib/db';
+import { getPublicData } from '@/lib/public-data';
 
 export async function generateMetadata() {
   return getLocalizedMetadata('/about');
@@ -12,8 +14,8 @@ const values = [
   {
     title: 'Excellence',
     titleAr: 'التميّز',
-    desc: 'We uphold the highest standards of osteopathic education and clinical practice, ensuring our members deliver world-class care.',
-    descAr: 'نلتزم بأعلى معايير التعليم والممارسة السريرية في الطب الأوستيوباثي، بما يضمن تقديم أعضائنا رعاية بمستوى عالمي.',
+    desc: 'We support clear professional standards for osteopathic education and clinical practice.',
+    descAr: 'ندعم معايير مهنية واضحة للتعليم والممارسة السريرية في الطب الأوستيوباثي.',
     icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
   },
   {
@@ -39,7 +41,16 @@ const values = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { data: statistics } = await getPublicData(
+    () => db.publicStatistic.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+      take: 8,
+    }),
+    [],
+  );
+
   return (
     <div className="flex-grow">
       <PageHeader
@@ -47,14 +58,14 @@ export default function AboutPage() {
         eyebrowAr="من نحن"
         title="About EGSOM"
         titleAr="عن الجمعية"
-        subtitle="The Egyptian Society of Osteopathic Medicine: the leading professional body for osteopaths in Egypt and the wider Middle East."
-        subtitleAr="الجمعية المصرية لطب الأوستيوباثية، الهيئة المهنية الرائدة لممارسي الطب الأوستيوباثي في مصر والشرق الأوسط."
+        subtitle="The Egyptian Society of Osteopathic Medicine supports professional education, practice, and public understanding in Egypt and the region."
+        subtitleAr="تدعم الجمعية المصرية لطب الأوستيوباثي التعليم والممارسة المهنية والتوعية العامة في مصر والمنطقة."
       />
 
       {/* Story section */}
       <section className="py-14 sm:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          <div className={`grid gap-10 lg:gap-16 items-start ${statistics.length > 0 ? 'lg:grid-cols-2' : ''}`}>
             <div>
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-px w-8 bg-brand-600" />
@@ -70,8 +81,8 @@ export default function AboutPage() {
               </h2>
               <p className="mb-4 leading-relaxed text-slate-600">
                 <LocalizedText
-                  en="EGSOM was founded with a singular purpose: to establish osteopathic medicine as a respected, evidence-based discipline within Egypt's healthcare landscape. Since our founding in Cairo, we have grown into the region's foremost professional association for osteopathic practitioners."
-                  ar="تأسست الجمعية بهدف واضح، وهو ترسيخ الطب الأوستيوباثي كتخصص مهني محترم قائم على الدليل ضمن منظومة الرعاية الصحية في مصر. ومنذ انطلاقنا في القاهرة، أصبحنا من أبرز الجمعيات المهنية لممارسي هذا التخصص في المنطقة."
+                  en="EGSOM was established to support the professional development of osteopathic medicine within Egypt's healthcare landscape. Its work focuses on education, professional standards, and connections between practitioners and the public."
+                  ar="تأسست الجمعية لدعم التطور المهني لطب الأوستيوباثي ضمن منظومة الرعاية الصحية في مصر. ويركز عملها على التعليم والمعايير المهنية والربط بين الممارسين والجمهور."
                 />
               </p>
               <p className="leading-relaxed text-slate-600">
@@ -82,24 +93,40 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              {egsomStats.map((stat) => (
-                <div key={stat.label} className="surface-panel bg-slate-50/70 p-5">
+            {statistics.length > 0 && (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {statistics.map((stat) => (
+                <div key={stat.id} className="surface-panel bg-slate-50/70 p-5">
                   <div className="font-display text-[2.5rem] font-semibold text-brand-600 leading-none mb-2">
                     <bdi
                       dir="ltr"
                       lang="en"
                       className="font-display-latin tabular-nums"
                     >
-                      {stat.num}
+                      {stat.value}
                     </bdi>
                   </div>
                   <div className="text-sm text-slate-600">
                     <LocalizedText en={stat.label} ar={stat.labelAr} />
                   </div>
+                  <div className="mt-4 border-t border-brand-100/80 pt-3 text-xs leading-5 text-slate-500">
+                    <span className="block">
+                      <LocalizedText en="Source" ar="المصدر" />:{' '}
+                      {stat.sourceUrl ? (
+                        <a href={stat.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-300 underline-offset-2 hover:text-brand-700">
+                          {stat.sourceLabel}
+                        </a>
+                      ) : stat.sourceLabel}
+                    </span>
+                    <span className="block">
+                      <LocalizedText en="Verified" ar="تاريخ التحقق" />:{' '}
+                      <LocalizedDate value={stat.lastVerifiedAt.toISOString()} />
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       </section>
@@ -119,8 +146,8 @@ export default function AboutPage() {
               </h3>
               <p className="text-brand-200/75 leading-relaxed">
                 <LocalizedText
-                  en="To integrate osteopathic principles into the wider healthcare system in Egypt, ensuring patients have access to safe, effective, and holistic care, while supporting the ongoing professional development of every member."
-                  ar="دمج مبادئ الطب الأوستيوباثي في منظومة الرعاية الصحية في مصر، وضمان وصول المرضى إلى رعاية آمنة وفعّالة وشاملة، مع دعم التطوير المهني المستمر لكل عضو."
+                  en="To support the responsible integration of osteopathic principles within healthcare in Egypt while encouraging professional learning, ethical practice, and clear public information."
+                  ar="دعم الدمج المسؤول لمبادئ الطب الأوستيوباثي ضمن الرعاية الصحية في مصر، مع تشجيع التعلم المهني والممارسة الأخلاقية والمعلومات العامة الواضحة."
                 />
               </p>
             </div>
@@ -137,8 +164,8 @@ export default function AboutPage() {
               </h3>
               <p className="leading-relaxed text-slate-600">
                 <LocalizedText
-                  en="A future where osteopathic medicine is widely recognised and practised across Egypt and the Middle East, improving health outcomes for millions of patients through evidence-based, holistic treatment."
-                  ar="مستقبل يحظى فيه الطب الأوستيوباثي بالاعتراف والممارسة الواسعة في مصر والشرق الأوسط، ويسهم في تحسين صحة ملايين المرضى من خلال علاج شامل قائم على الدليل."
+                  en="A future where osteopathic medicine is understood clearly and practised responsibly across Egypt and the Middle East."
+                  ar="مستقبل يُفهم فيه الطب الأوستيوباثي بوضوح ويُمارس بمسؤولية في مصر والشرق الأوسط."
                 />
               </p>
             </div>
@@ -196,8 +223,8 @@ export default function AboutPage() {
           </h2>
           <p className="text-brand-300/70 mb-8 leading-relaxed">
             <LocalizedText
-              en="Become part of Egypt's premier osteopathic community. Access exclusive training, connect with peers, and help shape the future of healthcare in the region."
-              ar="انضم إلى مجتمع مهني رائد للطب الأوستيوباثي في مصر، واستفد من التدريب المتخصص والتواصل مع الزملاء والمساهمة في تشكيل مستقبل الرعاية الصحية في المنطقة."
+              en="Explore professional education, connect with peers, and ask about participating in EGSOM's work."
+              ar="استكشف التعليم المهني وتواصل مع الزملاء واستفسر عن المشاركة في عمل الجمعية."
             />
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -1,8 +1,10 @@
 import { db } from '@/lib/db';
-import { withPublicDataFallback } from '@/lib/public-data';
+import { getPublicData } from '@/lib/public-data';
 import LocalizedText from '@/components/i18n/LocalizedText';
 import LocalizedDate from '@/components/i18n/LocalizedDate';
+import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
+import Link from '@/components/i18n/LocalizedLink';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -12,9 +14,17 @@ export async function generateMetadata() {
 }
 
 export default async function CoursesPage() {
-  const courses = await withPublicDataFallback(
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const { data: courses, unavailable: dataUnavailable } = await getPublicData(
     () => db.course.findMany({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        OR: [
+          { endDate: { gte: today } },
+          { endDate: null, startDate: { gte: today } },
+        ],
+      },
       orderBy: { startDate: 'asc' },
     }),
     [],
@@ -27,13 +37,21 @@ export default async function CoursesPage() {
         eyebrowAr="التعليم"
         title="Courses & Training"
         titleAr="الدورات والتدريب"
-        subtitle="Comprehensive osteopathic training programs, from introductory workshops to advanced certification, designed to meet international standards."
-        subtitleAr="برامج تدريبية متكاملة في الطب الأوستيوباثي، من ورش العمل التمهيدية إلى الاعتماد المتقدم، ومصممة وفق المعايير الدولية."
+        subtitle="Published osteopathic workshops, courses, and professional-development opportunities."
+        subtitleAr="ورش العمل والدورات وفرص التطوير المهني المنشورة في مجال الأوستيوباثي."
       />
 
       <div className="bg-slate-50/70 py-9 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          {courses.length === 0 ? (
+          {dataUnavailable ? (
+            <PublicDataUnavailable
+              title={{ en: 'Courses temporarily unavailable', ar: 'الدورات غير متاحة مؤقتًا' }}
+              description={{
+                en: 'Course information is temporarily unavailable. Please try again shortly.',
+                ar: 'بيانات الدورات غير متاحة مؤقتًا. يُرجى المحاولة مرة أخرى بعد قليل.',
+              }}
+            />
+          ) : courses.length === 0 ? (
             <div className="surface-panel p-10 text-center sm:p-12">
               <svg className="mx-auto mb-4 h-12 w-12 text-brand-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -65,22 +83,22 @@ export default async function CoursesPage() {
                   )}
                   <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <h2 dir="auto" className="font-bold text-gray-900 text-base leading-snug">{course.title}</h2>
-                      {course.price != null && (
+                      <h2 dir="auto" className="font-bold text-gray-900 text-base leading-snug"><LocalizedText en={course.title} ar={course.titleAr || course.title} /></h2>
+                      {course.price != null && course.priceCurrency && (
                         <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
                           <bdi dir="ltr" lang="en" className="font-sans">
-                            ${course.price}
+                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: course.priceCurrency }).format(course.price)}
                           </bdi>
                         </span>
                       )}
                     </div>
-                    <p dir="auto" className="mb-5 flex-grow text-sm leading-relaxed text-slate-600">{course.description}</p>
+                    <p dir="auto" className="mb-5 flex-grow text-sm leading-relaxed text-slate-600"><LocalizedText en={course.description} ar={course.descriptionAr || course.description} /></p>
                     <div className="space-y-2 border-t border-brand-100/70 pt-4 text-xs text-slate-500">
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        <span dir="auto">{course.instructor}</span>
+                        <span dir="auto"><LocalizedText en={course.instructor} ar={course.instructorAr || course.instructor} /></span>
                       </div>
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,9 +110,13 @@ export default async function CoursesPage() {
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span dir="auto">{course.duration}</span>
+                        <span dir="auto"><LocalizedText en={course.duration} ar={course.durationAr || course.duration} /></span>
                       </div>
                     </div>
+                    <Link href={`/courses/${encodeURIComponent(course.id)}`} className="mt-5 inline-flex min-h-11 items-center gap-2 border-t border-brand-100/70 pt-4 text-sm font-semibold text-brand-700 hover:text-brand-950 focus-visible:ring-2 focus-visible:ring-brand-600">
+                      <LocalizedText en="View course details" ar="عرض تفاصيل الدورة" />
+                      <span className="rtl-flip" aria-hidden="true">→</span>
+                    </Link>
                   </div>
                 </div>
               ))}

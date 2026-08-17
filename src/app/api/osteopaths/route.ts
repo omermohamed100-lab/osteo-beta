@@ -1,26 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { mediaUrlSchema } from '@/lib/url-security';
 import { approvedOsteopaths } from '@/data/approved-osteopaths';
 import { z } from 'zod';
 
 const osteopathSchema = z.object({
   name:         z.string().min(2),
   specialty:    z.string().min(2),
+  specialtyAr:  z.string().default(''),
   city:         z.string().min(1),
   country:      z.string().min(1).default('Egypt'),
   location:     z.string().default(''),
+  locationAr:   z.string().default(''),
   phone:        z.string().default(''),
   email:        z.string().default(''),
   bio:          z.string().default(''),
-  profileImage: z.string().url().optional().or(z.literal('')),
+  bioAr:        z.string().default(''),
+  profileImage: mediaUrlSchema.optional().or(z.literal('')),
+  credentialType: z.string().default(''),
+  credentialNumber: z.string().default(''),
+  credentialIssuer: z.string().default(''),
+  credentialStatus: z.enum(['unverified', 'verified', 'expired']).default('unverified'),
+  credentialVerifiedAt: z.string().optional().transform((value) => value ? new Date(value) : null),
+  credentialExpiresAt: z.string().optional().transform((value) => value ? new Date(value) : null),
+  profileReviewedAt: z.string().optional().transform((value) => value ? new Date(value) : null),
   isActive:     z.boolean().default(true),
+}).superRefine((data, context) => {
+  if (data.credentialStatus !== 'verified') return;
+  for (const field of ['credentialType', 'credentialNumber', 'credentialIssuer'] as const) {
+    if (!data[field].trim()) {
+      context.addIssue({ code: 'custom', path: [field], message: 'Required for a verified credential' });
+    }
+  }
+  if (!data.credentialVerifiedAt || Number.isNaN(data.credentialVerifiedAt.getTime())) {
+    context.addIssue({ code: 'custom', path: ['credentialVerifiedAt'], message: 'A valid verification date is required' });
+  }
 });
 
 export async function GET(request: NextRequest) {
   const publicRequest = request.nextUrl.searchParams.get('public') === '1';
+  const adminRequest = request.nextUrl.searchParams.get('admin') === '1';
 
   try {
+    if (adminRequest && !(await requireAdmin(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const { searchParams } = new URL(request.url);
     const name    = searchParams.get('name')    ?? '';
     const city    = searchParams.get('city')    ?? '';
@@ -28,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     const osteopaths = await db.osteopath.findMany({
       where: {
-        isActive: true,
+        ...(adminRequest ? {} : { isActive: true }),
         ...(name    ? { name:    { contains: name,    } } : {}),
         ...(city    ? { city:    { contains: city,    } } : {}),
         ...(country ? { country: { contains: country, } } : {}),
@@ -47,7 +73,9 @@ export async function GET(request: NextRequest) {
   } catch {
     if (publicRequest) {
       // Keep the approved public directory available during a database outage.
-      return NextResponse.json(approvedOsteopaths);
+      return NextResponse.json(approvedOsteopaths, {
+        headers: { 'x-egsom-data-status': 'unavailable' },
+      });
     }
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -56,8 +84,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = osteopathSchema.parse(body);

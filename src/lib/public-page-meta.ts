@@ -1,4 +1,4 @@
-export type SiteLanguage = 'en' | 'ar';
+import type { SiteLanguage } from '@/lib/i18n-routing';
 
 export type PublicPageMeta = {
   title: string;
@@ -36,36 +36,48 @@ export const PUBLIC_PAGE_META: Record<
     en: {
       title: 'Courses & Training · EGSOM',
       description:
-        'Explore osteopathic training programs, workshops, and professional certification courses.',
+        'Explore EGSOM osteopathic education, workshops, training programs, and professional development opportunities.',
     },
     ar: {
       title: 'الدورات والتدريب · EGSOM',
       description:
-        'استكشف برامج التدريب وورش العمل ودورات الاعتماد المهني في الطب الأوستيوباثي.',
+        'استكشف برامج التعليم وورش العمل والتدريب وفرص التطوير المهني في الأوستيوباثي لدى الجمعية.',
     },
   },
   '/activities': {
     en: {
       title: 'Activities & Events · EGSOM',
       description:
-        'Discover upcoming EGSOM workshops, seminars, conferences, and community activities.',
+        'Explore EGSOM seminars, conferences, workshops, and community activities.',
     },
     ar: {
       title: 'الأنشطة والفعاليات · EGSOM',
       description:
-        'تعرّف على ورش العمل والندوات والمؤتمرات والأنشطة المجتمعية القادمة للجمعية.',
+        'تعرّف على ندوات الجمعية ومؤتمراتها وورش عملها وأنشطتها المجتمعية.',
     },
   },
   '/find-osteopath': {
     en: {
       title: 'Find an Osteopath · EGSOM',
       description:
-        'Search the EGSOM directory for certified osteopathic practitioners across Egypt and the Middle East.',
+        'Search the EGSOM directory for listed osteopathic practitioners across Egypt and the Middle East.',
     },
     ar: {
       title: 'دليل الممارسين · EGSOM',
       description:
-        'ابحث في دليل الجمعية عن ممارسي الطب الأوستيوباثي المعتمدين في مصر والشرق الأوسط.',
+        'ابحث في دليل الجمعية عن ممارسي الأوستيوباثي المدرجين في مصر والشرق الأوسط.',
+    },
+  },
+  '/practitioners': {
+    en: {
+      title: 'Practitioner Resources · EGSOM',
+      description:
+        'Professional information, education pathways, directory guidance, and enquiry routes for osteopathic practitioners.',
+    },
+    ar: {
+      title: 'موارد الممارسين · EGSOM',
+      description:
+        'معلومات مهنية ومسارات تعليمية وإرشادات الدليل وقنوات الاستفسار لممارسي الأوستيوباثي.',
     },
   },
   '/gallery': {
@@ -90,6 +102,18 @@ export const PUBLIC_PAGE_META: Record<
       title: 'تواصل معنا · EGSOM',
       description:
         'تواصل مع الجمعية للاستفسار عن العضوية أو الدورات أو الشراكات أو الطب الأوستيوباثي في مصر.',
+    },
+  },
+  '/privacy': {
+    en: {
+      title: 'Privacy · EGSOM',
+      description:
+        'Learn how EGSOM handles contact messages, directory information, security data, and privacy requests.',
+    },
+    ar: {
+      title: 'الخصوصية · EGSOM',
+      description:
+        'تعرّف على كيفية تعامل الجمعية مع رسائل التواصل وبيانات الدليل وبيانات الأمان وطلبات الخصوصية.',
     },
   },
 };

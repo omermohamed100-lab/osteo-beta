@@ -11,6 +11,7 @@ export default function ContactInfoSettingsPage() {
     email: '',
     phone: '',
     address: '',
+    addressAr: '',
     facebook: '',
     instagram: '',
     linkedin: '',
@@ -25,6 +26,7 @@ export default function ContactInfoSettingsPage() {
             email: data.email || '',
             phone: data.phone || '',
             address: data.address || '',
+            addressAr: data.addressAr || '',
             facebook: data.facebook || '',
             instagram: data.instagram || '',
             linkedin: data.linkedin || '',
@@ -86,6 +88,7 @@ export default function ContactInfoSettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Office Address</label>
               <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
             </div>
+            <div className="md:col-span-2"><label className="block text-sm font-medium text-gray-700 mb-1">Office Address (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.addressAr} onChange={e => setFormData({...formData, addressAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
           </div>
 
           <h2 className="text-lg font-medium text-gray-900 mb-6 border-t border-gray-100 pt-8">Social Links</h2>

@@ -6,19 +6,31 @@ type Osteopath = {
   id: string;
   name: string;
   specialty: string;
+  specialtyAr: string;
   city: string;
   country: string;
   location: string;
+  locationAr: string;
   phone: string;
   email: string;
   bio: string;
+  bioAr: string;
   profileImage: string | null;
+  credentialType: string;
+  credentialNumber: string;
+  credentialIssuer: string;
+  credentialStatus: 'unverified' | 'verified' | 'expired';
+  credentialVerifiedAt: string | null;
+  credentialExpiresAt: string | null;
+  profileReviewedAt: string | null;
   isActive: boolean;
 };
 
 const EMPTY_FORM = {
-  name: '', specialty: '', city: '', country: 'Egypt',
-  location: '', phone: '', email: '', bio: '',
+  name: '', specialty: '', specialtyAr: '', city: '', country: 'Egypt',
+  location: '', locationAr: '', phone: '', email: '', bio: '', bioAr: '',
+  credentialType: '', credentialNumber: '', credentialIssuer: '', credentialStatus: 'unverified' as Osteopath['credentialStatus'],
+  credentialVerifiedAt: '', credentialExpiresAt: '', profileReviewedAt: '',
   profileImage: '', isActive: true,
 };
 
@@ -39,7 +51,7 @@ export default function AdminOsteopathsPage() {
   const fetchItems = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/osteopaths');
+      const res = await fetch('/api/osteopaths?admin=1');
       if (res.ok) setItems(await res.json());
     } finally {
       setIsLoading(false);
@@ -49,7 +61,7 @@ export default function AdminOsteopathsPage() {
   useEffect(() => {
     let cancelled = false;
 
-    fetch('/api/osteopaths')
+    fetch('/api/osteopaths?admin=1')
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (!cancelled && Array.isArray(data)) setItems(data);
@@ -67,8 +79,13 @@ export default function AdminOsteopathsPage() {
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (o: Osteopath) => {
     setFormData({
-      name: o.name, specialty: o.specialty, city: o.city, country: o.country,
-      location: o.location, phone: o.phone, email: o.email, bio: o.bio,
+      name: o.name, specialty: o.specialty, specialtyAr: o.specialtyAr, city: o.city, country: o.country,
+      location: o.location, locationAr: o.locationAr, phone: o.phone, email: o.email, bio: o.bio, bioAr: o.bioAr,
+      credentialType: o.credentialType, credentialNumber: o.credentialNumber, credentialIssuer: o.credentialIssuer,
+      credentialStatus: o.credentialStatus,
+      credentialVerifiedAt: o.credentialVerifiedAt ? new Date(o.credentialVerifiedAt).toISOString().split('T')[0] : '',
+      credentialExpiresAt: o.credentialExpiresAt ? new Date(o.credentialExpiresAt).toISOString().split('T')[0] : '',
+      profileReviewedAt: o.profileReviewedAt ? new Date(o.profileReviewedAt).toISOString().split('T')[0] : '',
       profileImage: o.profileImage ?? '', isActive: o.isActive,
     });
     setEditingId(o.id);
@@ -178,6 +195,7 @@ export default function AdminOsteopathsPage() {
                   <input required type="text" value={formData.specialty} onChange={e => set({ specialty: e.target.value })} className={inputCls} placeholder="e.g. Structural Osteopathy" />
                 </div>
               </div>
+              <div><label className={labelCls}>Specialty (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.specialtyAr} onChange={e => set({ specialtyAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>City *</label>
@@ -192,6 +210,7 @@ export default function AdminOsteopathsPage() {
                 <label className={labelCls}>Location / Address</label>
                 <input type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} placeholder="e.g. Maadi, Cairo" />
               </div>
+              <div><label className={labelCls}>Location / Address (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={labelCls}>Phone</label>
@@ -206,10 +225,24 @@ export default function AdminOsteopathsPage() {
                 <label className={labelCls}>Bio</label>
                 <textarea rows={3} value={formData.bio} onChange={e => set({ bio: e.target.value })} className={inputCls} />
               </div>
+              <div><label className={labelCls}>Bio (Arabic)</label><textarea dir="rtl" lang="ar" rows={3} value={formData.bioAr} onChange={e => set({ bioAr: e.target.value })} className={inputCls} /></div>
               <div>
                 <label className={labelCls}>Profile Image URL</label>
                 <input type="url" value={formData.profileImage} onChange={e => set({ profileImage: e.target.value })} className={inputCls} placeholder="https://…" />
               </div>
+              <fieldset className="space-y-4 border-t border-gray-200 pt-5">
+                <legend className="text-base font-semibold text-gray-900">Credential evidence</legend>
+                <p className="text-xs leading-5 text-gray-500">Keep the status unverified until the credential number, issuer, and verification date have been checked against supporting evidence.</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div><label className={labelCls}>Credential type</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialType} onChange={e => set({ credentialType: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Credential number</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialNumber} onChange={e => set({ credentialNumber: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Issuing organization</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialIssuer} onChange={e => set({ credentialIssuer: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Verification status</label><select value={formData.credentialStatus} onChange={e => set({ credentialStatus: e.target.value as typeof formData.credentialStatus })} className={inputCls}><option value="unverified">Unverified</option><option value="verified">Verified</option><option value="expired">Expired</option></select></div>
+                  <div><label className={labelCls}>Verification date</label><input required={formData.credentialStatus === 'verified'} type="date" value={formData.credentialVerifiedAt} onChange={e => set({ credentialVerifiedAt: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Expiry date</label><input type="date" value={formData.credentialExpiresAt} onChange={e => set({ credentialExpiresAt: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Profile review date</label><input type="date" value={formData.profileReviewedAt} onChange={e => set({ profileReviewedAt: e.target.value })} className={inputCls} /></div>
+                </div>
+              </fieldset>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => set({ isActive: e.target.checked })} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
                 <label htmlFor="isActive" className="text-sm text-gray-900">Active (visible to public)</label>

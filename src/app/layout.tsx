@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Cormorant_Garamond, Noto_Sans_Arabic } from 'next/font/google';
-import { cookies } from 'next/headers';
+import localFont from 'next/font/local';
+import { headers } from 'next/headers';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -11,27 +11,54 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import LocalizedText from '@/components/i18n/LocalizedText';
+import {
+  DEFAULT_LANGUAGE,
+  isSiteLanguage,
+  LANGUAGE_REQUEST_HEADER,
+  localizePublicPath,
+} from '@/lib/i18n-routing';
+import { getSiteUrl } from '@/lib/site-url';
 
 export const dynamic = 'force-dynamic';
 
-const inter = Inter({
-  subsets: ['latin'],
+const inter = localFont({
+  src: './fonts/inter-latin-variable.woff2',
   variable: '--font-inter',
+  weight: '100 900',
+  style: 'normal',
+  display: 'swap',
+  fallback: ['Arial', 'sans-serif'],
+  adjustFontFallback: 'Arial',
 });
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
+const cormorant = localFont({
+  src: [
+    {
+      path: './fonts/cormorant-garamond-latin-variable.woff2',
+      weight: '300 700',
+      style: 'normal',
+    },
+    {
+      path: './fonts/cormorant-garamond-latin-italic-variable.woff2',
+      weight: '300 700',
+      style: 'italic',
+    },
+  ],
   variable: '--font-cormorant',
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
   display: 'swap',
+  fallback: ['Georgia', 'serif'],
+  adjustFontFallback: 'Times New Roman',
 });
 
-const notoArabic = Noto_Sans_Arabic({
-  subsets: ['arabic'],
+const notoArabic = localFont({
+  src: './fonts/noto-sans-arabic-variable.woff2',
   variable: '--font-arabic',
-  weight: ['400', '500', '600', '700'],
+  weight: '400 700',
+  style: 'normal',
   display: 'swap',
+  preload: false,
+  fallback: ['Tahoma', 'Arial', 'sans-serif'],
+  adjustFontFallback: false,
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -50,10 +77,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const savedLanguage = cookieStore.get('egsom-language')?.value;
-  const initialLanguage: Language = savedLanguage === 'ar' ? 'ar' : 'en';
-  const hasLanguageCookie = savedLanguage === 'ar' || savedLanguage === 'en';
+  const headerStore = await headers();
+  const requestedLanguage = headerStore.get(LANGUAGE_REQUEST_HEADER);
+  const initialLanguage: Language = isSiteLanguage(requestedLanguage)
+    ? requestedLanguage
+    : DEFAULT_LANGUAGE;
+  const siteUrl = getSiteUrl();
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': new URL('/#organization', siteUrl).toString(),
+    name: 'Egyptian Society of Osteopathic Medicine',
+    alternateName: 'EGSOM',
+    url: new URL(localizePublicPath('/', 'en'), siteUrl).toString(),
+    logo: new URL('/logo-clean.webp', siteUrl).toString(),
+  };
 
   return (
     <html
@@ -62,11 +100,16 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className={`${inter.variable} ${cormorant.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-bone font-sans`}>
-        <LanguageProvider
-          initialLanguage={initialLanguage}
-          hasLanguageCookie={hasLanguageCookie}
-        >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema).replace(/</g, '\\u003c'),
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} ${cormorant.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-bone`}>
+        <LanguageProvider initialLanguage={initialLanguage}>
           <a href="#main-content" className="skip-link">
             <LocalizedText
               en="Skip to main content"

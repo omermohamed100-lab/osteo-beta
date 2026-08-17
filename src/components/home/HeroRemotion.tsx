@@ -99,7 +99,7 @@ export const HeroHandsComposition = ({
         />
 
         <Img
-          src={staticFile('hero-hands-rising.png')}
+          src={staticFile('hero-hands-rising.webp')}
           style={{
             position: 'absolute',
             top: 190,
@@ -115,7 +115,7 @@ export const HeroHandsComposition = ({
           }}
         />
         <Img
-          src={staticFile('hero-hands-rising.png')}
+          src={staticFile('hero-hands-rising.webp')}
           style={{
             position: 'absolute',
             top: 190,
@@ -194,7 +194,7 @@ export const HeroHandsComposition = ({
             }}
           />
           <Img
-            src={staticFile('logo-clean.png')}
+            src={staticFile('logo-clean.webp')}
             style={{
               position: 'absolute',
               inset: 0,
@@ -208,7 +208,7 @@ export const HeroHandsComposition = ({
         </Interactive.Div>
 
         <Img
-          src={staticFile('hero-hands-rising.png')}
+          src={staticFile('hero-hands-rising.webp')}
           style={{
             position: 'absolute',
             top: 190,
@@ -225,7 +225,7 @@ export const HeroHandsComposition = ({
           }}
         />
         <Img
-          src={staticFile('hero-hands-rising.png')}
+          src={staticFile('hero-hands-rising.webp')}
           style={{
             position: 'absolute',
             top: 190,
@@ -248,8 +248,6 @@ export const HeroHandsComposition = ({
 
 export default function HeroRemotion() {
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileAnimationStarted, setMobileAnimationStarted] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -261,79 +259,38 @@ export default function HeroRemotion() {
     return () => mediaQuery.removeEventListener('change', updatePreference);
   }, []);
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
-    const updateViewport = () => setIsMobile(mediaQuery.matches);
-
-    updateViewport();
-    mediaQuery.addEventListener('change', updateViewport);
-
-    return () => mediaQuery.removeEventListener('change', updateViewport);
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile || reducedMotion) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setMobileAnimationStarted(true);
-    }, 180);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [isMobile, reducedMotion]);
-
-  const mobileVisualIsVisible = reducedMotion || mobileAnimationStarted;
-
   return (
-    <>
-      <div
-        className={`hero-mobile-visual ${
-          mobileVisualIsVisible ? 'is-visible' : 'is-waiting'
-        }`}
-        aria-hidden="true"
-      >
-        <div className="hero-mobile-glow" />
-        <div className="hero-mobile-seal" />
-        <div className="hero-mobile-hands" />
-      </div>
-
-      {!isMobile && (
-        <div
-          className="hero-remotion-player"
-          dir="ltr"
-          aria-hidden="true"
-        >
-          <Player
-            component={HeroHandsComposition}
-            inputProps={{ reducedMotion }}
-            acknowledgeRemotionLicense
-            durationInFrames={HERO_DURATION_IN_FRAMES}
-            compositionWidth={1080}
-            compositionHeight={1080}
-            fps={30}
-            autoPlay={!reducedMotion}
-            loop={false}
-            controls={false}
-            clickToPlay={false}
-            doubleClickToFullscreen={false}
-            spaceKeyToPlayOrPause={false}
-            allowFullscreen={false}
-            showVolumeControls={false}
-            numberOfSharedAudioTags={0}
-            initiallyMuted
-            moveToBeginningWhenEnded={false}
-            overflowVisible={false}
-            style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'transparent',
-            }}
-          />
-        </div>
-      )}
-    </>
+    <div
+      className="hero-remotion-player"
+      dir="ltr"
+      aria-hidden="true"
+    >
+      <Player
+        component={HeroHandsComposition}
+        inputProps={{ reducedMotion }}
+        acknowledgeRemotionLicense
+        durationInFrames={HERO_DURATION_IN_FRAMES}
+        compositionWidth={1080}
+        compositionHeight={1080}
+        fps={30}
+        autoPlay={!reducedMotion}
+        loop={false}
+        controls={false}
+        clickToPlay={false}
+        doubleClickToFullscreen={false}
+        spaceKeyToPlayOrPause={false}
+        allowFullscreen={false}
+        showVolumeControls={false}
+        numberOfSharedAudioTags={0}
+        initiallyMuted
+        moveToBeginningWhenEnded={false}
+        overflowVisible={false}
+        style={{
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'transparent',
+        }}
+      />
+    </div>
   );
 }

@@ -2,23 +2,25 @@
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import LanguageToggle from '@/components/i18n/LanguageToggle';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import { getPublicPathFromPathname } from '@/lib/i18n-routing';
 
 const links = [
   { href: '/about', en: 'About EGSOM', ar: 'عن الجمعية' },
   { href: '/courses', en: 'Education', ar: 'التعليم' },
   { href: '/#standards', en: 'Standards', ar: 'المعايير' },
   { href: '/find-osteopath', en: 'For the Public', ar: 'للجمهور' },
-  { href: '/contact', en: 'For Practitioners', ar: 'للممارسين' },
+  { href: '/practitioners', en: 'For Practitioners', ar: 'للممارسين' },
   { href: '/activities', en: 'News & Events', ar: 'الأخبار والفعاليات' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const publicPathname = getPublicPathFromPathname(pathname);
   const { isArabic } = useLanguage();
   const reduceMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -103,7 +105,7 @@ export default function Navbar() {
             className="flex shrink-0 items-center gap-3.5 outline-none transition-transform duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-brand-950"
           >
             <Image
-              src="/logo-clean.png"
+              src="/logo-clean.webp"
               alt="EGSOM"
               width={68}
               height={68}
@@ -123,7 +125,7 @@ export default function Navbar() {
           <div className="hidden items-center gap-1.5 xl:flex 2xl:gap-3">
             {links.map((link) => {
               const cleanHref = link.href.split('#')[0] || '/';
-              const active = pathname === cleanHref && !link.href.includes('#');
+              const active = publicPathname === cleanHref && !link.href.includes('#');
               return (
                 <Link
                   key={`${link.href}-${link.en}`}
@@ -145,7 +147,7 @@ export default function Navbar() {
             })}
             <Link
               href="/contact"
-              aria-current={pathname === '/contact' ? 'page' : undefined}
+              aria-current={publicPathname === '/contact' ? 'page' : undefined}
               className="ms-1 border border-gold bg-gold px-4 py-2.5 text-[0.78rem] font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-150 hover:border-gold-light hover:bg-gold-light active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-gold-light focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950 2xl:px-5"
             >
               {isArabic ? 'تواصل معنا' : 'Contact'}
@@ -172,13 +174,11 @@ export default function Navbar() {
               onClick={() => setMenuOpen((open) => !open)}
               className="-me-2 inline-flex h-11 w-11 items-center justify-center text-bone outline-none transition-[background-color,color,transform] duration-150 hover:bg-bone/10 hover:text-gold-light active:scale-[0.94] focus-visible:ring-2 focus-visible:ring-gold"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                {menuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6l12 12M6 18L18 6" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              <span aria-hidden="true" className="relative block h-5 w-5">
+                <span className={`absolute left-0 top-1 block h-0.5 w-5 rounded-full bg-current transition-[transform,opacity] duration-200 ease-out ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
+                <span className={`absolute left-0 top-2.5 block h-0.5 w-5 rounded-full bg-current transition-opacity duration-150 ${menuOpen ? 'opacity-0' : 'opacity-100'}`} />
+                <span className={`absolute left-0 top-4 block h-0.5 w-5 rounded-full bg-current transition-[transform,opacity] duration-200 ease-out ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`} />
+              </span>
             </button>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function Navbar() {
                 </div>
                 {links.map((link) => {
                   const cleanHref = link.href.split('#')[0] || '/';
-                  const active = pathname === cleanHref && !link.href.includes('#');
+                  const active = publicPathname === cleanHref && !link.href.includes('#');
                   return (
                     <Link
                       key={`${link.href}-${link.en}`}
@@ -245,7 +245,7 @@ export default function Navbar() {
                 })}
                 <Link
                   href="/contact"
-                  aria-current={pathname === '/contact' ? 'page' : undefined}
+                  aria-current={publicPathname === '/contact' ? 'page' : undefined}
                   onClick={() => setMenuOpen(false)}
                   className="mt-2 flex min-h-12 items-center justify-center bg-brand-950 px-4 py-3 text-base font-semibold text-bone outline-none transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-gold"
                 >

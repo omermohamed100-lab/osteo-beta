@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { mediaUrlSchema } from '@/lib/url-security';
 import { z } from 'zod';
 
 const gallerySchema = z.object({
-  imageUrl: z.string().url(),
+  imageUrl: mediaUrlSchema,
   caption:  z.string().default(''),
+  captionAr: z.string().default(''),
   category: z.string().default('General'),
+  categoryAr: z.string().default(''),
 });
 
 export async function GET() {
@@ -22,8 +26,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = gallerySchema.parse(body);

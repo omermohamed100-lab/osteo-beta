@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import LocalizedText from '@/components/i18n/LocalizedText';
 
 function PersonIcon() {
@@ -42,7 +42,7 @@ function HandsArtwork() {
       alt=""
       width={1536}
       height={1024}
-      unoptimized
+      sizes="(max-width: 767px) 100vw, 33vw"
       className="path-artwork path-care-hands-raster"
       aria-hidden="true"
     />
@@ -56,7 +56,7 @@ function StudyPillarArtwork() {
       alt=""
       width={1536}
       height={1024}
-      unoptimized
+      sizes="(max-width: 767px) 100vw, 33vw"
       className="path-artwork path-column-raster"
       aria-hidden="true"
     />
@@ -87,7 +87,7 @@ function PractitionerEmblemArtwork() {
       alt=""
       width={1254}
       height={1254}
-      unoptimized
+      sizes="(max-width: 767px) 100vw, 33vw"
       className="path-artwork path-logo-emblem path-practitioner-emblem"
       aria-hidden="true"
     />
@@ -116,10 +116,10 @@ const PATHS = [
     href: '/find-osteopath',
     title: 'I need care',
     titleAr: 'أحتاج إلى رعاية',
-    body: 'Find trusted osteopathic care and learn how osteopathy can help you.',
-    bodyAr: 'اعثر على رعاية أوستيوباثية موثوقة وتعرّف على كيف يمكنها مساعدتك.',
-    action: 'Find a qualified osteopath',
-    actionAr: 'ابحث عن ممارس مؤهل',
+    body: 'Browse listed practitioners and their published professional information.',
+    bodyAr: 'تصفّح الممارسين المدرجين ومعلوماتهم المهنية المنشورة.',
+    action: 'Browse the practitioner directory',
+    actionAr: 'تصفّح دليل الممارسين',
     tone: 'dark',
     icon: PersonIcon,
     artwork: HandsArtwork,
@@ -128,8 +128,8 @@ const PATHS = [
     href: '/courses',
     title: 'I want to study',
     titleAr: 'أرغب في الدراسة',
-    body: 'Explore accredited education pathways and build a career in osteopathy.',
-    bodyAr: 'استكشف مسارات التعليم المعتمدة وابنِ مسيرة مهنية في الأوستيوباثي.',
+    body: 'Explore published education and professional-development opportunities.',
+    bodyAr: 'استكشف فرص التعليم والتطوير المهني المنشورة.',
     action: 'View education and training',
     actionAr: 'استكشف التعليم والتدريب',
     tone: 'light',
@@ -137,7 +137,7 @@ const PATHS = [
     artwork: StudyPillarArtwork,
   },
   {
-    href: '/contact',
+    href: '/practitioners',
     title: 'I am a practitioner',
     titleAr: 'أنا ممارس',
     body: 'Access professional resources, standards, and opportunities to grow your practice.',

@@ -1,21 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
+import { enforceMutationRequest } from '@/lib/request-security';
+import { mediaUrlSchema } from '@/lib/url-security';
 import { z } from 'zod';
 
 const activitySchema = z.object({
   title:       z.string().min(2),
+  titleAr:     z.string().default(''),
   description: z.string().min(5),
+  descriptionAr: z.string().default(''),
   date:        z.string().transform((s) => new Date(s)),
   location:    z.string().min(1),
-  imageUrl:    z.string().url().optional().or(z.literal('')),
+  locationAr:  z.string().default(''),
+  imageUrl:    mediaUrlSchema.optional().or(z.literal('')),
   isActive:    z.boolean().default(true),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const adminRequest = request.nextUrl.searchParams.get('admin') === '1';
+    if (adminRequest && !(await requireAdmin(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const activities = await db.activity.findMany({
-      where: { isActive: true },
+      where: adminRequest ? undefined : { isActive: true },
       orderBy: { date: 'desc' },
     });
     return NextResponse.json(activities);
@@ -26,8 +35,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession(request);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rejected = enforceMutationRequest(request);
+    if (rejected) return rejected;
+
+    const admin = await requireAdmin(request);
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const data = activitySchema.parse(body);

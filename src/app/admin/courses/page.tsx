@@ -5,10 +5,18 @@ import { useState, useEffect } from 'react';
 type Course = {
   id: string;
   title: string;
+  titleAr: string;
   description: string;
+  descriptionAr: string;
   instructor: string;
+  instructorAr: string;
   duration: string;
+  durationAr: string;
   startDate: string;
+  endDate: string | null;
+  price: number | null;
+  priceCurrency: string;
+  imageUrl: string | null;
   isActive: boolean;
 };
 
@@ -21,16 +29,24 @@ export default function AdminCoursesPage() {
   // Form state
   const [formData, setFormData] = useState({
     title: '',
+    titleAr: '',
     description: '',
+    descriptionAr: '',
     instructor: '',
+    instructorAr: '',
     duration: '',
+    durationAr: '',
     startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
+    price: '',
+    priceCurrency: '',
+    imageUrl: '',
     isActive: true,
   });
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch('/api/courses');
+      const res = await fetch('/api/courses?admin=1');
       if (res.ok) {
         const data = await res.json();
         setCourses(data);
@@ -54,7 +70,11 @@ export default function AdminCoursesPage() {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          price: formData.price ? Number(formData.price) : null,
+          imageUrl: formData.imageUrl || undefined,
+        }),
       });
 
       if (res.ok) {
@@ -85,10 +105,18 @@ export default function AdminCoursesPage() {
   const openEdit = (course: Course) => {
     setFormData({
       title: course.title,
+      titleAr: course.titleAr,
       description: course.description,
+      descriptionAr: course.descriptionAr,
       instructor: course.instructor,
+      instructorAr: course.instructorAr,
       duration: course.duration,
+      durationAr: course.durationAr,
       startDate: new Date(course.startDate).toISOString().split('T')[0],
+      endDate: course.endDate ? new Date(course.endDate).toISOString().split('T')[0] : '',
+      price: course.price?.toString() ?? '',
+      priceCurrency: course.priceCurrency,
+      imageUrl: course.imageUrl ?? '',
       isActive: course.isActive,
     });
     setEditingId(course.id);
@@ -98,10 +126,18 @@ export default function AdminCoursesPage() {
   const openCreate = () => {
     setFormData({
       title: '',
+      titleAr: '',
       description: '',
+      descriptionAr: '',
       instructor: '',
+      instructorAr: '',
       duration: '',
+      durationAr: '',
       startDate: new Date().toISOString().split('T')[0],
+      endDate: '',
+      price: '',
+      priceCurrency: '',
+      imageUrl: '',
       isActive: true,
     });
     setEditingId(null);
@@ -181,8 +217,16 @@ export default function AdminCoursesPage() {
                 <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Course Title (Arabic)</label>
+                <input dir="rtl" lang="ar" type="text" value={formData.titleAr} onChange={e => setFormData({...formData, titleAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea required rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500"></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Arabic)</label>
+                <textarea dir="rtl" lang="ar" rows={3} value={formData.descriptionAr} onChange={e => setFormData({...formData, descriptionAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -195,15 +239,25 @@ export default function AdminCoursesPage() {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Instructor (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.instructorAr} onChange={e => setFormData({...formData, instructorAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Duration (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.durationAr} onChange={e => setFormData({...formData, durationAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                   <input required type="date" value={formData.startDate} onChange={e => setFormData({...formData, startDate: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
                 </div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">End Date</label><input type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Fee</label><input type="number" min="0" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Currency code</label><input maxLength={3} value={formData.priceCurrency} onChange={e => setFormData({...formData, priceCurrency: e.target.value.toUpperCase()})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" placeholder="EGP" /></div>
                 <div className="flex items-center mt-6">
                   <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => setFormData({...formData, isActive: e.target.checked})} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
                   <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">Active (Visible to public)</label>
                 </div>
               </div>
+              <div><label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label><input type="url" value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" placeholder="https://…" /></div>
               <div className="pt-4 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">Save Course</button>

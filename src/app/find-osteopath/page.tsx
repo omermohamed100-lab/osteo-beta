@@ -2,19 +2,24 @@
 
 import { useState, useEffect, useMemo, type CSSProperties } from 'react';
 import Image from 'next/image';
+import Link from '@/components/i18n/LocalizedLink';
 import PageHeader from '@/components/layout/PageHeader';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
+import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 
 type Osteopath = {
   id: string;
   name: string;
   specialty: string;
+  specialtyAr?: string;
   city: string;
   country: string;
   location: string;
+  locationAr?: string;
   phone: string;
   email: string;
   bio: string;
+  bioAr?: string;
   profileImage: string | null;
   directoryCities?: string[];
 };
@@ -45,7 +50,7 @@ const arabicNumber = new Intl.NumberFormat('ar-EG');
 
 function DirectoryPortrait({ osteopath }: { osteopath: Osteopath }) {
   const alt = `Professional portrait of ${osteopath.name}, ${osteopath.specialty}`;
-  const isDirectoryCutout = osteopath.profileImage?.endsWith('-cutout.png');
+  const isDirectoryCutout = /-cutout\.(?:png|webp)$/i.test(osteopath.profileImage ?? '');
 
   if (osteopath.profileImage?.startsWith('/images/osteopaths/')) {
     return (
@@ -116,13 +121,13 @@ export default function FindOsteopathPage() {
         loading: 'جارٍ تحميل الدليل…',
         unavailable: 'الدليل غير متاح',
         loadError: 'تعذر تحميل الدليل. تحقق من اتصالك وحاول مرة أخرى.',
-        temporaryUnavailable: 'بيانات الدليل غير متاحة مؤقتًا. يمكنك متابعة تصفح الموقع والمحاولة مرة أخرى بعد قليل.',
         retry: 'حاول مرة أخرى',
         noResults: 'لم يتم العثور على ممارسين',
         adjustFilters: 'جرّب تعديل عوامل البحث أو',
         clearAll: 'امسحها جميعًا',
         noPractitioners: 'لم تتم إضافة ممارسين بعد.',
         other: 'أخرى',
+        profile: 'عرض الملف المهني',
       }
     : {
         specialty: 'Specialty',
@@ -137,13 +142,13 @@ export default function FindOsteopathPage() {
         loading: 'Loading directory…',
         unavailable: 'Directory unavailable',
         loadError: 'We could not load the directory. Please check your connection and try again.',
-        temporaryUnavailable: 'Directory data is temporarily unavailable. You can continue browsing the site and try again shortly.',
         retry: 'Try again',
         noResults: 'No osteopaths found',
         adjustFilters: 'Try adjusting your filters or',
         clearAll: 'clear all',
         noPractitioners: 'No practitioners have been added yet.',
         other: 'Other',
+        profile: 'View professional profile',
       };
 
   const [osteopaths, setOsteopaths] = useState<Osteopath[]>([]);
@@ -154,6 +159,7 @@ export default function FindOsteopathPage() {
   const [nameFilter,    setNameFilter]    = useState('');
   const [cityFilter,    setCityFilter]    = useState('');
   const [countryFilter, setCountryFilter] = useState('');
+  const [directoryIntroduced, setDirectoryIntroduced] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -180,6 +186,12 @@ export default function FindOsteopathPage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (isLoading || loadError || dataUnavailable || directoryIntroduced) return;
+    const timer = window.setTimeout(() => setDirectoryIntroduced(true), 320);
+    return () => window.clearTimeout(timer);
+  }, [dataUnavailable, directoryIntroduced, isLoading, loadError]);
 
   const specialtyOptions = useMemo(() => {
     const set = new Set<string>();
@@ -271,8 +283,8 @@ export default function FindOsteopathPage() {
         eyebrowAr="الدليل"
         title="Find an Osteopath"
         titleAr="ابحث عن ممارس أوستيوباثي"
-        subtitle="Search our directory of certified practitioners across Egypt and the Middle East, all meeting EGSOM's rigorous standards."
-        subtitleAr="ابحث في دليل الممارسين المعتمدين في مصر والشرق الأوسط، وجميعهم يستوفون المعايير المهنية الصارمة للجمعية."
+        subtitle="Search published profiles for osteopathic practitioners listed by EGSOM. Credential details appear only when verification information is recorded."
+        subtitleAr="ابحث في الملفات المنشورة لممارسي الأوستيوباثي المدرجين لدى الجمعية. ولا تظهر بيانات الاعتماد إلا عند تسجيل معلومات التحقق."
       />
 
       <div className="bg-slate-50/70 py-9 sm:py-12">
@@ -346,7 +358,7 @@ export default function FindOsteopathPage() {
           </div>
           {hasFilters && (
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-slate-600">
+              <span aria-live="polite" aria-atomic="true" className="text-sm text-slate-600">
                 {isArabic
                   ? formatArabicResults(filtered.length)
                   : `${filtered.length} result${filtered.length !== 1 ? 's' : ''} found`}
@@ -367,30 +379,22 @@ export default function FindOsteopathPage() {
 
         {/* Results */}
         {isLoading ? (
-          <div className="py-20 text-center text-slate-500">
-            <svg className="w-8 h-8 mx-auto mb-3 animate-spin" fill="none" viewBox="0 0 24 24">
+          <div role="status" aria-live="polite" aria-atomic="true" className="py-20 text-center text-slate-500">
+            <svg aria-hidden="true" className="status-spinner mx-auto mb-3 h-8 w-8" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
             {copy.loading}
           </div>
         ) : dataUnavailable ? (
-          <div role="status" className="flex items-start gap-4 rounded-xl border border-gold/35 bg-gold-soft/45 p-6 sm:p-8">
-            <svg className="mt-0.5 h-6 w-6 shrink-0 text-gold-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.25 9.75h1.5v6h-1.5v-6zm0-3h1.5v1.5h-1.5v-1.5zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-brand-950">{copy.unavailable}</p>
-              <p className="mt-1 text-sm leading-relaxed text-ink-muted">{copy.temporaryUnavailable}</p>
-              <button
-                type="button"
-                onClick={retryDirectory}
-                className="mt-2 inline-flex min-h-11 items-center font-medium text-brand-700 underline decoration-gold/70 underline-offset-4 transition-colors hover:text-brand-950"
-              >
-                {copy.retry}
-              </button>
-            </div>
-          </div>
+          <PublicDataUnavailable
+            title={{ en: 'Directory unavailable', ar: 'الدليل غير متاح' }}
+            description={{
+              en: 'Directory data is temporarily unavailable. You can continue browsing the site and try again shortly.',
+              ar: 'بيانات الدليل غير متاحة مؤقتًا. يمكنك متابعة تصفح الموقع والمحاولة مرة أخرى بعد قليل.',
+            }}
+            onRetry={retryDirectory}
+          />
         ) : loadError ? (
           <div role="alert" className="flex items-start gap-4 rounded-xl border border-red-200 bg-red-50 p-6 sm:p-8">
             <svg className="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -445,13 +449,13 @@ export default function FindOsteopathPage() {
                   {group.items.map((o, index) => (
               <article
                 key={o.id}
-                className="surface-card directory-practitioner-card group flex h-full flex-col overflow-hidden p-0"
-                style={{ '--directory-delay': `${Math.min(index, 6) * 45}ms` } as CSSProperties}
+                className={`surface-card directory-practitioner-card group flex h-full flex-col overflow-hidden p-0 ${directoryIntroduced ? '' : 'directory-entry'}`}
+                style={directoryIntroduced ? undefined : ({ '--directory-delay': `${Math.min(index, 4) * 25}ms` } as CSSProperties)}
               >
                 <div className="directory-practitioner-content flex flex-grow flex-col p-5 sm:p-6">
                   <div className="directory-practitioner-header">
                     <div className="directory-practitioner-intro min-w-0 pt-1">
-                      <p dir="auto" className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{o.specialty}</p>
+                      <p dir="auto" className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{isArabic && o.specialtyAr ? o.specialtyAr : o.specialty}</p>
                       <h3 dir="auto" className="mt-1.5 font-display text-xl font-semibold leading-tight tracking-tight text-brand-950">{o.name}</h3>
                       <p dir="auto" className="mt-2 text-sm text-slate-500">
                         {o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{o.country}
@@ -464,24 +468,24 @@ export default function FindOsteopathPage() {
 
                   {o.bio && (
                     <p dir="auto" className="directory-practitioner-bio mt-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                      {o.bio}
+                      {isArabic && o.bioAr ? o.bioAr : o.bio}
                     </p>
                   )}
 
                   {o.location && (
-                    <p dir="auto" title={o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
+                    <p dir="auto" title={isArabic && o.locationAr ? o.locationAr : o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
                       <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21s7-5.52 7-12A7 7 0 105 9c0 6.48 7 12 7 12z" />
                         <circle cx="12" cy="9" r="2.25" strokeWidth={1.5} />
                       </svg>
-                      <span>{o.location}</span>
+                      <span>{isArabic && o.locationAr ? o.locationAr : o.location}</span>
                     </p>
                   )}
 
                   {(o.phone || o.email) && (
                     <div className="mt-auto space-y-1.5 border-t border-gray-100 pt-4">
                     {o.phone && (
-                      <a href={`tel:${o.phone.replace(/[^+\d]/g, '')}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
+                      <a href={`tel:${o.phone.replace(/[^+\d]/g, '')}`} dir="ltr" className="flex min-h-11 items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
@@ -489,7 +493,7 @@ export default function FindOsteopathPage() {
                       </a>
                     )}
                     {o.email && (
-                      <a href={`mailto:${o.email}`} dir="ltr" className="flex items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
+                      <a href={`mailto:${o.email}`} dir="ltr" className="flex min-h-11 items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -498,6 +502,13 @@ export default function FindOsteopathPage() {
                     )}
                     </div>
                   )}
+                  <Link
+                    href={`/find-osteopath/${encodeURIComponent(o.id)}`}
+                    className="mt-4 inline-flex min-h-11 items-center gap-2 border-t border-brand-100/80 pt-4 text-sm font-semibold text-brand-700 outline-none transition-colors hover:text-brand-950 focus-visible:ring-2 focus-visible:ring-brand-600"
+                  >
+                    {copy.profile}
+                    <span className="rtl-flip" aria-hidden="true">→</span>
+                  </Link>
                 </div>
               </article>
                   ))}

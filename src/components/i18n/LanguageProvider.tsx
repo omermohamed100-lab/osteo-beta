@@ -6,18 +6,22 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from 'react';
 import { usePathname } from 'next/navigation';
-import { PUBLIC_PAGE_META } from '@/lib/public-page-meta';
+import {
+  getLanguageFromPathname,
+  localizePublicHref,
+  type SiteLanguage,
+} from '@/lib/i18n-routing';
 
-export type Language = 'en' | 'ar';
+export type Language = SiteLanguage;
 
 type LanguageContextValue = {
   language: Language;
   isArabic: boolean;
   setLanguage: (language: Language) => void;
   toggleLanguage: () => void;
+  localizedHref: (href: string) => string;
 };
 
 const STORAGE_KEY = 'egsom-language';
@@ -29,59 +33,19 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 export default function LanguageProvider({
   children,
   initialLanguage = 'en',
-  hasLanguageCookie = false,
 }: {
   children: React.ReactNode;
   initialLanguage?: Language;
-  hasLanguageCookie?: boolean;
 }) {
   const pathname = usePathname();
-  const [language, setLanguageState] =
-    useState<Language>(initialLanguage);
+  const language = getLanguageFromPathname(pathname) ?? initialLanguage;
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-
-      if (!hasLanguageCookie && (saved === 'ar' || saved === 'en')) {
-        const frame = window.requestAnimationFrame(() => {
-          setLanguageState(saved);
-        });
-        document.cookie = `${COOKIE_KEY}=${saved}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
-        return () => window.cancelAnimationFrame(frame);
-      }
-
-      window.localStorage.setItem(STORAGE_KEY, initialLanguage);
-    } catch {
-      // The server-provided language remains the safe source of truth.
-    }
-  }, [hasLanguageCookie, initialLanguage]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.lang = language;
-    root.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   }, [language]);
 
-  useEffect(() => {
-    const pageMeta = PUBLIC_PAGE_META[pathname];
-    if (!pageMeta) return;
-
-    const localizedMeta = pageMeta[language];
-    const frame = window.requestAnimationFrame(() => {
-      document.title = localizedMeta.title;
-    });
-
-    const description = document.querySelector<HTMLMetaElement>(
-      'meta[name="description"]',
-    );
-    description?.setAttribute('content', localizedMeta.description);
-    return () => window.cancelAnimationFrame(frame);
-  }, [language, pathname]);
-
   const setLanguage = useCallback((nextLanguage: Language) => {
-    setLanguageState(nextLanguage);
-
     try {
       window.localStorage.setItem(STORAGE_KEY, nextLanguage);
     } catch {
@@ -89,11 +53,22 @@ export default function LanguageProvider({
     }
 
     document.cookie = `${COOKIE_KEY}=${nextLanguage}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
-  }, []);
+    const nextPath = localizePublicHref(pathname, nextLanguage);
+    const destination = new URL(
+      `${nextPath}${window.location.search}${window.location.hash}`,
+      window.location.origin,
+    );
+    window.location.assign(destination.toString());
+  }, [pathname]);
 
   const toggleLanguage = useCallback(() => {
     setLanguage(language === 'en' ? 'ar' : 'en');
   }, [language, setLanguage]);
+
+  const localizedHref = useCallback(
+    (href: string) => localizePublicHref(href, language),
+    [language],
+  );
 
   const value = useMemo(
     () => ({
@@ -101,8 +76,9 @@ export default function LanguageProvider({
       isArabic: language === 'ar',
       setLanguage,
       toggleLanguage,
+      localizedHref,
     }),
-    [language, setLanguage, toggleLanguage],
+    [language, localizedHref, setLanguage, toggleLanguage],
   );
 
   return (

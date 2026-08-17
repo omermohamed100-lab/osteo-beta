@@ -1,12 +1,13 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import Image from 'next/image';
 import type { SiteSettings } from '@prisma/client';
 import { db } from '@/lib/db';
-import { withPublicDataFallback } from '@/lib/public-data';
+import { getPublicData } from '@/lib/public-data';
 import LocalizedText from '@/components/i18n/LocalizedText';
+import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 
 export default async function Footer() {
-  const settings = await withPublicDataFallback<SiteSettings | null>(
+  const { data: settings, unavailable: settingsUnavailable } = await getPublicData<SiteSettings | null>(
     () => db.siteSettings.findUnique({ where: { id: 'global' } }),
     null,
   );
@@ -14,6 +15,7 @@ export default async function Footer() {
   const email   = settings?.email   || null;
   const phone   = settings?.phone   || null;
   const address = settings?.address || null;
+  const addressAr = settings?.addressAr || address;
   const facebook  = settings?.facebook  || null;
   const instagram = settings?.instagram || null;
   const linkedin  = settings?.linkedin  || null;
@@ -28,7 +30,7 @@ export default async function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="mb-5 flex min-h-11 items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-gold">
-              <Image src="/logo-clean.png" alt="EGSOM Logo" width={40} height={40} className="h-10 w-10 rounded-full bg-white object-contain p-0.5" />
+              <Image src="/logo-clean.webp" alt="EGSOM Logo" width={40} height={40} className="h-10 w-10 rounded-full bg-white object-contain p-0.5" />
               <span
                 lang="en"
                 dir="ltr"
@@ -37,7 +39,7 @@ export default async function Footer() {
                 EGSOM
               </span>
             </Link>
-            <p className="mb-6 max-w-sm text-sm leading-relaxed text-brand-200/78">
+            <p className="mb-6 max-w-sm text-sm leading-relaxed text-brand-200/90">
               <LocalizedText
                 en="The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East."
                 ar="الجمعية المصرية لطب الأوستيوباثية، مؤسسة مكرسة للارتقاء بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي في مصر والشرق الأوسط."
@@ -46,17 +48,19 @@ export default async function Footer() {
             {hasSocial && (
               <div className="flex items-center gap-3">
                 {facebook && (
-                    <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                    <a href={facebook} target="_blank" rel="noopener noreferrer"
                     className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <span className="sr-only"><LocalizedText en="Visit EGSOM on Facebook" ar="زيارة صفحة الجمعية على فيسبوك" /></span>
+                    <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
                     </svg>
                   </a>
                 )}
                 {instagram && (
-                  <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                  <a href={instagram} target="_blank" rel="noopener noreferrer"
                     className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                    <span className="sr-only"><LocalizedText en="Visit EGSOM on Instagram" ar="زيارة صفحة الجمعية على إنستغرام" /></span>
+                    <svg aria-hidden="true" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                       <circle cx="12" cy="12" r="4" />
                       <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
@@ -64,9 +68,10 @@ export default async function Footer() {
                   </a>
                 )}
                 {linkedin && (
-                  <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                  <a href={linkedin} target="_blank" rel="noopener noreferrer"
                     className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <span className="sr-only"><LocalizedText en="Visit EGSOM on LinkedIn" ar="زيارة صفحة الجمعية على لينكدإن" /></span>
+                    <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
                       <circle cx="4" cy="4" r="2" />
                     </svg>
@@ -87,11 +92,13 @@ export default async function Footer() {
                 { href: '/courses', en: 'Courses & Training', ar: 'الدورات والتدريب' },
                 { href: '/activities', en: 'Activities & Events', ar: 'الأنشطة والفعاليات' },
                 { href: '/find-osteopath', en: 'Find an Osteopath', ar: 'ابحث عن ممارس أوستيوباثي' },
+                { href: '/practitioners', en: 'Practitioner Resources', ar: 'موارد الممارسين' },
                 { href: '/gallery', en: 'Gallery', ar: 'معرض الصور' },
                 { href: '/contact', en: 'Contact Us', ar: 'تواصل معنا' },
+                { href: '/privacy', en: 'Privacy', ar: 'الخصوصية' },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-brand-200/78 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
+                  <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-brand-200/90 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <LocalizedText en={l.en} ar={l.ar} />
                   </Link>
                 </li>
@@ -104,14 +111,29 @@ export default async function Footer() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
               <LocalizedText en="Contact" ar="بيانات التواصل" />
             </h3>
-            <ul className="space-y-3 text-sm text-brand-200/78">
+            <ul className="space-y-3 text-sm text-brand-200/90">
+              {settingsUnavailable && (
+                <li>
+                  <PublicDataUnavailable
+                    variant="footer"
+                    title={{
+                      en: 'Contact details temporarily unavailable',
+                      ar: 'بيانات التواصل غير متاحة مؤقتًا',
+                    }}
+                    description={{
+                      en: 'Please try again shortly.',
+                      ar: 'يُرجى المحاولة مرة أخرى بعد قليل.',
+                    }}
+                  />
+                </li>
+              )}
               {address && (
                 <li className="flex items-start gap-2">
                   <svg className="w-4 h-4 text-brand-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span dir="auto">{address}</span>
+                  <span dir="auto"><LocalizedText en={address} ar={addressAr || address} /></span>
                 </li>
               )}
               {email && (
@@ -130,8 +152,8 @@ export default async function Footer() {
                   <a href={`tel:${phone}`} dir="ltr" className="inline-flex min-h-11 items-center outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">{phone}</a>
                 </li>
               )}
-              {!email && !phone && !address && (
-                <li className="text-xs italic text-brand-300/75">
+              {!settingsUnavailable && !email && !phone && !address && (
+                <li className="text-xs italic text-brand-200/85">
                   <LocalizedText
                     en="Contact info not configured yet."
                     ar="لم تتم إضافة بيانات التواصل بعد."
@@ -140,7 +162,7 @@ export default async function Footer() {
               )}
             </ul>
             <div className="mt-6">
-              <Link href="/admin/login" className="inline-flex min-h-11 items-center text-xs text-brand-600 outline-none transition-colors hover:text-brand-400 focus-visible:ring-2 focus-visible:ring-gold">
+              <Link href="/admin/login" className="inline-flex min-h-11 items-center text-xs text-brand-300 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                 <LocalizedText en="Admin Login" ar="دخول الإدارة" />
               </Link>
             </div>
@@ -148,7 +170,7 @@ export default async function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-brand-900 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-brand-300/75">
+          <p className="text-xs text-brand-200/85">
             &copy;{' '}
             <bdi dir="ltr" lang="en" className="font-sans tabular-nums">
               {new Date().getFullYear()}
@@ -160,8 +182,8 @@ export default async function Footer() {
           </p>
           <div className="flex items-center gap-1.5">
             <div className="h-px w-6 bg-gold/40" />
-            <span className="text-brand-600 text-[10px] tracking-[0.3em] uppercase">
-              <LocalizedText en="Cairo, Egypt" ar="القاهرة، مصر" />
+            <span className="text-brand-300 text-[10px] tracking-[0.3em] uppercase">
+              <span lang="en" dir="ltr">EGSOM</span>
             </span>
             <div className="h-px w-6 bg-gold/40" />
           </div>

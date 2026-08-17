@@ -2,13 +2,22 @@
  * Keeps public pages available when their optional CMS data cannot be reached.
  * Admin and API routes intentionally continue to report database failures.
  */
-export async function withPublicDataFallback<T>(
+export type PublicDataResult<T> = {
+  data: T;
+  unavailable: boolean;
+};
+
+/**
+ * Returns public data together with its availability so pages can distinguish
+ * an empty collection from a database outage.
+ */
+export async function getPublicData<T>(
   query: () => Promise<T>,
   fallback: T,
-): Promise<T> {
+): Promise<PublicDataResult<T>> {
   try {
-    return await query();
+    return { data: await query(), unavailable: false };
   } catch {
-    return fallback;
+    return { data: fallback, unavailable: true };
   }
 }
