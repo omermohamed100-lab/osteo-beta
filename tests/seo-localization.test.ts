@@ -70,4 +70,15 @@ test('proxy permanently redirects legacy URLs and rewrites localized URLs', () =
     'https://example.test/activities',
   );
   assert.equal(localizedResponse.headers.get('content-language'), 'ar');
+
+  const localizedNotFoundResponse = proxy(
+    new NextRequest('https://example.test/ar/does-not-exist'),
+  );
+  assert.equal(localizedNotFoundResponse.status, 200);
+  assert.equal(localizedNotFoundResponse.headers.get('x-middleware-rewrite'), null);
+  assert.equal(localizedNotFoundResponse.headers.get('content-language'), 'ar');
+  assert.equal(
+    localizedNotFoundResponse.headers.get('x-middleware-request-x-egsom-locale'),
+    'ar',
+  );
 });

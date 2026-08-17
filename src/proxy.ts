@@ -17,17 +17,19 @@ export function proxy(request: NextRequest) {
 
   if (routeLanguage) {
     const publicPath = getPublicPathFromPathname(pathname);
-    if (!isPublicPagePath(publicPath)) return NextResponse.next();
-
-    const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = publicPath;
-
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set(LANGUAGE_REQUEST_HEADER, routeLanguage);
 
-    const response = NextResponse.rewrite(rewriteUrl, {
-      request: { headers: requestHeaders },
-    });
+    let response: NextResponse;
+    if (isPublicPagePath(publicPath)) {
+      const rewriteUrl = request.nextUrl.clone();
+      rewriteUrl.pathname = publicPath;
+      response = NextResponse.rewrite(rewriteUrl, {
+        request: { headers: requestHeaders },
+      });
+    } else {
+      response = NextResponse.next({ request: { headers: requestHeaders } });
+    }
     response.headers.set('Content-Language', routeLanguage);
     response.cookies.set(LANGUAGE_COOKIE, routeLanguage, {
       httpOnly: false,
