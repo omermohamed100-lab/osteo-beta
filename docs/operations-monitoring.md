@@ -24,7 +24,14 @@ The deployment log sink should alert on:
 
 ## Active monitoring
 
-GitHub Actions checks the production health endpoint twice per hour. A database outage fails the workflow. Email degradation produces an explicit workflow warning while preserving availability for stored contact receipts. Vercel runtime logs receive the allowlisted operational events, while Vercel Analytics and Speed Insights cover public usage and performance.
+GitHub Actions checks the production health endpoint twice per hour. The
+`PRODUCTION_SITE_URL` repository variable selects the canonical origin; when it
+is unset, the workflow safely checks `https://osteo-beta.vercel.app`. A database
+outage fails the workflow. Email degradation produces an explicit workflow
+warning while preserving availability for stored contact receipts. Vercel
+runtime logs receive the allowlisted operational events, while Vercel Analytics
+and Speed Insights cover public usage and performance. See
+`docs/seo-localization.md` for the domain-verification and cutover sequence.
 
 ## Optional monitoring provider
 

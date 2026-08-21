@@ -17,6 +17,20 @@ test('Vercel applies additive migrations before building the production release'
   assert.match(migrationRunner, /deployment = runPrisma\(\['migrate', 'deploy'\]\)/);
 });
 
+test('scheduled health checks use the canonical origin with a stable Vercel fallback', async () => {
+  const workflow = await readFile('.github/workflows/production-health.yml', 'utf8');
+  assert.match(
+    workflow,
+    /PRODUCTION_SITE_URL: \$\{\{ vars\.PRODUCTION_SITE_URL \|\| 'https:\/\/osteo-beta\.vercel\.app' \}\}/,
+  );
+  assert.match(workflow, /new URL\("\/api\/health", url\)\.href/);
+  assert.match(workflow, /curl[\s\S]*"\$HEALTH_URL"/);
+  assert.doesNotMatch(
+    workflow,
+    /curl[^\n]*https:\/\/osteo-beta\.vercel\.app\/api\/health/,
+  );
+});
+
 test('migration history includes an idempotent baseline for the pre-migration production schema', async () => {
   const baseline = await readFile(
     'database/migrations/20260515000000_initial_schema/migration.sql',

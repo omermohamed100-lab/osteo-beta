@@ -12,9 +12,12 @@ jobs:
   health:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || 'https://osteo-beta.vercel.app' }}
     steps:
       - name: Check production readiness
         run: |
+          HEALTH_URL="$(node -e 'const url = new URL(process.env.PRODUCTION_SITE_URL); if (url.protocol !== "https:" || url.username || url.password || url.pathname !== "/" || url.search || url.hash) process.exit(1); console.log(new URL("/api/health", url).href)')"
           curl --fail --silent --show-error --retry 2 --retry-delay 5 \
-            https://osteo-beta.vercel.app/api/health > health.json
+            "$HEALTH_URL" > health.json
           node -e "const h=require('./health.json'); if(h.checks?.database!=='available') process.exit(1); if(h.checks?.email!=='available') console.log('::warning::Email notifications are degraded; submissions remain available in admin messages.');"

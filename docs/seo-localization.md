@@ -17,12 +17,77 @@ search engines receive.
 
 ## Production site URL
 
-Set `NEXT_PUBLIC_SITE_URL` to the verified canonical HTTPS origin, without a
-path. On Vercel, `VERCEL_PROJECT_PRODUCTION_URL` is used when the explicit value
-is absent. Local builds fall back to `http://localhost:3000`.
+The canonical production origin is `https://eg-som.com`.
+
+After Vercel marks both custom domains as verified, set this Production-only
+environment variable and redeploy:
+
+```dotenv
+NEXT_PUBLIC_SITE_URL=https://eg-som.com
+```
+
+Until that variable is set, Vercel deployments deliberately use
+`https://osteo-beta.vercel.app` as the stable canonical fallback. Invalid or
+insecure configured values are ignored. Outside Vercel, the resolver next tries
+`VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`; local builds finally fall
+back to `http://localhost:3000`.
 
 Verify this value before deployment because it controls absolute canonical,
 Open Graph, sitemap, robots, logo, and structured-data URLs.
+
+The production health workflow uses a separate GitHub Actions repository
+variable because Vercel environment variables are not available to scheduled
+GitHub workflows:
+
+```dotenv
+PRODUCTION_SITE_URL=https://eg-som.com
+```
+
+Leave that repository variable unset until the custom domain passes the checks
+below. The workflow then monitors `https://osteo-beta.vercel.app/api/health` as
+its fallback.
+
+## GoDaddy and Vercel cutover
+
+The following values were observed for this domain and project on 2026-08-21.
+
+In GoDaddy **DNS Management** for `eg-som.com`:
+
+| Action | Type | Name | Value | TTL |
+| --- | --- | --- | --- | --- |
+| Delete | A | `@` | `64.29.17.1` | existing |
+| Keep | A | `@` | `216.198.79.1` | 1 hour/default |
+| Keep | CNAME | `www` | `68fdc3b3fb7df908.vercel-dns-017.com` | 1 hour/default |
+
+Do not change the `ns31.domaincontrol.com` / `ns32.domaincontrol.com`
+nameservers or unrelated MX/TXT records. The extra `64.29.17.1` apex record can
+send some visitors away from Vercel and must be removed.
+
+In Vercel **osteo-beta → Settings → Domains**:
+
+1. Keep `eg-som.com` assigned to Production and make it the primary domain.
+2. Keep `www.eg-som.com` assigned to the project and configure a permanent
+   redirect to `https://eg-som.com`.
+3. Keep `osteo-beta.vercel.app` enabled as the fallback; do not remove it.
+4. In **Settings → Environment Variables**, add
+   `NEXT_PUBLIC_SITE_URL=https://eg-som.com` for Production only after both
+   custom-domain entries show **Valid Configuration** and their certificates
+   are active. Redeploy Production after saving it.
+
+In GitHub **Settings → Secrets and variables → Actions → Variables**, add
+`PRODUCTION_SITE_URL=https://eg-som.com` after the same verification, then run
+the **Production Health** workflow manually once.
+
+Verify the cutover with:
+
+```text
+https://eg-som.com/robots.txt
+https://eg-som.com/sitemap.xml
+https://eg-som.com/api/health
+```
+
+`robots.txt` must report `Host: https://eg-som.com`, sitemap entries must all
+start with `https://eg-som.com/`, and the health endpoint must return HTTP 200.
 
 ## Indexing behavior
 
