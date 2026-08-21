@@ -9,6 +9,7 @@ type Stats = {
   activities: number;
   gallery: number;
   messages: number;
+  applications: number;
 };
 
 const statCards = [
@@ -38,7 +39,7 @@ const statCards = [
     label: 'Gallery Images',
     href: '/admin/gallery',
     color: 'bg-purple-100 text-purple-600',
-    icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
+    icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
   },
   {
     key: 'messages' as keyof Stats,
@@ -47,9 +48,17 @@ const statCards = [
     color: 'bg-rose-100 text-rose-600',
     icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
   },
+  {
+    key: 'applications' as keyof Stats,
+    label: 'Open Applications',
+    href: '/admin/applications',
+    color: 'bg-cyan-100 text-cyan-700',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l3.414 3.414A1 1 0 0117 7.414V19a2 2 0 01-2 2z',
+  },
 ];
 
 const quickLinks = [
+  { label: 'Review Applications', href: '/admin/applications', desc: 'Review listing requests and create inactive drafts.' },
   { label: 'Manage Osteopaths', href: '/admin/osteopaths', desc: 'Add or update the practitioner directory.' },
   { label: 'Manage Courses', href: '/admin/courses', desc: 'Add, edit, or remove training programs.' },
   { label: 'Manage Activities', href: '/admin/activities', desc: 'Post upcoming events and seminars.' },
@@ -60,7 +69,7 @@ const quickLinks = [
 
 function isStats(value: unknown): value is Stats {
   if (!value || typeof value !== 'object') return false;
-  return ['courses', 'osteopaths', 'activities', 'gallery', 'messages'].every(
+  return ['courses', 'osteopaths', 'activities', 'gallery', 'messages', 'applications'].every(
     (key) => typeof (value as Record<string, unknown>)[key] === 'number',
   );
 }
@@ -131,7 +140,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((card) => (
           <Link key={card.key} href={card.href} className="flex min-h-28 items-center rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2">
             <div className={`p-3 rounded-lg ${card.color} shrink-0`}>

@@ -149,6 +149,9 @@ test('every mutation route enforces the centralized request policy', async () =>
     'src/app/api/gallery/[id]/route.ts',
     'src/app/api/osteopaths/route.ts',
     'src/app/api/osteopaths/[id]/route.ts',
+    'src/app/api/practitioner-applications/route.ts',
+    'src/app/api/practitioner-applications/[id]/route.ts',
+    'src/app/api/practitioner-applications/[id]/approve/route.ts',
     'src/app/api/settings/route.ts',
   ];
 

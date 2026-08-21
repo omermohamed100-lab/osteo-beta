@@ -8,6 +8,7 @@ test('dashboard totals come from one protected, non-cached admin endpoint', asyn
 
   assert.match(route, /await requireAdmin\(request\)/);
   assert.match(route, /db\.contactSubmission\.count\(\)/);
+  assert.match(route, /db\.practitionerApplication\.count/);
   assert.match(route, /approvedOsteopaths\.filter\(/);
   assert.match(route, /'Cache-Control': 'no-store, max-age=0'/);
   assert.match(dashboard, /fetch\('\/api\/admin\/dashboard', \{ cache: 'no-store' \}\)/);
@@ -18,6 +19,7 @@ test('dashboard exposes messages and does not present request failures as zero t
   const dashboard = await readFile('src/app/admin/dashboard/page.tsx', 'utf8');
 
   assert.match(dashboard, /key: 'messages'/);
+  assert.match(dashboard, /key: 'applications'/);
   assert.match(dashboard, /href: '\/admin\/messages'/);
   assert.match(dashboard, /Dashboard totals could not be loaded/);
   assert.match(dashboard, /stats\?\.\[card\.key\] \?\? '—'/);

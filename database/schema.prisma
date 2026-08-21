@@ -117,6 +117,48 @@ model Osteopath {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  sourceApplication PractitionerApplication?
+}
+
+model PractitionerApplication {
+  id                    String    @id @default(cuid())
+  applicationType       String
+  status                String    @default("pending")
+  name                  String
+  nameAr                String    @default("")
+  email                 String
+  phone                 String
+  specialty             String
+  specialtyAr           String    @default("")
+  city                  String
+  cityAr                String    @default("")
+  country               String    @default("Egypt")
+  countryAr             String    @default("")
+  location              String    @default("")
+  locationAr            String    @default("")
+  bio                   String
+  bioAr                 String    @default("")
+  profileImage          String?
+  credentialType        String
+  credentialTypeAr      String    @default("")
+  credentialNumber      String
+  credentialIssuer      String
+  credentialIssuerAr    String    @default("")
+  credentialIssuedAt    DateTime?
+  credentialExpiresAt   DateTime?
+  existingProfileUrl    String    @default("")
+  applicantNotes        String    @default("")
+  consentAccuracy       Boolean
+  consentPrivacy        Boolean
+  reviewNotes           String    @default("")
+  reviewedAt             DateTime?
+  draftOsteopathId      String?   @unique
+  draftOsteopath        Osteopath? @relation(fields: [draftOsteopathId], references: [id], onDelete: SetNull)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
 }
 
 model GalleryItem {

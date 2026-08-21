@@ -11,22 +11,22 @@ const sections = [
   {
     title: { en: 'Information we handle', ar: 'المعلومات التي نتعامل معها' },
     body: {
-      en: 'When you use the contact form, we receive the name, email address, and message you choose to provide. Public practitioner, course, activity, gallery, and organizational information is managed by authorized administrators. Security controls also process limited technical request data and privacy-preserving derived identifiers to prevent abuse.',
-      ar: 'عند استخدام نموذج التواصل، نستلم الاسم وعنوان البريد الإلكتروني والرسالة التي تختار تقديمها. ويدير المسؤولون المخولون المعلومات العامة الخاصة بالممارسين والدورات والأنشطة والمعرض والجمعية. كما تعالج ضوابط الأمان قدرًا محدودًا من بيانات الطلب الفنية ومعرّفات مشتقة تراعي الخصوصية لمنع إساءة الاستخدام.',
+      en: 'When you use the contact form, we receive the name, email address, and message you choose to provide. A practitioner application can also include contact details, professional biography, practice location, credential details, profile links, and an optional approved image link. Public practitioner, course, activity, gallery, and organizational information is managed by authorized administrators. Security controls also process limited technical request data and privacy-preserving derived identifiers to prevent abuse.',
+      ar: 'عند استخدام نموذج التواصل، نستلم الاسم وعنوان البريد الإلكتروني والرسالة التي تختار تقديمها. وقد يتضمن طلب الممارس أيضًا بيانات التواصل والنبذة المهنية وموقع الممارسة وتفاصيل المؤهلات وروابط الملف ورابط صورة معتمد اختياري. ويدير المسؤولون المخولون المعلومات العامة الخاصة بالممارسين والدورات والأنشطة والمعرض والجمعية. كما تعالج ضوابط الأمان قدرًا محدودًا من بيانات الطلب الفنية ومعرّفات مشتقة تراعي الخصوصية لمنع إساءة الاستخدام.',
     },
   },
   {
     title: { en: 'How information is used', ar: 'كيفية استخدام المعلومات' },
     body: {
-      en: 'Information is used to respond to enquiries, operate the practitioner directory and educational services, administer the website, maintain security, and meet applicable legal obligations. EGSOM does not sell contact-form information.',
-      ar: 'تُستخدم المعلومات للرد على الاستفسارات وتشغيل دليل الممارسين والخدمات التعليمية وإدارة الموقع والحفاظ على الأمان والوفاء بالالتزامات القانونية المعمول بها. ولا تبيع الجمعية معلومات نموذج التواصل.',
+      en: 'Information is used to respond to enquiries, review practitioner applications, operate the practitioner directory and educational services, administer the website, maintain security, and meet applicable legal obligations. Applications do not create or publish a directory profile automatically. EGSOM does not sell submitted information.',
+      ar: 'تُستخدم المعلومات للرد على الاستفسارات ومراجعة طلبات الممارسين وتشغيل دليل الممارسين والخدمات التعليمية وإدارة الموقع والحفاظ على الأمان والوفاء بالالتزامات القانونية المعمول بها. ولا تنشئ الطلبات ملفًا في الدليل أو تنشره تلقائيًا، كما لا تبيع الجمعية المعلومات المقدمة.',
     },
   },
   {
     title: { en: 'Storage, service providers, and retention', ar: 'التخزين ومقدمو الخدمات والاحتفاظ' },
     body: {
-      en: 'The website uses contracted hosting, database, analytics, and communication services that process only the information needed to provide those services. Contact messages are retained only while reasonably necessary to respond, maintain operational records, protect the service, or satisfy legal obligations, and should be reviewed periodically by authorized administrators.',
-      ar: 'يستخدم الموقع خدمات تعاقدية للاستضافة وقواعد البيانات والتحليلات والاتصالات، ولا تعالج هذه الخدمات إلا المعلومات اللازمة لتقديمها. ويُحتفظ برسائل التواصل فقط للمدة اللازمة بصورة معقولة للرد والاحتفاظ بالسجلات التشغيلية وحماية الخدمة أو الوفاء بالالتزامات القانونية، ويجب أن يراجعها المسؤولون المخولون دوريًا.',
+      en: 'The website uses contracted hosting, database, analytics, and communication services that process only the information needed to provide those services. Contact messages and practitioner applications are retained only while reasonably necessary to review or respond, maintain an audit and operational record, protect the service, or satisfy legal obligations. Authorized administrators should review retained records periodically.',
+      ar: 'يستخدم الموقع خدمات تعاقدية للاستضافة وقواعد البيانات والتحليلات والاتصالات، ولا تعالج هذه الخدمات إلا المعلومات اللازمة لتقديمها. ويُحتفظ برسائل التواصل وطلبات الممارسين فقط للمدة اللازمة بصورة معقولة للمراجعة أو الرد والاحتفاظ بسجل تدقيق وتشغيل وحماية الخدمة أو الوفاء بالالتزامات القانونية. وينبغي أن يراجع المسؤولون المخولون السجلات المحتفظ بها دوريًا.',
     },
   },
   {
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
             </div>
             <div className="mt-10 border-t border-brand-950/10 pt-6">
               <p className="text-sm text-ink-muted">
-                <LocalizedText en="Last updated: 18 August 2026" ar="آخر تحديث: 18 أغسطس 2026" />
+                <LocalizedText en="Last updated: 22 August 2026" ar="آخر تحديث: 22 أغسطس 2026" />
               </p>
               <Link href="/contact" className="mt-3 inline-flex min-h-11 items-center font-semibold text-brand-700 underline decoration-gold/70 underline-offset-4 hover:text-brand-950 focus-visible:ring-2 focus-visible:ring-brand-600">
                 <LocalizedText en="Submit a privacy request" ar="تقديم طلب متعلق بالخصوصية" />

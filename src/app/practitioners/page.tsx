@@ -30,13 +30,13 @@ const resources = [
   },
   {
     number: '03',
-    title: 'Directory and profile enquiries',
-    titleAr: 'استفسارات الدليل والملفات المهنية',
-    body: 'Ask about a directory listing, request a profile review, or submit updated professional information for review.',
-    bodyAr: 'استفسر عن الإدراج في الدليل أو اطلب مراجعة ملفك أو أرسل معلومات مهنية محدثة للمراجعة.',
-    href: '/contact',
-    action: 'Contact EGSOM',
-    actionAr: 'تواصل مع الجمعية',
+    title: 'Practitioner listing application',
+    titleAr: 'طلب إدراج ممارس',
+    body: 'Apply for a new directory listing or submit updated professional information for individual review.',
+    bodyAr: 'قدّم طلب إدراج جديد في الدليل أو أرسل معلومات مهنية محدثة لمراجعتها بصورة فردية.',
+    href: '/practitioners/apply',
+    action: 'Start application',
+    actionAr: 'بدء الطلب',
   },
 ];
 

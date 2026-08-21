@@ -74,6 +74,37 @@ export async function GET(request: NextRequest) {
       ]);
     }
 
+    if (adminRequest) {
+      const listedEmails = new Set(osteopaths.map((osteopath) => osteopath.email.toLowerCase()));
+      const approvedFallbacks = approvedOsteopaths
+        .filter((osteopath) => !listedEmails.has(osteopath.email.toLowerCase()))
+        .map((osteopath) => ({
+          ...osteopath,
+          nameAr: osteopath.nameAr ?? '',
+          specialtyAr: osteopath.specialtyAr ?? '',
+          cityAr: osteopath.cityAr ?? '',
+          countryAr: osteopath.countryAr ?? '',
+          locationAr: osteopath.locationAr ?? '',
+          bioAr: osteopath.bioAr ?? '',
+          credentialType: osteopath.credentialType ?? '',
+          credentialTypeAr: osteopath.credentialTypeAr ?? '',
+          credentialNumber: osteopath.credentialNumber ?? '',
+          credentialIssuer: osteopath.credentialIssuer ?? '',
+          credentialIssuerAr: osteopath.credentialIssuerAr ?? '',
+          credentialStatus: osteopath.credentialStatus ?? 'unverified',
+          credentialVerifiedAt: osteopath.credentialVerifiedAt ?? null,
+          credentialExpiresAt: osteopath.credentialExpiresAt ?? null,
+          profileReviewedAt: osteopath.profileReviewedAt ?? null,
+          isActive: true,
+          recordSource: 'approved-fallback' as const,
+        }));
+
+      return NextResponse.json([
+        ...osteopaths.map((osteopath) => ({ ...osteopath, recordSource: 'database' as const })),
+        ...approvedFallbacks,
+      ].sort((a, b) => a.name.localeCompare(b.name)));
+    }
+
     return NextResponse.json(osteopaths);
   } catch {
     if (publicRequest) {

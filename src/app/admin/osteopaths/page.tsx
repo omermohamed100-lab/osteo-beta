@@ -30,6 +30,7 @@ type Osteopath = {
   credentialExpiresAt: string | null;
   profileReviewedAt: string | null;
   isActive: boolean;
+  recordSource?: 'database' | 'approved-fallback';
 };
 
 const EMPTY_FORM = {
@@ -64,6 +65,7 @@ export default function AdminOsteopathsPage() {
   const [editingId, setEditingId]   = useState<string | null>(null);
   const [formData, setFormData]     = useState(EMPTY_FORM);
   const [isSaving, setIsSaving]     = useState(false);
+  const fallbackCount = items.filter((item) => item.recordSource === 'approved-fallback').length;
 
   const set = (patch: Partial<typeof EMPTY_FORM>) =>
     setFormData((prev) => ({ ...prev, ...patch }));
@@ -143,6 +145,12 @@ export default function AdminOsteopathsPage() {
         </button>
       </div>
 
+      {fallbackCount > 0 && (
+        <div role="status" className="mb-5 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900">
+          {fallbackCount} approved {fallbackCount === 1 ? 'profile is' : 'profiles are'} shown from the protected fallback source. The additive production migration will sync {fallbackCount === 1 ? 'it' : 'them'} into the database for editing without creating duplicates.
+        </div>
+      )}
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-gray-500">Loading…</div>
@@ -187,8 +195,14 @@ export default function AdminOsteopathsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onClick={() => openEdit(o)} className="text-brand-600 hover:text-brand-900 mr-4">Edit</button>
-                    <button onClick={() => handleDelete(o.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                    {o.recordSource === 'approved-fallback' ? (
+                      <span className="text-xs font-semibold text-blue-700">Approved source · sync pending</span>
+                    ) : (
+                      <>
+                        <button onClick={() => openEdit(o)} className="text-brand-600 hover:text-brand-900 mr-4">Edit</button>
+                        <button onClick={() => handleDelete(o.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

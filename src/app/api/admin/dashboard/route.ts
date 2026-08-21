@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const [courses, databaseOsteopaths, activities, gallery, messages] =
+    const [courses, databaseOsteopaths, activities, gallery, messages, applications] =
       await db.$transaction([
         db.course.count({ where: { isActive: true } }),
         db.osteopath.findMany({
@@ -22,6 +22,9 @@ export async function GET(request: NextRequest) {
         db.activity.count({ where: { isActive: true } }),
         db.galleryItem.count(),
         db.contactSubmission.count(),
+        db.practitionerApplication.count({
+          where: { status: { in: ['pending', 'needs_information'] } },
+        }),
       ]);
 
     const listedEmails = new Set(
@@ -38,6 +41,7 @@ export async function GET(request: NextRequest) {
         activities,
         gallery,
         messages,
+        applications,
       },
       { headers: { 'Cache-Control': 'no-store, max-age=0' } },
     );

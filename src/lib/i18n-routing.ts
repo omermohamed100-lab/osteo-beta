@@ -12,6 +12,7 @@ export const PUBLIC_PAGE_PATHS = [
   '/activities',
   '/find-osteopath',
   '/practitioners',
+  '/practitioners/apply',
   '/gallery',
   '/contact',
   '/privacy',

@@ -80,6 +80,18 @@ export const PUBLIC_PAGE_META: Record<
         'معلومات مهنية ومسارات تعليمية وإرشادات الدليل وقنوات الاستفسار لممارسي الأوستيوباثي.',
     },
   },
+  '/practitioners/apply': {
+    en: {
+      title: 'Practitioner Listing Application · EGSOM',
+      description:
+        'Submit a new practitioner listing or profile update application for individual EGSOM review.',
+    },
+    ar: {
+      title: 'طلب إدراج ممارس · EGSOM',
+      description:
+        'قدّم طلب إدراج ممارس جديد أو تحديث ملف مهني لمراجعته بصورة فردية من الجمعية.',
+    },
+  },
   '/gallery': {
     en: {
       title: 'Gallery · EGSOM',

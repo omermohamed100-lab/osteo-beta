@@ -80,7 +80,7 @@ export const config = {
     '/activities',
     '/find-osteopath',
     '/find-osteopath/:path*',
-    '/practitioners',
+    '/practitioners/:path*',
     '/courses/:path*',
     '/activities/:path*',
     '/gallery',

@@ -24,6 +24,22 @@ function getMissingArabicFields(item: Pick<GalleryItem, 'caption' | 'captionAr' 
   ].filter((field): field is string => Boolean(field));
 }
 
+function GalleryPreview({ src, alt, large = false }: { src: string; alt: string; large?: boolean }) {
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <div className={`flex items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 ${large ? 'aspect-[16/10] w-full' : 'aspect-[4/3] w-24'}`}>
+      {failed ? (
+        <span className="px-2 text-center text-xs text-slate-500">Preview unavailable</span>
+      ) : (
+        // Admin-entered image URLs may use arbitrary hosts.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={alt} className="h-full w-full object-contain" onError={() => setFailed(true)} />
+      )}
+    </div>
+  );
+}
+
 export default function AdminGalleryPage() {
   const [items, setItems]             = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading]     = useState(true);
@@ -117,9 +133,7 @@ export default function AdminGalleryPage() {
               {items.map((item) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {/* Admin-entered image URLs may use arbitrary hosts. */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={item.imageUrl} alt={item.caption} className="w-16 h-12 object-cover rounded-md bg-gray-100" />
+                    <GalleryPreview key={item.imageUrl} src={item.imageUrl} alt={item.caption || 'Gallery image preview'} />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
                     <span className="block truncate">{item.caption || '—'}</span>
@@ -145,10 +159,10 @@ export default function AdminGalleryPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full">
+          <div role="dialog" aria-modal="true" aria-labelledby="gallery-dialog-title" className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-xl">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Image' : 'Add Image'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <h2 id="gallery-dialog-title" className="text-xl font-bold text-gray-900">{editingId ? 'Edit Image' : 'Add Image'}</h2>
+              <button type="button" aria-label="Close image editor" onClick={() => setIsModalOpen(false)} className="min-h-11 min-w-11 text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -157,9 +171,7 @@ export default function AdminGalleryPage() {
                 <label className={labelCls}>Image URL *</label>
                 <input required type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
                 {formData.imageUrl && (
-                  // The preview must support arbitrary URLs before saving.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={formData.imageUrl} alt="preview" className="mt-2 w-full h-32 object-cover rounded-md bg-gray-100" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <div className="mt-3"><GalleryPreview key={formData.imageUrl} src={formData.imageUrl} alt="New gallery image preview" large /></div>
                 )}
               </div>
               <div>
