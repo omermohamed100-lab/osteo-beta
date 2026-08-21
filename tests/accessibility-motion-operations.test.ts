@@ -38,7 +38,7 @@ test('mobile navigation preserves scroll, traps focus, and keeps narrow branding
 test('public status messages are announced and reduced motion remains informative', async () => {
   const [notice, directory, styles] = await Promise.all([
     readFile('src/components/public/PublicDataUnavailable.tsx', 'utf8'),
-    readFile('src/app/find-osteopath/page.tsx', 'utf8'),
+    readFile('src/components/directory/FindOsteopathDirectory.tsx', 'utf8'),
     readFile('src/app/globals.css', 'utf8'),
   ]);
   assert.match(notice, /aria-live="polite"/);

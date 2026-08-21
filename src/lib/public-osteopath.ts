@@ -32,8 +32,86 @@ export type PublicOsteopathProfile = Omit<
   profileReviewedAt?: Date | string | null;
 };
 
+export type PublicDirectoryOsteopath = Pick<
+  PublicOsteopathProfile,
+  | 'id'
+  | 'name'
+  | 'nameAr'
+  | 'specialty'
+  | 'specialtyAr'
+  | 'city'
+  | 'cityAr'
+  | 'country'
+  | 'countryAr'
+  | 'location'
+  | 'locationAr'
+  | 'phone'
+  | 'email'
+  | 'bio'
+  | 'bioAr'
+  | 'profileImage'
+  | 'directoryCities'
+  | 'directoryCitiesAr'
+>;
+
 function toPublicProfile(profile: StoredOsteopath | ApprovedOsteopath): PublicOsteopathProfile {
   return profile;
+}
+
+function toPublicDirectoryProfile(
+  profile: StoredOsteopath | ApprovedOsteopath,
+): PublicDirectoryOsteopath {
+  return {
+    id: profile.id,
+    name: profile.name,
+    nameAr: profile.nameAr,
+    specialty: profile.specialty,
+    specialtyAr: profile.specialtyAr,
+    city: profile.city,
+    cityAr: profile.cityAr,
+    country: profile.country,
+    countryAr: profile.countryAr,
+    location: profile.location,
+    locationAr: profile.locationAr,
+    phone: profile.phone,
+    email: profile.email,
+    bio: profile.bio,
+    bioAr: profile.bioAr,
+    profileImage: profile.profileImage ?? null,
+    directoryCities: 'directoryCities' in profile ? profile.directoryCities : undefined,
+    directoryCitiesAr: 'directoryCitiesAr' in profile ? profile.directoryCitiesAr : undefined,
+  };
+}
+
+export async function getPublicOsteopaths(): Promise<{
+  data: PublicDirectoryOsteopath[];
+  unavailable: boolean;
+}> {
+  try {
+    const databaseProfiles = await db.osteopath.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    });
+    const listedEmails = new Set(
+      databaseProfiles.map((profile) => profile.email.toLowerCase()),
+    );
+    const profiles = [
+      ...(databaseProfiles as StoredOsteopath[]),
+      ...approvedOsteopaths.filter(
+        (profile) => !listedEmails.has(profile.email.toLowerCase()),
+      ),
+    ];
+
+    return {
+      data: profiles.map(toPublicDirectoryProfile),
+      unavailable: false,
+    };
+  } catch {
+    return {
+      data: approvedOsteopaths.map(toPublicDirectoryProfile),
+      unavailable: true,
+    };
+  }
 }
 
 export async function getPublicOsteopathProfile(id: string): Promise<{

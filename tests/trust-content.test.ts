@@ -81,7 +81,7 @@ test('Arabic public records use an explicit notice instead of silent English fal
     'src/app/activities/page.tsx',
     'src/app/activities/[id]/page.tsx',
     'src/app/gallery/page.tsx',
-    'src/app/find-osteopath/page.tsx',
+    'src/components/directory/FindOsteopathDirectory.tsx',
     'src/app/find-osteopath/[id]/page.tsx',
   ].map((file) => readFile(file, 'utf8')))).join('\n');
   assert.match(publicSource, /getArabicContent/);
@@ -116,7 +116,7 @@ test('unsupported public credibility claims and hard-coded statistics are absent
     'src/app/page.tsx',
     'src/app/about/page.tsx',
     'src/app/courses/page.tsx',
-    'src/app/find-osteopath/page.tsx',
+    'src/components/directory/FindOsteopathDirectory.tsx',
     'src/components/home/AnimatedBoxes.tsx',
     'src/components/home/HomeShowcase.tsx',
   ].map((path) => readFile(path, 'utf8')));
