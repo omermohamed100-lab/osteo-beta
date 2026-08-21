@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
 
 type Osteopath = {
   id: string;
   name: string;
+  nameAr: string;
   specialty: string;
   specialtyAr: string;
   city: string;
+  cityAr: string;
   country: string;
+  countryAr: string;
   location: string;
   locationAr: string;
   phone: string;
@@ -17,8 +21,10 @@ type Osteopath = {
   bioAr: string;
   profileImage: string | null;
   credentialType: string;
+  credentialTypeAr: string;
   credentialNumber: string;
   credentialIssuer: string;
+  credentialIssuerAr: string;
   credentialStatus: 'unverified' | 'verified' | 'expired';
   credentialVerifiedAt: string | null;
   credentialExpiresAt: string | null;
@@ -27,15 +33,29 @@ type Osteopath = {
 };
 
 const EMPTY_FORM = {
-  name: '', specialty: '', specialtyAr: '', city: '', country: 'Egypt',
+  name: '', nameAr: '', specialty: '', specialtyAr: '', city: '', cityAr: '', country: 'Egypt', countryAr: 'مصر',
   location: '', locationAr: '', phone: '', email: '', bio: '', bioAr: '',
-  credentialType: '', credentialNumber: '', credentialIssuer: '', credentialStatus: 'unverified' as Osteopath['credentialStatus'],
+  credentialType: '', credentialTypeAr: '', credentialNumber: '', credentialIssuer: '', credentialIssuerAr: '', credentialStatus: 'unverified' as Osteopath['credentialStatus'],
   credentialVerifiedAt: '', credentialExpiresAt: '', profileReviewedAt: '',
   profileImage: '', isActive: true,
 };
 
 const inputCls = 'w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-brand-500 focus:border-brand-500';
 const labelCls = 'block text-sm font-medium text-gray-700 mb-1';
+
+function getMissingArabicFields(record: typeof EMPTY_FORM | Osteopath) {
+  const missing = [
+    !record.nameAr?.trim() && 'name',
+    !record.specialtyAr?.trim() && 'specialty',
+    !record.cityAr?.trim() && 'city',
+    !record.countryAr?.trim() && 'country',
+    record.location?.trim() && !record.locationAr?.trim() && 'location/address',
+    record.bio?.trim() && !record.bioAr?.trim() && 'biography',
+    record.credentialType?.trim() && !record.credentialTypeAr?.trim() && 'credential type',
+    record.credentialIssuer?.trim() && !record.credentialIssuerAr?.trim() && 'credential issuer',
+  ];
+  return missing.filter((field): field is string => Boolean(field));
+}
 
 export default function AdminOsteopathsPage() {
   const [items, setItems]           = useState<Osteopath[]>([]);
@@ -79,9 +99,9 @@ export default function AdminOsteopathsPage() {
   const openCreate = () => { setFormData(EMPTY_FORM); setEditingId(null); setIsModalOpen(true); };
   const openEdit   = (o: Osteopath) => {
     setFormData({
-      name: o.name, specialty: o.specialty, specialtyAr: o.specialtyAr, city: o.city, country: o.country,
+      name: o.name, nameAr: o.nameAr || '', specialty: o.specialty, specialtyAr: o.specialtyAr, city: o.city, cityAr: o.cityAr || '', country: o.country, countryAr: o.countryAr || '',
       location: o.location, locationAr: o.locationAr, phone: o.phone, email: o.email, bio: o.bio, bioAr: o.bioAr,
-      credentialType: o.credentialType, credentialNumber: o.credentialNumber, credentialIssuer: o.credentialIssuer,
+      credentialType: o.credentialType, credentialTypeAr: o.credentialTypeAr || '', credentialNumber: o.credentialNumber, credentialIssuer: o.credentialIssuer, credentialIssuerAr: o.credentialIssuerAr || '',
       credentialStatus: o.credentialStatus,
       credentialVerifiedAt: o.credentialVerifiedAt ? new Date(o.credentialVerifiedAt).toISOString().split('T')[0] : '',
       credentialExpiresAt: o.credentialExpiresAt ? new Date(o.credentialExpiresAt).toISOString().split('T')[0] : '',
@@ -152,7 +172,10 @@ export default function AdminOsteopathsPage() {
                           {o.name.charAt(0)}
                         </div>
                       )}
-                      <span className="font-medium text-gray-900 text-sm">{o.name}</span>
+                      <div>
+                        <span className="font-medium text-gray-900 text-sm">{o.name}</span>
+                        <ArabicContentWarning missingFields={getMissingArabicFields(o)} compact />
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{o.specialty}</td>
@@ -195,6 +218,7 @@ export default function AdminOsteopathsPage() {
                   <input required type="text" value={formData.specialty} onChange={e => set({ specialty: e.target.value })} className={inputCls} placeholder="e.g. Structural Osteopathy" />
                 </div>
               </div>
+              <div><label className={labelCls}>Full Name (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.nameAr} onChange={e => set({ nameAr: e.target.value })} className={inputCls} /></div>
               <div><label className={labelCls}>Specialty (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.specialtyAr} onChange={e => set({ specialtyAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -205,6 +229,10 @@ export default function AdminOsteopathsPage() {
                   <label className={labelCls}>Country *</label>
                   <input required type="text" value={formData.country} onChange={e => set({ country: e.target.value })} className={inputCls} />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div><label className={labelCls}>City (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.cityAr} onChange={e => set({ cityAr: e.target.value })} className={inputCls} /></div>
+                <div><label className={labelCls}>Country (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.countryAr} onChange={e => set({ countryAr: e.target.value })} className={inputCls} /></div>
               </div>
               <div>
                 <label className={labelCls}>Location / Address</label>
@@ -235,14 +263,17 @@ export default function AdminOsteopathsPage() {
                 <p className="text-xs leading-5 text-gray-500">Keep the status unverified until the credential number, issuer, and verification date have been checked against supporting evidence.</p>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div><label className={labelCls}>Credential type</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialType} onChange={e => set({ credentialType: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Credential type (Arabic)</label><input dir="rtl" lang="ar" value={formData.credentialTypeAr} onChange={e => set({ credentialTypeAr: e.target.value })} className={inputCls} /></div>
                   <div><label className={labelCls}>Credential number</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialNumber} onChange={e => set({ credentialNumber: e.target.value })} className={inputCls} /></div>
                   <div><label className={labelCls}>Issuing organization</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialIssuer} onChange={e => set({ credentialIssuer: e.target.value })} className={inputCls} /></div>
+                  <div><label className={labelCls}>Issuing organization (Arabic)</label><input dir="rtl" lang="ar" value={formData.credentialIssuerAr} onChange={e => set({ credentialIssuerAr: e.target.value })} className={inputCls} /></div>
                   <div><label className={labelCls}>Verification status</label><select value={formData.credentialStatus} onChange={e => set({ credentialStatus: e.target.value as typeof formData.credentialStatus })} className={inputCls}><option value="unverified">Unverified</option><option value="verified">Verified</option><option value="expired">Expired</option></select></div>
                   <div><label className={labelCls}>Verification date</label><input required={formData.credentialStatus === 'verified'} type="date" value={formData.credentialVerifiedAt} onChange={e => set({ credentialVerifiedAt: e.target.value })} className={inputCls} /></div>
                   <div><label className={labelCls}>Expiry date</label><input type="date" value={formData.credentialExpiresAt} onChange={e => set({ credentialExpiresAt: e.target.value })} className={inputCls} /></div>
                   <div><label className={labelCls}>Profile review date</label><input type="date" value={formData.profileReviewedAt} onChange={e => set({ profileReviewedAt: e.target.value })} className={inputCls} /></div>
                 </div>
               </fieldset>
+              <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => set({ isActive: e.target.checked })} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
                 <label htmlFor="isActive" className="text-sm text-gray-900">Active (visible to public)</label>

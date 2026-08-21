@@ -93,7 +93,7 @@ export default function OpenGraphImage() {
               lineHeight: 1.45,
             }}
           >
-            Care, education and professional standards
+            Advancing osteopathic practice, education and standards
           </div>
         </div>
       </div>

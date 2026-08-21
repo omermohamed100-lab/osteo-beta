@@ -28,17 +28,17 @@
 }
 
 @keyframes mobileHandsRise {
-  from { opacity: 0.2; transform: translateY(22%) scale(0.98); }
+  from { opacity: 0; transform: translateY(38%) scale(0.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes mobileSealRise {
-  from { opacity: 0; transform: translate(-50%, 18%) scale(0.92); }
+  from { opacity: 0; transform: translate(-50%, 28%) scale(0.84); }
   to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
 
 @keyframes mobileGlowIn {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.78); }
   to   { opacity: 1; transform: scale(1); }
 }
 
@@ -149,7 +149,9 @@
   }
 
   .site-navbar.is-scrolled {
-    background: oklch(15.5% 0.035 238 / 97%);
+    background: oklch(15.5% 0.035 238 / 90%);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+    backdrop-filter: blur(18px) saturate(1.12);
     box-shadow:
       0 1px 0 oklch(83% 0.065 82 / 18%),
       0 12px 36px oklch(11% 0.025 238 / 20%);
@@ -711,11 +713,15 @@
   .hero-architecture,
   html[dir='rtl'] .hero-architecture {
     inset: auto -1px -1px;
-    height: 32rem;
-    background-position: 68% center;
+    height: 21rem;
+    background-position: 84% center;
     background-size: cover;
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 100%);
+  }
+
+  html[dir='rtl'] .hero-architecture {
+    transform: none;
   }
 
   .hero-stone-disc {
@@ -753,7 +759,7 @@
 
   .hero-mobile-hands {
     position: absolute;
-    top: 40.8%;
+    top: 33%;
     left: 12%;
     z-index: 3;
     width: 76%;
@@ -794,15 +800,15 @@
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-glow {
-    animation: mobileGlowIn 700ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+    animation: mobileGlowIn 560ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-hands {
-    animation: mobileHandsRise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: mobileHandsRise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .hero-mobile-visual.is-visible .hero-mobile-seal {
-    animation: mobileSealRise 800ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+    animation: mobileSealRise 580ms cubic-bezier(0.22, 1, 0.36, 1) 30ms both;
   }
 
   .hero-mobile-seal::before,
@@ -840,6 +846,10 @@
     width: 100%;
   }
 
+  .path-panel--light .path-panel-action {
+    margin-bottom: clamp(5.5rem, calc(67vw - 8rem), 8.5rem);
+  }
+
   .path-logo-emblem {
     bottom: calc(-3.25rem - max(0px, (100vw - 26rem) * 0.62));
   }
@@ -860,6 +870,13 @@
     justify-self: center;
     margin-top: 1rem;
     width: 92%;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 767px) {
+  .hero-architecture,
+  html[dir='rtl'] .hero-architecture {
+    background-position: 96% center;
   }
 }
 
@@ -1087,9 +1104,12 @@
 }
 
 @media (prefers-contrast: more) {
-  .site-navbar {
+  .site-navbar,
+  .site-navbar.is-scrolled {
     border-color: oklch(72% 0.15 82 / 70%);
     background: oklch(13% 0.036 252);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .mobile-nav-sheet,

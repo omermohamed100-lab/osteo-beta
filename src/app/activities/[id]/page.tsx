@@ -8,6 +8,7 @@ import PublicRecordActions from '@/components/public/PublicRecordActions';
 import { db } from '@/lib/db';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import { getPublicData } from '@/lib/public-data';
+import { getArabicContent } from '@/lib/arabic-content';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   );
   return getLocalizedMetadata(path, activity ? {
     en: { title: `${activity.title} · EGSOM`, description: activity.description },
-    ar: { title: `${activity.titleAr || activity.title} · EGSOM`, description: activity.descriptionAr || activity.description },
+    ar: { title: `${getArabicContent(activity.titleAr)} · EGSOM`, description: getArabicContent(activity.descriptionAr) },
   } : undefined);
 }
 
@@ -40,14 +41,14 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="flex-grow">
-      <PageHeader eyebrow="Activity" eyebrowAr="نشاط" title={activity.title} titleAr={activity.titleAr || activity.title} subtitle={activity.description} subtitleAr={activity.descriptionAr || activity.description} />
+      <PageHeader eyebrow="Activity" eyebrowAr="نشاط" title={activity.title} titleAr={getArabicContent(activity.titleAr)} subtitle={activity.description} subtitleAr={getArabicContent(activity.descriptionAr)} />
       <section className="bg-slate-50/70 py-10 sm:py-16">
         <div className="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:gap-12">
             <article className="border border-brand-950/15 bg-white p-6 sm:p-9">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600"><LocalizedText en="Activity details" ar="تفاصيل النشاط" /></p>
-              <h2 dir="auto" className="mt-3 font-display text-3xl font-semibold text-brand-950"><LocalizedText en={activity.title} ar={activity.titleAr || activity.title} /></h2>
-              <p dir="auto" className="mt-6 whitespace-pre-line text-base leading-8 text-slate-600"><LocalizedText en={activity.description} ar={activity.descriptionAr || activity.description} /></p>
+              <h2 dir="auto" className="mt-3 font-display text-3xl font-semibold text-brand-950"><LocalizedText en={activity.title} ar={getArabicContent(activity.titleAr)} /></h2>
+              <p dir="auto" className="mt-6 whitespace-pre-line text-base leading-8 text-slate-600"><LocalizedText en={activity.description} ar={getArabicContent(activity.descriptionAr)} /></p>
               <div className="mt-8"><PublicRecordActions title={activity.title} description={activity.description} start={activity.date.toISOString()} location={activity.location} /></div>
             </article>
 
@@ -55,7 +56,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
               <h2 className="font-display text-2xl font-semibold text-brand-950"><LocalizedText en="When and where" ar="الموعد والمكان" /></h2>
               <dl className="mt-6 space-y-5 text-sm">
                 <div><dt className="text-slate-500"><LocalizedText en="Date" ar="التاريخ" /></dt><dd className="mt-1 font-semibold text-brand-950"><LocalizedDate value={activity.date.toISOString()} /></dd></div>
-                <div><dt className="text-slate-500"><LocalizedText en="Published location" ar="الموقع المنشور" /></dt><dd dir="auto" className="mt-1 font-semibold leading-6 text-brand-950"><LocalizedText en={activity.location} ar={activity.locationAr || activity.location} /></dd></div>
+                <div><dt className="text-slate-500"><LocalizedText en="Published location" ar="الموقع المنشور" /></dt><dd dir="auto" className="mt-1 font-semibold leading-6 text-brand-950"><LocalizedText en={activity.location} ar={getArabicContent(activity.locationAr)} /></dd></div>
               </dl>
               <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 underline decoration-brand-300 underline-offset-4 hover:text-brand-950"><LocalizedText en="Open location in Maps" ar="فتح الموقع في الخرائط" /></a>
             </aside>

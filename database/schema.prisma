@@ -91,10 +91,13 @@ model SiteSettings {
 model Osteopath {
   id           String   @id @default(cuid())
   name         String
+  nameAr       String   @default("")
   specialty    String
   specialtyAr  String   @default("")
   city         String
+  cityAr       String   @default("")
   country      String   @default("Egypt")
+  countryAr    String   @default("")
   location     String   @default("")
   locationAr   String   @default("")
   phone        String   @default("")
@@ -103,8 +106,10 @@ model Osteopath {
   bioAr        String   @default("")
   profileImage String?
   credentialType       String   @default("")
+  credentialTypeAr     String   @default("")
   credentialNumber     String   @default("")
   credentialIssuer     String   @default("")
+  credentialIssuerAr   String   @default("")
   credentialStatus     String   @default("unverified")
   credentialVerifiedAt DateTime?
   credentialExpiresAt  DateTime?

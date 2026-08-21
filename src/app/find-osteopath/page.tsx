@@ -6,14 +6,18 @@ import Link from '@/components/i18n/LocalizedLink';
 import PageHeader from '@/components/layout/PageHeader';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
+import { getArabicContent } from '@/lib/arabic-content';
 
 type Osteopath = {
   id: string;
   name: string;
+  nameAr?: string;
   specialty: string;
   specialtyAr?: string;
   city: string;
+  cityAr?: string;
   country: string;
+  countryAr?: string;
   location: string;
   locationAr?: string;
   phone: string;
@@ -22,6 +26,7 @@ type Osteopath = {
   bioAr?: string;
   profileImage: string | null;
   directoryCities?: string[];
+  directoryCitiesAr?: string[];
 };
 
 const COUNTRIES = [
@@ -48,8 +53,10 @@ const inputCls =
 
 const arabicNumber = new Intl.NumberFormat('ar-EG');
 
-function DirectoryPortrait({ osteopath }: { osteopath: Osteopath }) {
-  const alt = `Professional portrait of ${osteopath.name}, ${osteopath.specialty}`;
+function DirectoryPortrait({ osteopath, isArabic }: { osteopath: Osteopath; isArabic: boolean }) {
+  const alt = isArabic
+    ? `صورة مهنية لـ ${getArabicContent(osteopath.nameAr)}، ${getArabicContent(osteopath.specialtyAr)}`
+    : `Professional portrait of ${osteopath.name}, ${osteopath.specialty}`;
   const isDirectoryCutout = /-cutout\.(?:png|webp)$/i.test(osteopath.profileImage ?? '');
 
   if (osteopath.profileImage?.startsWith('/images/osteopaths/')) {
@@ -81,7 +88,7 @@ function DirectoryPortrait({ osteopath }: { osteopath: Osteopath }) {
 
   return (
     <div aria-hidden="true" className="flex h-full w-full items-center justify-center bg-brand-100 text-4xl font-bold text-brand-600">
-      {osteopath.name.charAt(0).toUpperCase()}
+      {(isArabic ? getArabicContent(osteopath.nameAr) : osteopath.name).charAt(0).toUpperCase()}
     </div>
   );
 }
@@ -194,12 +201,18 @@ export default function FindOsteopathPage() {
   }, [dataUnavailable, directoryIntroduced, isLoading, loadError]);
 
   const specialtyOptions = useMemo(() => {
-    const set = new Set<string>();
+    const options = new Map<string, string>();
     for (const o of osteopaths) {
-      if (o.specialty?.trim()) set.add(o.specialty.trim());
+      if (o.specialty?.trim()) {
+        options.set(
+          o.specialty.trim(),
+          isArabic ? getArabicContent(o.specialtyAr) : o.specialty.trim(),
+        );
+      }
     }
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [osteopaths]);
+    return Array.from(options, ([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label, isArabic ? 'ar' : 'en'));
+  }, [isArabic, osteopaths]);
 
   const filtered = useMemo(() => {
     const s = specialtyFilter.toLowerCase();
@@ -209,9 +222,10 @@ export default function FindOsteopathPage() {
     return osteopaths
       .filter((o) => {
         if (s  && o.specialty.toLowerCase() !== s)         return false;
-        if (n  && !o.name.toLowerCase().includes(n))       return false;
+        if (n && ![o.name, o.nameAr].some((name) => name?.toLowerCase().includes(n))) return false;
         const serviceCities = o.directoryCities?.length ? o.directoryCities : [o.city];
-        if (c && !serviceCities.some((city) => city.toLowerCase().includes(c))) return false;
+        const serviceCitiesAr = o.directoryCitiesAr?.length ? o.directoryCitiesAr : [o.cityAr];
+        if (c && ![...serviceCities, ...serviceCitiesAr].some((city) => city?.toLowerCase().includes(c))) return false;
         if (co && !o.country.toLowerCase().includes(co))   return false;
         return true;
       })
@@ -223,9 +237,13 @@ export default function FindOsteopathPage() {
   }, [osteopaths, specialtyFilter, nameFilter, cityFilter, countryFilter]);
 
   const grouped = useMemo(() => {
-    const groups: { city: string; country: string; items: Osteopath[] }[] = [];
+    const groups: { city: string; cityAr?: string; country: string; countryAr?: string; items: Osteopath[] }[] = [];
     const directoryItems = filtered.flatMap((o) =>
-      (o.directoryCities?.length ? o.directoryCities : [o.city]).map((city) => ({ ...o, city })),
+      (o.directoryCities?.length ? o.directoryCities : [o.city]).map((city, index) => ({
+        ...o,
+        city,
+        cityAr: o.directoryCitiesAr?.[index] || o.cityAr,
+      })),
     );
     directoryItems.sort((a, b) => {
       const countryCompare = a.country.localeCompare(b.country);
@@ -240,7 +258,7 @@ export default function FindOsteopathPage() {
       if (last && last.city === o.city && last.country === o.country) {
         last.items.push(o);
       } else {
-        groups.push({ city: o.city, country: o.country, items: [o] });
+        groups.push({ city: o.city, cityAr: o.cityAr, country: o.country, countryAr: o.countryAr, items: [o] });
       }
     }
     return groups;
@@ -305,8 +323,8 @@ export default function FindOsteopathPage() {
                 className={inputCls}
               >
                 <option value="">{copy.allSpecialties}</option>
-                {specialtyOptions.map((s) => (
-                  <option key={s} value={s} dir="auto">{s}</option>
+                {specialtyOptions.map((option) => (
+                  <option key={option.value} value={option.value} dir="auto">{option.label}</option>
                 ))}
               </select>
             </div>
@@ -436,9 +454,9 @@ export default function FindOsteopathPage() {
               <section key={`${group.city}-${group.country}`}>
                 <header className="flex items-baseline gap-3 mb-5 pb-3 border-b border-gray-200">
                   <h2 className="font-display text-xl sm:text-2xl font-semibold text-brand-950 tracking-tight">
-                    <span dir="auto">{group.city || copy.other}</span>
+                    <span dir="auto">{isArabic ? getArabicContent(group.cityAr) : (group.city || copy.other)}</span>
                   </h2>
-                  <span dir="auto" className="text-xs uppercase tracking-[0.22em] text-slate-500">{group.country}</span>
+                  <span dir="auto" className="text-xs uppercase tracking-[0.22em] text-slate-500">{isArabic ? getArabicContent(group.countryAr) : group.country}</span>
                   <span className="ms-auto text-xs text-slate-500">
                     {isArabic
                       ? formatArabicPractitioners(group.items.length)
@@ -455,30 +473,30 @@ export default function FindOsteopathPage() {
                 <div className="directory-practitioner-content flex flex-grow flex-col p-5 sm:p-6">
                   <div className="directory-practitioner-header">
                     <div className="directory-practitioner-intro min-w-0 pt-1">
-                      <p dir="auto" className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{isArabic && o.specialtyAr ? o.specialtyAr : o.specialty}</p>
-                      <h3 dir="auto" className="mt-1.5 font-display text-xl font-semibold leading-tight tracking-tight text-brand-950">{o.name}</h3>
+                      <p dir="auto" className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{isArabic ? getArabicContent(o.specialtyAr) : o.specialty}</p>
+                      <h3 dir="auto" className="mt-1.5 font-display text-xl font-semibold leading-tight tracking-tight text-brand-950">{isArabic ? getArabicContent(o.nameAr) : o.name}</h3>
                       <p dir="auto" className="mt-2 text-sm text-slate-500">
-                        {o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{o.country}
+                        {isArabic ? getArabicContent(o.cityAr) : o.city}{o.city && o.country ? (isArabic ? '، ' : ', ') : ''}{isArabic ? getArabicContent(o.countryAr) : o.country}
                       </p>
                     </div>
                     <div className="directory-portrait-float relative">
-                      <DirectoryPortrait osteopath={o} />
+                      <DirectoryPortrait osteopath={o} isArabic={isArabic} />
                     </div>
                   </div>
 
                   {o.bio && (
                     <p dir="auto" className="directory-practitioner-bio mt-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                      {isArabic && o.bioAr ? o.bioAr : o.bio}
+                      {isArabic ? getArabicContent(o.bioAr) : o.bio}
                     </p>
                   )}
 
                   {o.location && (
-                    <p dir="auto" title={isArabic && o.locationAr ? o.locationAr : o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
+                    <p dir="auto" title={isArabic ? getArabicContent(o.locationAr) : o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
                       <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21s7-5.52 7-12A7 7 0 105 9c0 6.48 7 12 7 12z" />
                         <circle cx="12" cy="9" r="2.25" strokeWidth={1.5} />
                       </svg>
-                      <span>{isArabic && o.locationAr ? o.locationAr : o.location}</span>
+                      <span>{isArabic ? getArabicContent(o.locationAr) : o.location}</span>
                     </p>
                   )}
 

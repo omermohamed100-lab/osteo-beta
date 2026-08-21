@@ -56,7 +56,9 @@ test('localized metadata emits canonical, hreflang, Open Graph, and Twitter data
 });
 
 test('proxy permanently redirects legacy URLs and rewrites localized URLs', () => {
-  const legacyResponse = proxy(new NextRequest('https://example.test/activities?type=event'));
+  const legacyResponse = proxy(new NextRequest('https://example.test/activities?type=event', {
+    headers: { 'x-egsom-locale': 'ar' },
+  }));
   assert.equal(legacyResponse.status, 308);
   assert.equal(
     legacyResponse.headers.get('location'),
@@ -70,6 +72,30 @@ test('proxy permanently redirects legacy URLs and rewrites localized URLs', () =
     'https://example.test/activities',
   );
   assert.equal(localizedResponse.headers.get('content-language'), 'ar');
+  assert.match(localizedResponse.headers.get('set-cookie') ?? '', /\bSecure\b/);
+  assert.equal(
+    localizedResponse.headers.get('x-middleware-request-x-egsom-internal-localized-rewrite'),
+    'ar',
+  );
+
+  const internalRewriteResponse = proxy(new NextRequest('https://example.test/activities', {
+    headers: {
+      'x-egsom-internal-localized-rewrite': 'ar',
+      'x-egsom-locale': 'ar',
+    },
+  }));
+  assert.equal(internalRewriteResponse.status, 200);
+  assert.equal(internalRewriteResponse.headers.get('location'), null);
+  assert.equal(internalRewriteResponse.headers.get('x-middleware-rewrite'), null);
+  assert.equal(internalRewriteResponse.headers.get('content-language'), 'ar');
+  assert.equal(
+    internalRewriteResponse.headers.get('x-middleware-request-x-egsom-locale'),
+    'ar',
+  );
+  assert.equal(
+    internalRewriteResponse.headers.get('x-middleware-request-x-egsom-internal-localized-rewrite'),
+    null,
+  );
 
   const localizedNotFoundResponse = proxy(
     new NextRequest('https://example.test/ar/does-not-exist'),

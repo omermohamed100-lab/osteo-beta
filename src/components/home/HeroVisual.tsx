@@ -28,7 +28,7 @@ export default function HeroVisual() {
 
     const timer = window.setTimeout(() => {
       setMobileAnimationStarted(true);
-    }, 180);
+    }, 70);
 
     return () => window.clearTimeout(timer);
   }, [isDesktop]);

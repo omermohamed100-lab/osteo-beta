@@ -13,9 +13,9 @@ const links = [
   { href: '/about', en: 'About EGSOM', ar: 'عن الجمعية' },
   { href: '/courses', en: 'Education', ar: 'التعليم' },
   { href: '/#standards', en: 'Standards', ar: 'المعايير' },
-  { href: '/find-osteopath', en: 'For the Public', ar: 'للجمهور' },
+  { href: '/find-osteopath', en: 'Find an Osteopath', ar: 'ابحث عن ممارس' },
   { href: '/practitioners', en: 'For Practitioners', ar: 'للممارسين' },
-  { href: '/activities', en: 'News & Events', ar: 'الأخبار والفعاليات' },
+  { href: '/activities', en: 'Activities & Events', ar: 'الأنشطة والفعاليات' },
 ];
 
 export default function Navbar() {
@@ -38,8 +38,34 @@ export default function Navbar() {
   useEffect(() => {
     if (!menuOpen) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const scrollPosition = window.scrollY;
+    const body = document.body;
+    const root = document.documentElement;
+    const previousBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+      paddingRight: body.style.paddingRight,
+    };
+    const previousScrollBehavior = root.style.scrollBehavior;
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+    const inertElements = Array.from(
+      document.querySelectorAll<HTMLElement>('main, footer'),
+    ).map((element) => ({ element, inert: element.inert }));
+
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollPosition}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    inertElements.forEach(({ element }) => {
+      element.inert = true;
+    });
 
     const frame = window.requestAnimationFrame(() => {
       const firstFocusable = menuPanelRef.current?.querySelector<HTMLElement>(
@@ -67,7 +93,10 @@ export default function Navbar() {
 
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
+      if (!menuPanelRef.current?.contains(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -80,7 +109,13 @@ export default function Navbar() {
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
+      Object.assign(body.style, previousBodyStyles);
+      inertElements.forEach(({ element, inert }) => {
+        element.inert = inert;
+      });
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, scrollPosition);
+      root.style.scrollBehavior = previousScrollBehavior;
     };
   }, [menuOpen]);
 
@@ -89,20 +124,25 @@ export default function Navbar() {
     window.requestAnimationFrame(() => menuButtonRef.current?.focus());
   };
 
-  const menuTransition = reduceMotion
+  const panelTransition = reduceMotion
     ? { duration: 0.1 }
-    : { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const };
+    : { type: 'spring' as const, bounce: 0, duration: 0.3 };
+  const backdropTransition = reduceMotion
+    ? { duration: 0.1 }
+    : { duration: 0.18, ease: 'easeOut' as const };
 
   return (
+    <>
+    <div className="h-[4.5rem] xl:hidden" aria-hidden="true" />
     <nav
-      className={`site-navbar sticky top-0 z-50 w-full ${isScrolled ? 'is-scrolled' : ''}`}
+      className={`site-navbar fixed top-0 z-50 w-full xl:sticky ${isScrolled ? 'is-scrolled' : ''}`}
       aria-label={isArabic ? 'التنقل الرئيسي' : 'Main navigation'}
     >
       <div className="mx-auto max-w-[90rem] px-4 sm:px-8 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
         <div className="flex h-[4.5rem] items-center justify-between xl:h-24">
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-3.5 outline-none transition-transform duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-brand-950"
+            className="flex shrink-0 items-center gap-2 outline-none transition-transform duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-brand-950 min-[480px]:gap-3.5"
           >
             <Image
               src="/logo-clean.webp"
@@ -112,7 +152,10 @@ export default function Navbar() {
               priority
               className="h-12 w-12 object-contain xl:h-[4.25rem] xl:w-[4.25rem]"
             />
-            <span className="flex flex-col text-bone max-[374px]:hidden">
+            <span className="font-display text-[1.05rem] font-semibold tracking-[0.035em] text-bone min-[480px]:hidden">
+              EGSOM
+            </span>
+            <span className="hidden flex-col text-bone min-[480px]:flex">
               <span className="font-display text-[1.1rem] font-medium leading-[0.92] tracking-[-0.015em] xl:text-[1.27rem]">
                 {isArabic ? 'الجمعية المصرية' : 'Egyptian Society'}
               </span>
@@ -195,7 +238,7 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={menuTransition}
+              transition={backdropTransition}
               onClick={closeMenuAndRestoreFocus}
             />
 
@@ -209,8 +252,8 @@ export default function Navbar() {
               style={{ transformOrigin: isArabic ? 'top left' : 'top right' }}
               initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.985 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.99 }}
-              transition={menuTransition}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.985 }}
+              transition={panelTransition}
             >
               <div className="space-y-1">
                 <div className="flex justify-end pb-1">
@@ -257,5 +300,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </nav>
+    </>
   );
 }

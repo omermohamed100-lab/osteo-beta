@@ -15,7 +15,8 @@ export default async function Footer() {
   const email   = settings?.email   || null;
   const phone   = settings?.phone   || null;
   const address = settings?.address || null;
-  const addressAr = settings?.addressAr || address;
+  const addressAr = settings?.addressAr
+    || (address === 'Cairo, Egypt' ? 'القاهرة، مصر' : 'متاح باللغة الإنجليزية');
   const facebook  = settings?.facebook  || null;
   const instagram = settings?.instagram || null;
   const linkedin  = settings?.linkedin  || null;
@@ -41,8 +42,8 @@ export default async function Footer() {
             </Link>
             <p className="mb-6 max-w-sm text-sm leading-relaxed text-brand-200/90">
               <LocalizedText
-                en="The Egyptian Society of Osteopathic Medicine: dedicated to promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East."
-                ar="الجمعية المصرية لطب الأوستيوباثية، مؤسسة مكرسة للارتقاء بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي في مصر والشرق الأوسط."
+                en="EGSOM supports osteopathic education, professional standards, and public understanding in Egypt."
+                ar="تدعم الجمعية تعليم الأوستيوباثي والمعايير المهنية والتوعية العامة في مصر."
               />
             </p>
             {hasSocial && (
@@ -86,7 +87,7 @@ export default async function Footer() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-400 mb-5">
               <LocalizedText en="Quick Links" ar="روابط سريعة" />
             </h3>
-            <ul className="space-y-0.5">
+            <ul className="grid grid-cols-2 gap-x-4 sm:block sm:space-y-0.5">
               {[
                 { href: '/about', en: 'About Us', ar: 'من نحن' },
                 { href: '/courses', en: 'Courses & Training', ar: 'الدورات والتدريب' },
@@ -98,7 +99,7 @@ export default async function Footer() {
                 { href: '/privacy', en: 'Privacy', ar: 'الخصوصية' },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="inline-flex min-h-11 items-center text-sm text-brand-200/90 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
+                  <Link href={l.href} className="inline-flex min-h-11 w-full items-center py-2 text-sm leading-5 text-brand-200/90 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
                     <LocalizedText en={l.en} ar={l.ar} />
                   </Link>
                 </li>
@@ -133,7 +134,7 @@ export default async function Footer() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span dir="auto"><LocalizedText en={address} ar={addressAr || address} /></span>
+                  <span dir="auto"><LocalizedText en={address} ar={addressAr} /></span>
                 </li>
               )}
               {email && (

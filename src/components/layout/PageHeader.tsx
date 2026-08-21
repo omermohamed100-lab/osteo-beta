@@ -18,7 +18,7 @@ export default function PageHeader({
   subtitleAr,
 }: Props) {
   return (
-    <header className="relative overflow-hidden border-b border-brand-950/12 bg-bone py-14 text-brand-950 sm:py-20 lg:py-24">
+    <header className="relative overflow-hidden border-b border-brand-950/12 bg-bone py-10 text-brand-950 sm:py-14 lg:py-16">
       <div className="absolute inset-y-0 end-0 hidden w-[42%] border-s border-brand-950/8 bg-mist/65 lg:block" aria-hidden="true" />
       <div
         className="absolute inset-0 opacity-40"
@@ -31,10 +31,10 @@ export default function PageHeader({
         }}
       />
 
-      <div className="relative z-10 mx-auto grid max-w-[90rem] gap-8 px-5 sm:px-8 lg:grid-cols-12 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
+      <div className="relative z-10 mx-auto grid max-w-[90rem] gap-6 px-5 sm:px-8 lg:grid-cols-12 lg:gap-8 lg:px-12 xl:px-16 min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
         <div className="lg:col-span-8">
           {eyebrow && (
-            <div className="mb-6 flex items-center gap-4">
+            <div className="mb-4 flex items-center gap-4 sm:mb-5">
               <span className="h-px w-9 bg-gold-deep" aria-hidden="true" />
               <p className="text-[0.69rem] font-semibold uppercase tracking-[0.22em] text-gold-deep">
                 <LocalizedText en={eyebrow} ar={eyebrowAr || eyebrow} />

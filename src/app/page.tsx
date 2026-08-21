@@ -42,8 +42,8 @@ export default function Home() {
           <div className="hero-copy-reveal relative z-20 flex flex-col justify-center py-8 min-[375px]:py-10 sm:py-16 lg:col-span-6 lg:pe-12 lg:py-16 xl:col-span-5 xl:pe-8">
             <h1 className="max-w-[14ch] text-balance font-sans text-[clamp(2.5rem,11vw,3.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950 sm:text-[clamp(3rem,4.25vw,4.65rem)]">
               <LocalizedText
-                en="Care, education and standards for osteopathy in Egypt"
-                ar="رعاية وتعليم ومعايير للأوستيوباثي في مصر"
+                en="Advancing osteopathic practice in Egypt"
+                ar="نرتقي بممارسة الأوستيوباثي في مصر"
               />
             </h1>
 
@@ -51,8 +51,8 @@ export default function Home() {
 
             <p className="mt-6 max-w-[32rem] text-pretty text-[0.96rem] leading-7 text-ink-muted sm:text-base sm:leading-7">
               <LocalizedText
-                en="EGSOM supports responsible osteopathic practice through education, professional standards, and clear information for practitioners and the public."
-                ar="تدعم الجمعية الممارسة المسؤولة للأوستيوباثي من خلال التعليم والمعايير المهنية والمعلومات الواضحة للممارسين والجمهور."
+                en="EGSOM advances responsible osteopathic practice through professional education, clear standards, and practical information for the public."
+                ar="تعمل الجمعية على تطوير الممارسة المسؤولة للأوستيوباثي من خلال التعليم المهني والمعايير الواضحة والمعلومات المفيدة للجمهور."
               />
             </p>
 
@@ -61,14 +61,14 @@ export default function Home() {
                 href="/find-osteopath"
                 className="group inline-flex min-h-13 items-center justify-between gap-5 bg-brand-950 px-6 py-3.5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-200 ease-out hover:bg-brand-800 active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
-                <LocalizedText en="Browse practitioner profiles" ar="تصفّح ملفات الممارسين" />
+                <LocalizedText en="Find an osteopath" ar="ابحث عن ممارس أوستيوباثي" />
                 <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold" aria-hidden="true" />
               </Link>
               <Link
                 href="/courses"
                 className="group inline-flex min-h-13 items-center justify-between gap-5 border border-brand-950/55 bg-bone/82 px-6 py-3.5 text-sm font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-200 ease-out hover:border-brand-950 hover:bg-paper active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
-                <LocalizedText en="View education and training" ar="استكشف التعليم والتدريب" />
+                <LocalizedText en="Explore courses and training" ar="استكشف الدورات والتدريب" />
                 <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold-deep" aria-hidden="true" />
               </Link>
             </div>

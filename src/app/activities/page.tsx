@@ -6,6 +6,7 @@ import LocalizedDate from '@/components/i18n/LocalizedDate';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import Link from '@/components/i18n/LocalizedLink';
+import { getArabicContent } from '@/lib/arabic-content';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -48,7 +49,7 @@ export default async function ActivitiesPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           {dataUnavailable ? (
             <PublicDataUnavailable
-              title={{ en: 'Activities and events temporarily unavailable', ar: 'الأنشطة والفعاليات غير متاحة مؤقتًا' }}
+              title={{ en: 'Activities & Events temporarily unavailable', ar: 'الأنشطة والفعاليات غير متاحة مؤقتًا' }}
               description={{
                 en: 'Activities and event information is temporarily unavailable. Please try again shortly.',
                 ar: 'بيانات الأنشطة والفعاليات غير متاحة مؤقتًا. يُرجى المحاولة مرة أخرى بعد قليل.',
@@ -60,7 +61,7 @@ export default async function ActivitiesPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <p className="font-medium text-slate-600">
-                <LocalizedText en="No upcoming activities at the moment." ar="لا توجد أنشطة قادمة في الوقت الحالي." />
+                <LocalizedText en="No upcoming activities or events at the moment." ar="لا توجد أنشطة أو فعاليات قادمة في الوقت الحالي." />
               </p>
               <p className="mt-1 text-sm text-slate-500">
                 <LocalizedText
@@ -68,6 +69,12 @@ export default async function ActivitiesPage() {
                   ar="عُد قريبًا للاطلاع على أحدث الأنشطة."
                 />
               </p>
+              <Link
+                href="/contact"
+                className="mt-6 inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4"
+              >
+                <LocalizedText en="Ask about upcoming activities" ar="استفسر عن الأنشطة القادمة" />
+              </Link>
             </div>
           ) : (
             <div className="space-y-5">
@@ -80,7 +87,7 @@ export default async function ActivitiesPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={activity.imageUrl}
-                      alt={activity.title}
+                      alt={`${activity.title} / ${getArabicContent(activity.titleAr)}`}
                       className="w-full sm:w-52 h-44 sm:h-auto object-cover shrink-0"
                     />
                   ) : (
@@ -99,14 +106,14 @@ export default async function ActivitiesPage() {
                         <LocalizedText en={state.en} ar={state.ar} />
                       </span>
                     </div>
-                    <h2 dir="auto" className="font-bold text-gray-900 text-lg mb-2 leading-snug"><LocalizedText en={activity.title} ar={activity.titleAr || activity.title} /></h2>
-                    <p dir="auto" className="mb-4 text-sm leading-relaxed text-slate-600"><LocalizedText en={activity.description} ar={activity.descriptionAr || activity.description} /></p>
+                    <h2 dir="auto" className="font-bold text-gray-900 text-lg mb-2 leading-snug"><LocalizedText en={activity.title} ar={getArabicContent(activity.titleAr)} /></h2>
+                    <p dir="auto" className="mb-4 text-sm leading-relaxed text-slate-600"><LocalizedText en={activity.description} ar={getArabicContent(activity.descriptionAr)} /></p>
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
                       <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <span dir="auto"><LocalizedText en={activity.location} ar={activity.locationAr || activity.location} /></span>
+                      <span dir="auto"><LocalizedText en={activity.location} ar={getArabicContent(activity.locationAr)} /></span>
                     </div>
                     <Link href={`/activities/${encodeURIComponent(activity.id)}`} className="mt-4 inline-flex min-h-11 items-center gap-2 border-t border-brand-100/70 pt-4 text-sm font-semibold text-brand-700 hover:text-brand-950 focus-visible:ring-2 focus-visible:ring-brand-600">
                       <LocalizedText en="View activity details" ar="عرض تفاصيل النشاط" />

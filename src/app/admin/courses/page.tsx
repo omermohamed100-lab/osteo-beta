@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
 
 type Course = {
   id: string;
@@ -19,6 +20,15 @@ type Course = {
   imageUrl: string | null;
   isActive: boolean;
 };
+
+function getMissingArabicFields(course: Pick<Course, 'titleAr' | 'descriptionAr' | 'instructorAr' | 'durationAr'>) {
+  return [
+    !course.titleAr?.trim() && 'title',
+    !course.descriptionAr?.trim() && 'description',
+    !course.instructorAr?.trim() && 'instructor',
+    !course.durationAr?.trim() && 'duration',
+  ].filter((field): field is string => Boolean(field));
+}
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -179,6 +189,7 @@ export default function AdminCoursesPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">{course.title}</div>
                     <div className="text-sm text-gray-500">{course.duration}</div>
+                    <ArabicContentWarning missingFields={getMissingArabicFields(course)} compact />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{course.instructor}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -258,6 +269,7 @@ export default function AdminCoursesPage() {
                 </div>
               </div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label><input type="url" value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" placeholder="https://…" /></div>
+              <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="pt-4 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700">Save Course</button>

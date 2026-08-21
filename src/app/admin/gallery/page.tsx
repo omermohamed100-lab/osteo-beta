@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
 
 type GalleryItem = {
   id: string;
@@ -15,6 +16,13 @@ type GalleryItem = {
 const EMPTY_FORM = { imageUrl: '', caption: '', captionAr: '', category: 'General', categoryAr: '' };
 const inputCls   = 'w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-brand-500 focus:border-brand-500';
 const labelCls   = 'block text-sm font-medium text-gray-700 mb-1';
+
+function getMissingArabicFields(item: Pick<GalleryItem, 'caption' | 'captionAr' | 'category' | 'categoryAr'>) {
+  return [
+    item.caption?.trim() && !item.captionAr?.trim() && 'caption',
+    item.category?.trim() && !item.categoryAr?.trim() && 'category',
+  ].filter((field): field is string => Boolean(field));
+}
 
 export default function AdminGalleryPage() {
   const [items, setItems]             = useState<GalleryItem[]>([]);
@@ -113,7 +121,10 @@ export default function AdminGalleryPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.imageUrl} alt={item.caption} className="w-16 h-12 object-cover rounded-md bg-gray-100" />
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">{item.caption || '—'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
+                    <span className="block truncate">{item.caption || '—'}</span>
+                    <ArabicContentWarning missingFields={getMissingArabicFields(item)} compact />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 py-0.5 text-xs rounded-full bg-brand-50 text-brand-700 font-medium">{item.category}</span>
                   </td>
@@ -161,6 +172,7 @@ export default function AdminGalleryPage() {
                 <input type="text" value={formData.category} onChange={e => set({ category: e.target.value })} className={inputCls} placeholder="e.g. Conference, Training, Outreach" />
               </div>
               <div><label className={labelCls}>Category (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.categoryAr} onChange={e => set({ categoryAr: e.target.value })} className={inputCls} /></div>
+              <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
                 <button type="submit" disabled={isSaving} className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:opacity-50">

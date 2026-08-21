@@ -3,6 +3,7 @@ import { getPublicData } from '@/lib/public-data';
 import LocalizedText from '@/components/i18n/LocalizedText';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
+import { getArabicContent } from '@/lib/arabic-content';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -58,7 +59,7 @@ export default async function GalleryPage() {
                     <div className="flex items-center gap-4 mb-6">
                       <div aria-hidden="true" className="h-px flex-grow bg-gray-200" />
                       <h2 id={headingId} dir="auto" className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
-                        <LocalizedText en={cat} ar={catItems[0]?.categoryAr || cat} />
+                        <LocalizedText en={cat} ar={getArabicContent(catItems[0]?.categoryAr)} />
                       </h2>
                       <div aria-hidden="true" className="h-px flex-grow bg-gray-200" />
                     </div>
@@ -69,12 +70,12 @@ export default async function GalleryPage() {
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.imageUrl}
-                            alt={item.caption || item.captionAr || cat}
+                            alt={`${item.caption || cat} / ${getArabicContent(item.captionAr || item.categoryAr)}`}
                             className="gallery-image h-full w-full object-cover"
                           />
                           {(item.caption || item.captionAr) && (
                             <figcaption className="gallery-caption absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
-                              <p dir="auto" className="text-white text-xs leading-snug"><LocalizedText en={item.caption} ar={item.captionAr || item.caption} /></p>
+                              <p dir="auto" className="text-white text-xs leading-snug"><LocalizedText en={item.caption} ar={getArabicContent(item.captionAr)} /></p>
                             </figcaption>
                           )}
                         </figure>

@@ -5,6 +5,7 @@ import LocalizedDate from '@/components/i18n/LocalizedDate';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import Link from '@/components/i18n/LocalizedLink';
+import { getArabicContent } from '@/lib/arabic-content';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -65,6 +66,12 @@ export default async function CoursesPage() {
                   ar="عُد قريبًا للاطلاع على البرامج القادمة."
                 />
               </p>
+              <Link
+                href="/contact"
+                className="mt-6 inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4"
+              >
+                <LocalizedText en="Ask about upcoming programs" ar="استفسر عن البرامج القادمة" />
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
@@ -73,7 +80,7 @@ export default async function CoursesPage() {
                   {course.imageUrl ? (
                     // CMS images may be hosted on education-provider domains.
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={course.imageUrl} alt={course.title} className="w-full h-44 object-cover" />
+                    <img src={course.imageUrl} alt={`${course.title} / ${getArabicContent(course.titleAr)}`} className="w-full h-44 object-cover" />
                   ) : (
                     <div className="w-full h-44 bg-brand-950 flex items-center justify-center">
                       <svg className="w-10 h-10 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,7 +90,7 @@ export default async function CoursesPage() {
                   )}
                   <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <h2 dir="auto" className="font-bold text-gray-900 text-base leading-snug"><LocalizedText en={course.title} ar={course.titleAr || course.title} /></h2>
+                      <h2 dir="auto" className="font-bold text-gray-900 text-base leading-snug"><LocalizedText en={course.title} ar={getArabicContent(course.titleAr)} /></h2>
                       {course.price != null && course.priceCurrency && (
                         <span className="bg-brand-50 text-brand-700 text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
                           <bdi dir="ltr" lang="en" className="font-sans">
@@ -92,13 +99,13 @@ export default async function CoursesPage() {
                         </span>
                       )}
                     </div>
-                    <p dir="auto" className="mb-5 flex-grow text-sm leading-relaxed text-slate-600"><LocalizedText en={course.description} ar={course.descriptionAr || course.description} /></p>
+                    <p dir="auto" className="mb-5 flex-grow text-sm leading-relaxed text-slate-600"><LocalizedText en={course.description} ar={getArabicContent(course.descriptionAr)} /></p>
                     <div className="space-y-2 border-t border-brand-100/70 pt-4 text-xs text-slate-500">
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        <span dir="auto"><LocalizedText en={course.instructor} ar={course.instructorAr || course.instructor} /></span>
+                        <span dir="auto"><LocalizedText en={course.instructor} ar={getArabicContent(course.instructorAr)} /></span>
                       </div>
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,7 +117,7 @@ export default async function CoursesPage() {
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span dir="auto"><LocalizedText en={course.duration} ar={course.durationAr || course.duration} /></span>
+                        <span dir="auto"><LocalizedText en={course.duration} ar={getArabicContent(course.durationAr)} /></span>
                       </div>
                     </div>
                     <Link href={`/courses/${encodeURIComponent(course.id)}`} className="mt-5 inline-flex min-h-11 items-center gap-2 border-t border-brand-100/70 pt-4 text-sm font-semibold text-brand-700 hover:text-brand-950 focus-visible:ring-2 focus-visible:ring-brand-600">

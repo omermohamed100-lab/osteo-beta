@@ -28,8 +28,8 @@ const values = [
   {
     title: 'Community',
     titleAr: 'المجتمع المهني',
-    desc: 'Our members share knowledge, mentor one another, and collaborate across Egypt and the wider Middle East to raise the standard of care.',
-    descAr: 'يتبادل أعضاؤنا المعرفة والخبرة ويتعاونون في مصر والشرق الأوسط للارتقاء بمستوى الرعاية.',
+    desc: 'Our members share knowledge, mentor one another, and collaborate to support responsible osteopathic practice in Egypt.',
+    descAr: 'يتبادل أعضاؤنا المعرفة والخبرة ويتعاونون لدعم الممارسة المسؤولة للأوستيوباثي في مصر.',
     icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
   },
   {
@@ -58,8 +58,8 @@ export default async function AboutPage() {
         eyebrowAr="من نحن"
         title="About EGSOM"
         titleAr="عن الجمعية"
-        subtitle="The Egyptian Society of Osteopathic Medicine supports professional education, practice, and public understanding in Egypt and the region."
-        subtitleAr="تدعم الجمعية المصرية لطب الأوستيوباثي التعليم والممارسة المهنية والتوعية العامة في مصر والمنطقة."
+        subtitle="The Egyptian Society of Osteopathic Medicine supports professional education, practice, and public understanding in Egypt."
+        subtitleAr="تدعم الجمعية المصرية لطب الأوستيوباثي التعليم والممارسة المهنية والتوعية العامة في مصر."
       />
 
       {/* Story section */}
@@ -75,8 +75,8 @@ export default async function AboutPage() {
               </div>
               <h2 className="font-display text-[clamp(1.75rem,4vw,3rem)] font-light text-brand-950 leading-tight mb-6">
                 <LocalizedText
-                  en={<>Advancing healthcare <em>across the region</em></>}
-                  ar="نرتقي بالرعاية الصحية في أنحاء المنطقة"
+                  en="Advancing osteopathic practice in Egypt"
+                  ar="نرتقي بممارسة الأوستيوباثي في مصر"
                 />
               </h2>
               <p className="mb-4 leading-relaxed text-slate-600">
@@ -87,8 +87,8 @@ export default async function AboutPage() {
               </p>
               <p className="leading-relaxed text-slate-600">
                 <LocalizedText
-                  en="Today, our network spans Egypt and extends across the Middle East, uniting practitioners who share a commitment to holistic, patient-centred care, and to raising the bar for what osteopathic medicine can achieve."
-                  ar="تمتد شبكتنا اليوم عبر مصر والشرق الأوسط، وتجمع ممارسين يلتزمون برعاية شاملة تتمحور حول المريض وبالارتقاء بما يمكن أن يقدمه الطب الأوستيوباثي."
+                  en="Today, EGSOM brings practitioners together around responsible practice, professional learning, and clear public information in Egypt."
+                  ar="تجمع الجمعية اليوم الممارسين حول الممارسة المسؤولة والتعلم المهني والمعلومات العامة الواضحة في مصر."
                 />
               </p>
             </div>
@@ -164,8 +164,8 @@ export default async function AboutPage() {
               </h3>
               <p className="leading-relaxed text-slate-600">
                 <LocalizedText
-                  en="A future where osteopathic medicine is understood clearly and practised responsibly across Egypt and the Middle East."
-                  ar="مستقبل يُفهم فيه الطب الأوستيوباثي بوضوح ويُمارس بمسؤولية في مصر والشرق الأوسط."
+                  en="A future where osteopathic medicine is understood clearly and practised responsibly in Egypt."
+                  ar="مستقبل يُفهم فيه الطب الأوستيوباثي بوضوح ويُمارس بمسؤولية في مصر."
                 />
               </p>
             </div>

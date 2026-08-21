@@ -17,7 +17,7 @@
     "test:public-data": "tsx --test tests/public-data.test.ts",
     "test:seo": "node --require ./tests/tsx-windows-shim.cjs --import tsx --test tests/seo-localization.test.ts",
     "test:trust": "node --require ./tests/tsx-windows-shim.cjs --import tsx --test tests/trust-content.test.ts",
-    "test:security": "tsx --test tests/auth.test.ts tests/auth-contract.test.ts tests/contact-security.test.ts tests/email.test.ts tests/public-data.test.ts tests/rate-limit.test.ts tests/request-security.test.ts tests/url-security.test.ts"
+    "test:security": "node --require ./tests/tsx-windows-shim.cjs --import tsx --test tests/auth.test.ts tests/auth-contract.test.ts tests/contact-security.test.ts tests/email.test.ts tests/public-data.test.ts tests/rate-limit.test.ts tests/request-security.test.ts tests/url-security.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

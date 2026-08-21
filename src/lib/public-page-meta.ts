@@ -12,12 +12,12 @@ export const PUBLIC_PAGE_META: Record<
     en: {
       title: 'Egyptian Society of Osteopathic Medicine (EGSOM)',
       description:
-        'Promoting excellence in osteopathic education, practice, and research across Egypt and the Middle East.',
+        'EGSOM advances responsible osteopathic practice through professional education, clear standards, and practical information for the public.',
     },
     ar: {
       title: 'الجمعية المصرية لطب الأوستيوباثية (EGSOM)',
       description:
-        'نرتقي بالتعليم والممارسة والبحث في مجال الطب الأوستيوباثي في مصر والشرق الأوسط.',
+        'تعمل الجمعية على تطوير الممارسة المسؤولة للأوستيوباثي من خلال التعليم المهني والمعايير الواضحة والمعلومات المفيدة للجمهور.',
     },
   },
   '/about': {
@@ -60,12 +60,12 @@ export const PUBLIC_PAGE_META: Record<
     en: {
       title: 'Find an Osteopath · EGSOM',
       description:
-        'Search the EGSOM directory for listed osteopathic practitioners across Egypt and the Middle East.',
+        'Search the EGSOM directory for listed osteopathic practitioners in Egypt.',
     },
     ar: {
       title: 'دليل الممارسين · EGSOM',
       description:
-        'ابحث في دليل الجمعية عن ممارسي الأوستيوباثي المدرجين في مصر والشرق الأوسط.',
+        'ابحث في دليل الجمعية عن ممارسي الأوستيوباثي المدرجين في مصر.',
     },
   },
   '/practitioners': {

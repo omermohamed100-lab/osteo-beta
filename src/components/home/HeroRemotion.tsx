@@ -135,11 +135,11 @@ export const HeroHandsComposition = ({
           name="Centered EGSOM seal"
           style={{
             position: 'absolute',
-            top: 220,
+            top: 246,
             left: '50%',
             zIndex: 20,
-            width: 430,
-            height: 430,
+            width: 378,
+            height: 378,
             opacity: interpolate(animationFrame, [12, 35], [0, 1], {
               extrapolateLeft: 'clamp',
               extrapolateRight: 'clamp',

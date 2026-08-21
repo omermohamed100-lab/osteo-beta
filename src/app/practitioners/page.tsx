@@ -20,13 +20,13 @@ const resources = [
   },
   {
     number: '02',
-    title: 'Activities and professional events',
-    titleAr: 'الأنشطة والفعاليات المهنية',
+    title: 'Activities & Events',
+    titleAr: 'الأنشطة والفعاليات',
     body: 'Follow published seminars, meetings, conferences, and community activities.',
     bodyAr: 'تابع الندوات والاجتماعات والمؤتمرات والأنشطة المجتمعية المنشورة.',
     href: '/activities',
-    action: 'View activities',
-    actionAr: 'عرض الأنشطة',
+    action: 'View activities and events',
+    actionAr: 'عرض الأنشطة والفعاليات',
   },
   {
     number: '03',
