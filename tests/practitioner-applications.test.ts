@@ -68,6 +68,24 @@ test('public application is bilingual, privacy-aware, and does not upload files'
   assert.match(page, /getLocalizedMetadata\('\/practitioners\/apply'\)/);
 });
 
+test('public application exposes localized field errors and deliberate focus targets', async () => {
+  const form = await readFile('src/components/practitioners/PractitionerApplicationForm.tsx', 'utf8');
+  assert.match(form, /validationSummary: 'Review the highlighted fields below/);
+  assert.match(form, /validationSummary: 'راجع الحقول الموضحة أدناه/);
+  assert.match(form, /aria-describedby=\{describedBy\}/);
+  assert.match(form, /focusFirstInvalid\(errors\)/);
+  assert.match(form, /successTitleRef\.current\?\.focus\(\)/);
+  assert.match(form, /aria-labelledby="application-success-title"/);
+});
+
+test('bilingual professional fields preserve explicit writing direction', async () => {
+  const form = await readFile('src/components/practitioners/PractitionerApplicationForm.tsx', 'utf8');
+  assert.match(form, /field\('name'.*dir: 'ltr'.*lang: 'en'/);
+  assert.match(form, /field\('nameAr'.*dir: 'rtl'.*lang: 'ar'/);
+  assert.match(form, /field\('credentialIssuer'.*dir: 'ltr'.*lang: 'en'/);
+  assert.match(form, /field\('credentialIssuerAr'.*dir: 'rtl'.*lang: 'ar'/);
+});
+
 test('admin exposes an application queue and gallery previews preserve the image', async () => {
   const dashboard = await readFile('src/app/admin/dashboard/page.tsx', 'utf8');
   const sidebar = await readFile('src/components/layout/AdminSidebar.tsx', 'utf8');
