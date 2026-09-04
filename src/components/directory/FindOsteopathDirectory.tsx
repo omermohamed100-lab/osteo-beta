@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from '@/components/i18n/LocalizedLink';
 import PageHeader from '@/components/layout/PageHeader';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getArabicContent } from '@/lib/arabic-content';
+import { getPracticeLocations } from '@/lib/directory-search';
+import { directoryFiltersFromParams, directoryHref, type DirectoryFilters } from '@/lib/directory-query';
 import type { PublicDirectoryOsteopath } from '@/lib/public-osteopath';
 
 type Osteopath = PublicDirectoryOsteopath;
@@ -14,26 +17,8 @@ type Osteopath = PublicDirectoryOsteopath;
 type FindOsteopathDirectoryProps = {
   initialOsteopaths: Osteopath[];
   initialDataUnavailable: boolean;
+  initialFilters: DirectoryFilters;
 };
-
-const COUNTRIES = [
-  { value: 'Egypt', ar: 'مصر' },
-  { value: 'Saudi Arabia', ar: 'السعودية' },
-  { value: 'UAE', ar: 'الإمارات' },
-  { value: 'Jordan', ar: 'الأردن' },
-  { value: 'Lebanon', ar: 'لبنان' },
-  { value: 'Kuwait', ar: 'الكويت' },
-  { value: 'Qatar', ar: 'قطر' },
-  { value: 'Bahrain', ar: 'البحرين' },
-  { value: 'Oman', ar: 'عُمان' },
-  { value: 'Libya', ar: 'ليبيا' },
-  { value: 'Tunisia', ar: 'تونس' },
-  { value: 'Morocco', ar: 'المغرب' },
-  { value: 'Algeria', ar: 'الجزائر' },
-  { value: 'Sudan', ar: 'السودان' },
-  { value: 'Iraq', ar: 'العراق' },
-  { value: 'Palestine', ar: 'فلسطين' },
-];
 
 const inputCls =
   'w-full border border-gray-300 rounded-lg px-4 py-2.5 text-base sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white';
@@ -102,8 +87,12 @@ function formatArabicPractitioners(count: number) {
 export default function FindOsteopathDirectory({
   initialOsteopaths,
   initialDataUnavailable,
+  initialFilters,
 }: FindOsteopathDirectoryProps) {
   const { isArabic } = useLanguage();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const copy = isArabic
     ? {
         specialty: 'التخصص',
@@ -125,6 +114,8 @@ export default function FindOsteopathDirectory({
         noPractitioners: 'لم تتم إضافة ممارسين بعد.',
         other: 'أخرى',
         profile: 'عرض الملف المهني',
+        moreFilters: 'مزيد من عوامل البحث',
+        activeSecondary: 'عوامل بحث إضافية نشطة',
       }
     : {
         specialty: 'Specialty',
@@ -146,16 +137,42 @@ export default function FindOsteopathDirectory({
         noPractitioners: 'No practitioners have been added yet.',
         other: 'Other',
         profile: 'View professional profile',
+        moreFilters: 'More filters',
+        activeSecondary: 'additional filters active',
       };
 
   const [osteopaths, setOsteopaths] = useState<Osteopath[]>(initialOsteopaths);
   const [isLoading, setIsLoading]   = useState(false);
   const [loadError, setLoadError]   = useState(false);
   const [dataUnavailable, setDataUnavailable] = useState(initialDataUnavailable);
-  const [specialtyFilter, setSpecialtyFilter] = useState('');
-  const [nameFilter,    setNameFilter]    = useState('');
-  const [cityFilter,    setCityFilter]    = useState('');
-  const [countryFilter, setCountryFilter] = useState('');
+  const [specialtyFilter, setSpecialtyFilter] = useState(initialFilters.specialty);
+  const [nameFilter,    setNameFilter]    = useState(initialFilters.name);
+  const [cityFilter,    setCityFilter]    = useState(initialFilters.city);
+  const [countryFilter, setCountryFilter] = useState(initialFilters.country);
+  const [secondaryOpen, setSecondaryOpen] = useState(Boolean(initialFilters.specialty || initialFilters.country || initialFilters.name));
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      const filters = directoryFiltersFromParams(searchParams);
+      setCityFilter(filters.city);
+      setSpecialtyFilter(filters.specialty);
+      setCountryFilter(filters.country);
+      setNameFilter(filters.name);
+      if (filters.specialty || filters.country || filters.name) setSecondaryOpen(true);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const filters = { city: cityFilter, specialty: specialtyFilter, country: countryFilter, name: nameFilter };
+    const currentQuery = searchParams.toString();
+    const nextHref = directoryHref(pathname, currentQuery, filters);
+    const currentHref = currentQuery ? `${pathname}?${currentQuery}` : pathname;
+    if (nextHref === currentHref) return;
+
+    const timeout = window.setTimeout(() => router.replace(nextHref, { scroll: false }), 250);
+    return () => window.clearTimeout(timeout);
+  }, [cityFilter, countryFilter, nameFilter, pathname, router, searchParams, specialtyFilter]);
 
   const specialtyOptions = useMemo(() => {
     const options = new Map<string, string>();
@@ -164,6 +181,20 @@ export default function FindOsteopathDirectory({
         options.set(
           o.specialty.trim(),
           isArabic ? getArabicContent(o.specialtyAr) : o.specialty.trim(),
+        );
+      }
+    }
+    return Array.from(options, ([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label, isArabic ? 'ar' : 'en'));
+  }, [isArabic, osteopaths]);
+
+  const countryOptions = useMemo(() => {
+    const options = new Map<string, string>();
+    for (const o of osteopaths) {
+      if (o.country?.trim()) {
+        options.set(
+          o.country.trim(),
+          isArabic ? getArabicContent(o.countryAr) : o.country.trim(),
         );
       }
     }
@@ -180,10 +211,8 @@ export default function FindOsteopathDirectory({
       .filter((o) => {
         if (s  && o.specialty.toLowerCase() !== s)         return false;
         if (n && ![o.name, o.nameAr].some((name) => name?.toLowerCase().includes(n))) return false;
-        const serviceCities = o.directoryCities?.length ? o.directoryCities : [o.city];
-        const serviceCitiesAr = o.directoryCitiesAr?.length ? o.directoryCitiesAr : [o.cityAr];
-        if (c && ![...serviceCities, ...serviceCitiesAr].some((city) => city?.toLowerCase().includes(c))) return false;
-        if (co && !o.country.toLowerCase().includes(co))   return false;
+        if (c && getPracticeLocations(o, c).length === 0) return false;
+        if (co && ![o.country, o.countryAr].some((country) => country?.toLocaleLowerCase().includes(co))) return false;
         return true;
       })
       .sort((a, b) => {
@@ -196,10 +225,10 @@ export default function FindOsteopathDirectory({
   const grouped = useMemo(() => {
     const groups: { city: string; cityAr?: string; country: string; countryAr?: string; items: Osteopath[] }[] = [];
     const directoryItems = filtered.flatMap((o) =>
-      (o.directoryCities?.length ? o.directoryCities : [o.city]).map((city, index) => ({
+      getPracticeLocations(o, cityFilter).map(({ city, cityAr }) => ({
         ...o,
         city,
-        cityAr: o.directoryCitiesAr?.[index] || o.cityAr,
+        cityAr,
       })),
     );
     directoryItems.sort((a, b) => {
@@ -219,9 +248,10 @@ export default function FindOsteopathDirectory({
       }
     }
     return groups;
-  }, [filtered]);
+  }, [cityFilter, filtered]);
 
   const hasFilters = specialtyFilter || nameFilter || cityFilter || countryFilter;
+  const secondaryFilterCount = [specialtyFilter, countryFilter, nameFilter].filter(Boolean).length;
   const showingApprovedFallback = (dataUnavailable || loadError) && osteopaths.length > 0;
 
   const clearFilters = () => {
@@ -268,7 +298,26 @@ export default function FindOsteopathDirectory({
 
         {/* Search bar */}
         <div className="surface-panel mb-6 p-4 sm:mb-8 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <div>
+              <label htmlFor="city-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
+                {copy.city}
+              </label>
+              <input
+                id="city-filter"
+                type="text"
+                dir="auto"
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+                placeholder={copy.cityPlaceholder}
+                className={inputCls}
+              />
+            </div>
+            <button type="button" aria-expanded={secondaryOpen} aria-controls="directory-secondary-filters" onClick={() => setSecondaryOpen((open) => !open)} className="flex min-h-11 items-center justify-between rounded-lg border border-brand-950/20 bg-white px-4 text-sm font-semibold text-brand-800 sm:hidden">
+              <span>{copy.moreFilters}{secondaryFilterCount > 0 ? ` (${secondaryFilterCount})` : ''}</span><span aria-hidden="true">{secondaryOpen ? '−' : '+'}</span>
+              {secondaryFilterCount > 0 && <span className="sr-only">{secondaryFilterCount} {copy.activeSecondary}</span>}
+            </button>
+            <div id="directory-secondary-filters" className={`${secondaryOpen ? 'grid' : 'hidden'} gap-4 sm:col-span-3 sm:grid sm:grid-cols-3`}>
             <div>
               <label htmlFor="specialty-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.specialty}
@@ -287,20 +336,6 @@ export default function FindOsteopathDirectory({
               </select>
             </div>
             <div>
-              <label htmlFor="city-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
-                {copy.city}
-              </label>
-              <input
-                id="city-filter"
-                type="text"
-                dir="auto"
-                value={cityFilter}
-                onChange={(e) => setCityFilter(e.target.value)}
-                placeholder={copy.cityPlaceholder}
-                className={inputCls}
-              />
-            </div>
-            <div>
               <label htmlFor="country-filter" className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-600">
                 {copy.country}
               </label>
@@ -312,8 +347,8 @@ export default function FindOsteopathDirectory({
                 className={inputCls}
               >
                 <option value="">{copy.allCountries}</option>
-                {COUNTRIES.map((c) => (
-                  <option key={c.value} value={c.value}>{isArabic ? c.ar : c.value}</option>
+                {countryOptions.map((option) => (
+                  <option key={option.value} value={option.value} dir="auto">{option.label}</option>
                 ))}
               </select>
             </div>
@@ -330,6 +365,7 @@ export default function FindOsteopathDirectory({
                 placeholder={copy.namePlaceholder}
                 className={inputCls}
               />
+            </div>
             </div>
           </div>
           {hasFilters && (
@@ -461,23 +497,28 @@ export default function FindOsteopathDirectory({
                   </div>
 
                   {o.bio && (
-                    <p dir="auto" className="directory-practitioner-bio mt-5 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                      {isArabic ? getArabicContent(o.bioAr) : o.bio}
-                    </p>
+                    <div className="mt-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{isArabic ? 'المؤهلات والنبذة المهنية' : 'Qualifications and biography'}</p>
+                      <p dir="auto" className="directory-practitioner-bio mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600">{isArabic ? getArabicContent(o.bioAr) : o.bio}</p>
+                    </div>
                   )}
 
                   {o.location && (
-                    <p dir="auto" title={isArabic ? getArabicContent(o.locationAr) : o.location} className="mt-4 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
+                    <div className="mt-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{isArabic ? 'مواقع الممارسة' : 'Practice locations'}</p>
+                    <p dir="auto" title={isArabic ? getArabicContent(o.locationAr) : o.location} className="mt-2 flex gap-2 line-clamp-2 text-sm leading-relaxed text-slate-600">
                       <svg className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21s7-5.52 7-12A7 7 0 105 9c0 6.48 7 12 7 12z" />
                         <circle cx="12" cy="9" r="2.25" strokeWidth={1.5} />
                       </svg>
                       <span>{isArabic ? getArabicContent(o.locationAr) : o.location}</span>
                     </p>
+                    </div>
                   )}
 
                   {(o.phone || o.email) && (
                     <div className="mt-auto space-y-1.5 border-t border-gray-100 pt-4">
+                    <p className="pb-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{isArabic ? 'التواصل والمواعيد' : 'Contact and appointments'}</p>
                     {o.phone && (
                       <a href={`tel:${o.phone.replace(/[^+\d]/g, '')}`} dir="ltr" className="flex min-h-11 items-center gap-2 font-sans text-sm text-slate-600 transition-colors hover:text-brand-700">
                         <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

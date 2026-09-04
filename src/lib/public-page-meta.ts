@@ -10,14 +10,14 @@ export const PUBLIC_PAGE_META: Record<
 > = {
   '/': {
     en: {
-      title: 'Egyptian Society of Osteopathic Medicine (EGSOM)',
+      title: 'Find an Osteopath & Training in Egypt | EGSOM',
       description:
-        'EGSOM advances responsible osteopathic practice through professional education, clear standards, and practical information for the public.',
+        'EGSOM helps the public find listed osteopaths and helps professionals explore osteopathic education and directory listing opportunities in Egypt.',
     },
     ar: {
-      title: 'الجمعية المصرية لطب الأوستيوباثية (EGSOM)',
+      title: 'ابحث عن ممارس وتدريب الأوستيوباثي في مصر | EGSOM',
       description:
-        'تعمل الجمعية على تطوير الممارسة المسؤولة للأوستيوباثي من خلال التعليم المهني والمعايير الواضحة والمعلومات المفيدة للجمهور.',
+        'تساعد الجمعية الجمهور في العثور على ممارسي الأوستيوباثي المدرجين، وتساعد المهنيين في استكشاف فرص التعليم والإدراج في الدليل في مصر.',
     },
   },
   '/about': {
@@ -32,16 +32,28 @@ export const PUBLIC_PAGE_META: Record<
         'تعرّف على الجمعية المصرية لطب الأوستيوباثية ورسالتها ورؤيتها وقيمها المهنية.',
     },
   },
-  '/courses': {
+  '/standards': {
     en: {
-      title: 'Courses & Training · EGSOM',
+      title: 'Directory Review & Credential Status | EGSOM',
       description:
-        'Explore EGSOM osteopathic education, workshops, training programs, and professional development opportunities.',
+        'Understand how EGSOM reviews directory applications, publishes profiles, displays recorded credential status, and handles correction requests.',
     },
     ar: {
-      title: 'الدورات والتدريب · EGSOM',
+      title: 'مراجعة الدليل وحالة المؤهلات | EGSOM',
       description:
-        'استكشف برامج التعليم وورش العمل والتدريب وفرص التطوير المهني في الأوستيوباثي لدى الجمعية.',
+        'تعرّف على كيفية مراجعة طلبات الدليل ونشر الملفات وعرض حالة المؤهلات المسجلة والتعامل مع طلبات التصحيح لدى الجمعية.',
+    },
+  },
+  '/courses': {
+    en: {
+      title: 'Osteopathy Courses & Training in Egypt | EGSOM',
+      description:
+        'Explore published osteopathy courses, workshops and professional training opportunities from EGSOM in Egypt.',
+    },
+    ar: {
+      title: 'دورات وتدريب الأوستيوباثي في مصر | EGSOM',
+      description:
+        'استكشف دورات الأوستيوباثي وورش العمل وفرص التدريب المهني المنشورة من الجمعية في مصر.',
     },
   },
   '/activities': {
@@ -58,14 +70,14 @@ export const PUBLIC_PAGE_META: Record<
   },
   '/find-osteopath': {
     en: {
-      title: 'Find an Osteopath · EGSOM',
+      title: 'Find an Osteopath in Egypt | EGSOM Directory',
       description:
-        'Search the EGSOM directory for listed osteopathic practitioners in Egypt.',
+        'Find listed osteopaths in Egypt. Compare published training, practice locations and contact details, then contact a practitioner directly.',
     },
     ar: {
-      title: 'دليل الممارسين · EGSOM',
+      title: 'ابحث عن ممارس أوستيوباثي في مصر | دليل EGSOM',
       description:
-        'ابحث في دليل الجمعية عن ممارسي الأوستيوباثي المدرجين في مصر.',
+        'ابحث عن ممارسي الأوستيوباثي المدرجين في مصر، وقارن التدريب المنشور ومواقع الممارسة وبيانات التواصل، ثم تواصل مع الممارس مباشرة.',
     },
   },
   '/practitioners': {

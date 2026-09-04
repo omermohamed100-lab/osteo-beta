@@ -29,6 +29,7 @@ export async function PATCH(
       data: {
         status: data.status,
         reviewNotes: data.reviewNotes,
+        ...Object.fromEntries(Object.entries(data).filter(([key]) => key !== 'status' && key !== 'reviewNotes')),
         reviewedAt: data.status === 'pending' ? null : new Date(),
       },
       include: {

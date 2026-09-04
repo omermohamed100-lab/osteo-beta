@@ -9,6 +9,7 @@ import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import { getPublicOsteopathProfile } from '@/lib/public-osteopath';
 import { getPublicCredentialStatus } from '@/lib/practitioner-credentials';
 import { getArabicContent } from '@/lib/arabic-content';
+import PractitionerProfileAnalytics from '@/components/analytics/PractitionerProfileAnalytics';
 
 export const dynamic = 'force-dynamic';
 
@@ -108,23 +109,40 @@ export default async function OsteopathProfilePage({ params }: { params: Promise
               <h2 dir="auto" className="mt-3 font-display text-[clamp(2rem,4vw,3.6rem)] font-semibold leading-none text-brand-950"><LocalizedText en={profile.name} ar={getArabicContent(profile.nameAr)} /></h2>
               <p dir="auto" className="mt-3 text-sm text-slate-500"><LocalizedText en={`${profile.city}, ${profile.country}`} ar={`${getArabicContent(profile.cityAr)}، ${getArabicContent(profile.countryAr)}`} /></p>
 
-              {profile.bio && <p dir="auto" className="mt-8 max-w-2xl text-base leading-8 text-slate-600"><LocalizedText en={profile.bio} ar={getArabicContent(profile.bioAr)} /></p>}
+              <section className="mt-8 border-t border-brand-950/12 pt-6" aria-labelledby="profile-biography-heading">
+                <h2 id="profile-biography-heading" className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  <LocalizedText en="Qualifications and professional biography" ar="المؤهلات والنبذة المهنية" />
+                </h2>
+                {profile.bio ? (
+                  <p dir="auto" className="mt-3 max-w-2xl text-base leading-8 text-slate-600"><LocalizedText en={profile.bio} ar={getArabicContent(profile.bioAr)} /></p>
+                ) : (
+                  <p className="mt-3 text-sm leading-7 text-slate-500"><LocalizedText en="Professional biography not provided." ar="لم تُقدَّم نبذة مهنية." /></p>
+                )}
+              </section>
 
-              {profile.location && (
-                <div className="mt-8 border-t border-brand-950/12 pt-6">
-                  <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
-                    <LocalizedText en="Published practice location" ar="موقع الممارسة المنشور" />
+              <section className="mt-8 border-t border-brand-950/12 pt-6" aria-labelledby="practice-locations-heading">
+                  <h2 id="practice-locations-heading" className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                    <LocalizedText en="Practice locations" ar="مواقع الممارسة" />
                   </h2>
-                  <p dir="auto" className="mt-3 text-sm leading-7 text-slate-600"><LocalizedText en={profile.location} ar={getArabicContent(profile.locationAr)} /></p>
-                </div>
-              )}
+                  {profile.location ? (
+                    <p dir="auto" className="mt-3 text-sm leading-7 text-slate-600"><LocalizedText en={profile.location} ar={getArabicContent(profile.locationAr)} /></p>
+                  ) : (
+                    <p className="mt-3 text-sm leading-7 text-slate-500"><LocalizedText en="Practice address not provided. Contact this practitioner for location details." ar="لم يُقدَّم عنوان الممارسة. تواصل مع الممارس للحصول على تفاصيل الموقع." /></p>
+                  )}
+              </section>
 
-              {(profile.phone || profile.email) && (
-                <div className="mt-8 flex flex-wrap gap-3">
-                  {profile.phone && <a href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`} dir="ltr" className="inline-flex min-h-11 items-center border border-brand-950/20 px-4 text-sm font-semibold text-brand-800 hover:border-brand-700">{profile.phone}</a>}
-                  {profile.email && <a href={`mailto:${profile.email}`} dir="ltr" className="inline-flex min-h-11 items-center border border-brand-950/20 px-4 text-sm font-semibold text-brand-800 hover:border-brand-700">{profile.email}</a>}
-                </div>
-              )}
+              <section className="mt-8 border-t border-brand-950/12 pt-6" aria-labelledby="practitioner-contact-heading">
+                <h2 id="practitioner-contact-heading" className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  <LocalizedText en="Contact and appointments" ar="التواصل والمواعيد" />
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  <LocalizedText en="Use the published contact details to ask the practitioner directly about appointments, availability, and location details." ar="استخدم بيانات التواصل المنشورة للاستفسار من الممارس مباشرة عن المواعيد والتوفر وتفاصيل الموقع." />
+                </p>
+                <PractitionerProfileAnalytics profileId={profile.id} phone={profile.phone} email={profile.email} />
+                {!profile.phone && !profile.email && (
+                  <p className="mt-3 text-sm leading-7 text-slate-500"><LocalizedText en="Direct contact details are not published for this profile." ar="لا توجد بيانات تواصل مباشرة منشورة لهذا الملف." /></p>
+                )}
+              </section>
             </div>
           </div>
 
@@ -150,6 +168,14 @@ export default async function OsteopathProfilePage({ params }: { params: Promise
             </section>
           )}
 
+          {credentialStatus === 'unverified' && (
+            <section className="mt-8 border border-brand-950/15 bg-white p-6 sm:p-8" aria-labelledby="credential-heading">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600"><LocalizedText en="Credential information" ar="معلومات المؤهل" /></p>
+              <h2 id="credential-heading" className="mt-2 text-xl font-semibold text-brand-950"><LocalizedText en="No verified credential record is displayed" ar="لا يُعرض سجل مؤهل موثق" /></h2>
+              <p className="mt-3 max-w-[70ch] text-sm leading-7 text-slate-600"><LocalizedText en="Directory inclusion and profile review do not, by themselves, verify a credential. A verified record is displayed only when the required evidence details and verification date are recorded." ar="لا يثبت الإدراج في الدليل أو مراجعة الملف، في حد ذاتهما، صحة مؤهل. ولا يُعرض سجل موثق إلا عند تسجيل تفاصيل الأدلة المطلوبة وتاريخ التحقق." /></p>
+            </section>
+          )}
+
           <div className="mt-8 flex flex-col gap-4 border-t border-brand-950/15 pt-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
             <p>
               {profile.profileReviewedAt ? (
@@ -158,6 +184,7 @@ export default async function OsteopathProfilePage({ params }: { params: Promise
                 <LocalizedText en="No public profile-review date is recorded." ar="لا يوجد تاريخ منشور لمراجعة الملف." />
               )}
             </p>
+            <p className="max-w-md text-xs leading-5 text-slate-500"><LocalizedText en="The profile-review date refers to the published profile information, not credential verification." ar="يشير تاريخ مراجعة الملف إلى معلومات الملف المنشورة، وليس إلى التحقق من المؤهل." /></p>
             <Link href="/find-osteopath" className="inline-flex min-h-11 items-center gap-2 font-semibold text-brand-700 hover:text-brand-950">
               <span className="rtl-flip" aria-hidden="true">←</span>
               <LocalizedText en="Back to directory" ar="العودة إلى الدليل" />

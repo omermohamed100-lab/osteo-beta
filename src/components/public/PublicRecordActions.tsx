@@ -1,7 +1,8 @@
 'use client';
 
-import Link from '@/components/i18n/LocalizedLink';
 import LocalizedText from '@/components/i18n/LocalizedText';
+import { inquiryHref, type InquiryType } from '@/lib/inquiry-context';
+import TrackedInquiryLink from '@/components/analytics/TrackedInquiryLink';
 
 function calendarDate(value: string) {
   return new Date(value).toISOString().slice(0, 10).replaceAll('-', '');
@@ -23,12 +24,18 @@ export default function PublicRecordActions({
   start,
   end,
   location,
+  inquiryType,
+  listingId,
+  titleAr,
 }: {
   title: string;
   description: string;
   start: string;
   end?: string | null;
   location?: string;
+  inquiryType: Extract<InquiryType, 'course' | 'activity'>;
+  listingId: string;
+  titleAr?: string;
 }) {
   const startDate = calendarDate(start);
   const endDate = nextCalendarDay(end || start);
@@ -50,9 +57,9 @@ export default function PublicRecordActions({
 
   return (
     <div className="flex flex-wrap gap-3">
-      <Link href="/contact" className="inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2">
+      <TrackedInquiryLink inquiryType={inquiryType} href={inquiryHref({ type: inquiryType, id: listingId, title, titleAr })} className="inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2">
         <LocalizedText en="Ask about this listing" ar="استفسر عن هذا الإعلان" />
-      </Link>
+      </TrackedInquiryLink>
       <a href={calendarHref} download="egsom-calendar.ics" className="inline-flex min-h-12 items-center justify-center border border-brand-950/20 px-5 text-sm font-semibold text-brand-800 hover:border-brand-700 focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2">
         <LocalizedText en="Add to calendar" ar="أضف إلى التقويم" />
       </a>

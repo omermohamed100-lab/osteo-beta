@@ -162,11 +162,6 @@ export default async function Footer() {
                 </li>
               )}
             </ul>
-            <div className="mt-6">
-              <Link href="/admin/login" className="inline-flex min-h-11 items-center text-xs text-brand-300 outline-none transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                <LocalizedText en="Admin Login" ar="دخول الإدارة" />
-              </Link>
-            </div>
           </div>
         </div>
 

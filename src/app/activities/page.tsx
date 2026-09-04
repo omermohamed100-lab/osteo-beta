@@ -7,6 +7,8 @@ import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import Link from '@/components/i18n/LocalizedLink';
 import { getArabicContent } from '@/lib/arabic-content';
+import { inquiryHref } from '@/lib/inquiry-context';
+import TrackedInquiryLink from '@/components/analytics/TrackedInquiryLink';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -69,12 +71,13 @@ export default async function ActivitiesPage() {
                   ar="عُد قريبًا للاطلاع على أحدث الأنشطة."
                 />
               </p>
-              <Link
-                href="/contact"
+              <TrackedInquiryLink
+                inquiryType="upcoming-activities"
+                href={inquiryHref({ type: 'upcoming-activities' })}
                 className="mt-6 inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4"
               >
                 <LocalizedText en="Ask about upcoming activities" ar="استفسر عن الأنشطة القادمة" />
-              </Link>
+              </TrackedInquiryLink>
             </div>
           ) : (
             <div className="space-y-5">

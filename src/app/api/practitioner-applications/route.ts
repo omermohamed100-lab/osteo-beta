@@ -23,6 +23,19 @@ import {
   RequestBodyTooLargeError,
 } from '@/lib/request-security';
 
+function decodePhoto(value: string) {
+  const match = value.match(/^data:image\/(jpeg|png|webp);base64,(.+)$/);
+  if (!match) throw new z.ZodError([]);
+  const bytes = Buffer.from(match[2], 'base64');
+  if (bytes.length === 0 || bytes.length > 2 * 1024 * 1024) throw new z.ZodError([]);
+  if (bytes.toString('base64').replace(/=+$/, '') !== match[2].replace(/=+$/, '')) throw new z.ZodError([]);
+  const valid = match[1] === 'jpeg' ? bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+    : match[1] === 'png' ? bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+    : bytes.subarray(0, 4).toString('ascii') === 'RIFF' && bytes.subarray(8, 12).toString('ascii') === 'WEBP';
+  if (!valid) throw new z.ZodError([]);
+  return { bytes, mediaType: `image/${match[1]}` };
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
@@ -57,6 +70,7 @@ export async function POST(request: NextRequest) {
 
     const body = await readBoundedJsonBody(request, PRACTITIONER_APPLICATION_BODY_MAX_BYTES);
     const data = practitionerApplicationSchema.parse(body);
+    const photo = decodePhoto(data.profileImage);
     if (data.website) return acceptedResponse(202);
 
     try {
@@ -95,6 +109,7 @@ export async function POST(request: NextRequest) {
 
     await db.practitionerApplication.create({
       data: {
+        primaryLanguage: data.primaryLanguage,
         applicationType: data.applicationType,
         name: data.name,
         nameAr: data.nameAr,
@@ -110,7 +125,10 @@ export async function POST(request: NextRequest) {
         locationAr: data.locationAr,
         bio: data.bio,
         bioAr: data.bioAr,
-        profileImage: data.profileImage || null,
+        profileImage: null,
+        photoData: photo.bytes,
+        photoMediaType: photo.mediaType,
+        photoOriginalName: 'application-photo',
         credentialType: data.credentialType,
         credentialTypeAr: data.credentialTypeAr,
         credentialNumber: data.credentialNumber,

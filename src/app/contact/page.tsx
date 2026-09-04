@@ -1,19 +1,31 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/layout/PageHeader';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import Link from '@/components/i18n/LocalizedLink';
+import { clearSessionDraft, readSessionDraft, writeSessionDraft } from '@/lib/session-draft';
+import { inquiryLabel, messageWithInquiryContext, parseInquiryContext } from '@/lib/inquiry-context';
+import { educationInquiryProperties, safeTrack } from '@/lib/conversion-analytics';
 
 type FieldErrors = { name?: string; email?: string; message?: string };
 
+const CONTACT_DRAFT_KEY = 'egsom-contact-draft';
+const CONTACT_DRAFT_FIELDS = ['name', 'email', 'message'] as const;
+const INITIAL_FORM = { name: '', email: '', message: '', website: '' };
+
 export default function ContactPage() {
   const { isArabic } = useLanguage();
+  const searchParams = useSearchParams();
+  const inquiryContext = parseInquiryContext(searchParams);
   const copy = isArabic
     ? {
         name: 'الاسم',
         email: 'البريد الإلكتروني',
         message: 'الرسالة',
+        inquiry: 'موضوع استفسارك',
+        inquiryMessage: 'ما الذي تود معرفته؟',
         nameError: 'يرجى إدخال الاسم (حرفان على الأقل).',
         emailError: 'يرجى إدخال بريد إلكتروني صحيح.',
         messageError: 'يجب ألا تقل الرسالة عن 10 أحرف.',
@@ -33,6 +45,8 @@ export default function ContactPage() {
         name: 'Name',
         email: 'Email',
         message: 'Message',
+        inquiry: 'Your inquiry',
+        inquiryMessage: 'What would you like to know?',
         nameError: 'Please enter your name (at least 2 characters).',
         emailError: 'Please enter a valid email address.',
         messageError: 'Message must be at least 10 characters.',
@@ -49,7 +63,8 @@ export default function ContactPage() {
         privacySuffix: '.',
       };
 
-  const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [draftReady, setDraftReady] = useState(false);
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState('');
@@ -57,7 +72,43 @@ export default function ContactPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
-  const set = (patch: Partial<typeof form>) => setForm((p) => ({ ...p, ...patch }));
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      const draft = readSessionDraft(CONTACT_DRAFT_KEY, INITIAL_FORM, CONTACT_DRAFT_FIELDS);
+      if (draft) setForm((current) => ({ ...current, ...draft }));
+      setDraftReady(true);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  const set = (patch: Partial<typeof form>) => {
+    setForm((current) => {
+      const next = { ...current, ...patch };
+
+      // Persist inside the input update rather than in a later effect. The
+      // language control performs a full navigation, so a deferred effect can
+      // lose the last edit when navigation starts immediately after typing.
+      if (draftReady && status !== 'success') {
+        if (CONTACT_DRAFT_FIELDS.some((field) => next[field].trim())) {
+          writeSessionDraft(CONTACT_DRAFT_KEY, next, CONTACT_DRAFT_FIELDS);
+        } else {
+          clearSessionDraft(CONTACT_DRAFT_KEY);
+        }
+      }
+
+      return next;
+    });
+  };
+  const clearFieldError = (field: keyof FieldErrors) => {
+    setFieldErrors((previous) => {
+      if (!previous[field]) return previous;
+
+      const next = { ...previous };
+      delete next[field];
+      return next;
+    });
+  };
+  const hasFieldErrors = Object.values(fieldErrors).some(Boolean);
 
   const validate = (): FieldErrors => {
     const errors: FieldErrors = {};
@@ -87,11 +138,18 @@ export default function ContactPage() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          message: messageWithInquiryContext(form.message, inquiryContext),
+        }),
       });
       if (res.ok) {
+        if (inquiryContext) {
+          safeTrack('education_inquiry_received', educationInquiryProperties(inquiryContext.type));
+        }
+        clearSessionDraft(CONTACT_DRAFT_KEY);
         setStatus('success');
-        setForm({ name: '', email: '', message: '', website: '' });
+        setForm(INITIAL_FORM);
         setFieldErrors({});
       } else {
         const data = await res.json();
@@ -153,7 +211,13 @@ export default function ContactPage() {
                   onChange={(event) => set({ website: event.target.value })}
                 />
               </div>
-              {Object.keys(fieldErrors).length > 0 && (
+              {inquiryContext && (
+                <div className="rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-950">
+                  <span className="font-semibold">{copy.inquiry}:</span>{' '}
+                  <span dir="auto">{inquiryLabel(inquiryContext, isArabic)}</span>
+                </div>
+              )}
+              {hasFieldErrors && (
                 <div
                   id="contact-error-summary"
                   role="alert"
@@ -180,7 +244,7 @@ export default function ContactPage() {
                     autoComplete="name"
                     maxLength={100}
                     value={form.name}
-                    onChange={(e) => { set({ name: e.target.value }); setFieldErrors((p) => ({ ...p, name: undefined })); }}
+                    onChange={(e) => { set({ name: e.target.value }); clearFieldError('name'); }}
                     className={inputCls('name')}
                     aria-invalid={Boolean(fieldErrors.name)}
                     aria-describedby={fieldErrors.name ? 'name-error' : undefined}
@@ -198,7 +262,7 @@ export default function ContactPage() {
                     autoComplete="email"
                     maxLength={254}
                     value={form.email}
-                    onChange={(e) => { set({ email: e.target.value }); setFieldErrors((p) => ({ ...p, email: undefined })); }}
+                    onChange={(e) => { set({ email: e.target.value }); clearFieldError('email'); }}
                     className={`${inputCls('email')} font-sans`}
                     aria-invalid={Boolean(fieldErrors.email)}
                     aria-describedby={fieldErrors.email ? 'email-error' : undefined}
@@ -207,16 +271,16 @@ export default function ContactPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">{copy.message}</label>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700">{inquiryContext ? copy.inquiryMessage : copy.message}</label>
                 <textarea
                   id="message"
                   name="message"
                   ref={messageRef}
                   dir="auto"
                   rows={4}
-                  maxLength={5000}
+                  maxLength={inquiryContext ? 4500 : 5000}
                   value={form.message}
-                  onChange={(e) => { set({ message: e.target.value }); setFieldErrors((p) => ({ ...p, message: undefined })); }}
+                  onChange={(e) => { set({ message: e.target.value }); clearFieldError('message'); }}
                   className={inputCls('message')}
                   aria-invalid={Boolean(fieldErrors.message)}
                   aria-describedby={fieldErrors.message ? 'message-error' : undefined}

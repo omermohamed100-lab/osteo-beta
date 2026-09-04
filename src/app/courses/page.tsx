@@ -6,6 +6,9 @@ import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import Link from '@/components/i18n/LocalizedLink';
 import { getArabicContent } from '@/lib/arabic-content';
+import { inquiryHref } from '@/lib/inquiry-context';
+import TrackedInquiryLink from '@/components/analytics/TrackedInquiryLink';
+import CourseInterestForm from '@/components/courses/CourseInterestForm';
 
 export const dynamic = 'force-dynamic';
 import PageHeader from '@/components/layout/PageHeader';
@@ -27,6 +30,20 @@ export default async function CoursesPage() {
         ],
       },
       orderBy: { startDate: 'asc' },
+    }),
+    [],
+  );
+  const { data: previousCourses, unavailable: previousUnavailable } = await getPublicData(
+    () => db.course.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { endDate: { lt: today } },
+          { endDate: null, startDate: { lt: today } },
+        ],
+      },
+      orderBy: { startDate: 'desc' },
+      take: 6,
     }),
     [],
   );
@@ -66,12 +83,13 @@ export default async function CoursesPage() {
                   ar="عُد قريبًا للاطلاع على البرامج القادمة."
                 />
               </p>
-              <Link
-                href="/contact"
+              <TrackedInquiryLink
+                inquiryType="upcoming-courses"
+                href={inquiryHref({ type: 'upcoming-courses' })}
                 className="mt-6 inline-flex min-h-12 items-center justify-center bg-brand-950 px-5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-150 hover:bg-brand-800 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4"
               >
                 <LocalizedText en="Ask about upcoming programs" ar="استفسر عن البرامج القادمة" />
-              </Link>
+              </TrackedInquiryLink>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
@@ -129,6 +147,32 @@ export default async function CoursesPage() {
               ))}
             </div>
           )}
+          {!dataUnavailable && <div className="mt-8"><CourseInterestForm /></div>}
+
+          {!dataUnavailable && (
+            <section className="mt-10 grid gap-5 md:grid-cols-2" aria-label="Education information">
+              <div className="surface-panel p-6">
+                <h2 className="font-display text-2xl font-semibold text-brand-950"><LocalizedText en="Who can apply?" ar="من يمكنه التقديم؟" /></h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600"><LocalizedText en="Eligibility is set for each program rather than assumed across all EGSOM education. When a course is published, review its listing for the intended audience and any stated application requirements, then contact EGSOM if a detail is unclear." ar="تُحدَّد الأهلية لكل برنامج على حدة، ولا تُفترض شروط موحدة لجميع برامج الجمعية التعليمية. عند نشر دورة، راجع قائمتها لمعرفة الفئة المستهدفة وأي متطلبات تقديم مذكورة، ثم تواصل مع الجمعية إذا لم تكن إحدى التفاصيل واضحة." /></p>
+                <Link href="/practitioners" className="mt-4 inline-flex text-sm font-semibold text-brand-700 underline underline-offset-4"><LocalizedText en="Practitioner resources" ar="موارد الممارسين" /></Link>
+              </div>
+              <div className="surface-panel p-6">
+                <h2 className="font-display text-2xl font-semibold text-brand-950"><LocalizedText en="How training is delivered" ar="كيف يُقدَّم التدريب؟" /></h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600"><LocalizedText en="Each published listing is the source for its instructor, dates, duration and fee when recorded. Delivery format, location and other arrangements are included only when confirmed for that program; use the course inquiry route for anything not shown." ar="تُعد قائمة كل دورة منشورة المصدر الخاص بالمدرّس والمواعيد والمدة والرسوم عند تسجيلها. ولا يُذكر نمط التقديم والموقع والترتيبات الأخرى إلا عند تأكيدها لذلك البرنامج؛ استخدم مسار الاستفسار عن الدورة لأي معلومات غير ظاهرة." /></p>
+                <div className="mt-4 flex flex-wrap gap-4 text-sm font-semibold text-brand-700"><Link href="/activities" className="underline underline-offset-4"><LocalizedText en="Related activities" ar="الأنشطة ذات الصلة" /></Link><Link href="/standards" className="underline underline-offset-4"><LocalizedText en="Review standards" ar="معايير المراجعة" /></Link></div>
+              </div>
+            </section>
+          )}
+
+          {!dataUnavailable && (previousUnavailable ? (
+            <div className="mt-10"><PublicDataUnavailable title={{ en: 'Previous programs temporarily unavailable', ar: 'البرامج السابقة غير متاحة مؤقتًا' }} description={{ en: 'Historical course information could not be loaded. Current course and notification information remains available above.', ar: 'تعذر تحميل معلومات الدورات السابقة. تظل معلومات الدورات الحالية وطلب الإشعار متاحة أعلاه.' }} /></div>
+          ) : previousCourses.length > 0 ? (
+            <section className="mt-12" aria-labelledby="previous-programs-title">
+              <h2 id="previous-programs-title" className="font-display text-3xl font-semibold text-brand-950"><LocalizedText en="Previous programs" ar="البرامج السابقة" /></h2>
+              <p className="mt-2 text-sm text-slate-600"><LocalizedText en="Documented active course records whose listed dates have passed. These are historical references, not current offers." ar="سجلات دورات موثقة ونشطة انقضت مواعيدها المدرجة. تُعرض للمرجعية التاريخية وليست عروضًا حالية." /></p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{previousCourses.map((course) => <article key={course.id} className="surface-card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500"><LocalizedDate value={course.startDate.toISOString()} /></p><h3 dir="auto" className="mt-2 font-bold text-brand-950"><LocalizedText en={course.title} ar={getArabicContent(course.titleAr)} /></h3><p dir="auto" className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600"><LocalizedText en={course.description} ar={getArabicContent(course.descriptionAr)} /></p><Link href={`/courses/${encodeURIComponent(course.id)}`} className="mt-4 inline-flex text-sm font-semibold text-brand-700 underline underline-offset-4"><LocalizedText en="View historical details" ar="عرض التفاصيل السابقة" /></Link></article>)}</div>
+            </section>
+          ) : null)}
         </div>
       </div>
     </div>

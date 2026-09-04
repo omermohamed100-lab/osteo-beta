@@ -134,7 +134,7 @@ export default function AdminApplicationsPage() {
       const response = await fetch(`/api/practitioner-applications/${selected.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: reviewStatus, reviewNotes }),
+        body: JSON.stringify({ status: reviewStatus, reviewNotes, name: selected.name, nameAr: selected.nameAr, specialty: selected.specialty, specialtyAr: selected.specialtyAr, city: selected.city, cityAr: selected.cityAr, country: selected.country, countryAr: selected.countryAr, location: selected.location, locationAr: selected.locationAr, bio: selected.bio, bioAr: selected.bioAr, credentialType: selected.credentialType, credentialTypeAr: selected.credentialTypeAr, credentialIssuer: selected.credentialIssuer, credentialIssuerAr: selected.credentialIssuerAr }),
       });
       if (!response.ok) throw new Error('The review could not be saved.');
       const updated = await response.json() as Application;
@@ -145,6 +145,8 @@ export default function AdminApplicationsPage() {
       setIsSaving(false);
     }
   };
+
+  const editTranslation = (field: keyof Application, value: string) => setApplications((items) => items.map((item) => item.id === selectedId ? { ...item, [field]: value } : item));
 
   const createDraft = async () => {
     if (!selected || selected.applicationType !== 'new_listing') return;
@@ -223,8 +225,10 @@ export default function AdminApplicationsPage() {
                 <div className="flex flex-wrap gap-4 text-sm">
                   <a href={`mailto:${selected.email}`} className="font-semibold text-brand-700 underline underline-offset-4">Email applicant</a>
                   {selected.existingProfileUrl && <a href={selected.existingProfileUrl} target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline underline-offset-4">Open current profile</a>}
-                  {selected.profileImage && <a href={selected.profileImage} target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline underline-offset-4">Open submitted photo</a>}
+                  <a href={`/api/practitioner-applications/${selected.id}/photo`} target="_blank" rel="noreferrer" className="font-semibold text-brand-700 underline underline-offset-4">Preview private submitted photo</a>
                 </div>
+
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5"><h3 className="font-semibold text-slate-900">Complete bilingual profile copy</h3><p className="mt-1 text-xs text-slate-600">Both versions must be completed and reviewed before a draft can be created.</p><div className="mt-4 grid gap-3 sm:grid-cols-2">{([['name','Name (English)'],['nameAr','Name (Arabic)'],['specialty','Specialty (English)'],['specialtyAr','Specialty (Arabic)'],['city','City (English)'],['cityAr','City (Arabic)'],['country','Country (English)'],['countryAr','Country (Arabic)'],['location','Location (English)'],['locationAr','Location (Arabic)'],['credentialType','Credential type (English)'],['credentialTypeAr','Credential type (Arabic)'],['credentialIssuer','Issuer (English)'],['credentialIssuerAr','Issuer (Arabic)']] as [keyof Application,string][]).map(([key,label]) => <label key={key} className="text-xs font-semibold text-slate-700">{label}<input value={String(selected[key] ?? '')} onChange={(event) => editTranslation(key,event.target.value)} dir={key.endsWith('Ar') ? 'rtl' : 'auto'} className="mt-1 min-h-10 w-full border border-slate-300 bg-white px-3 text-sm" /></label>)}</div><div className="mt-3 grid gap-3 sm:grid-cols-2"><label className="text-xs font-semibold">Biography (English)<textarea value={selected.bio} onChange={(e) => editTranslation('bio',e.target.value)} rows={4} className="mt-1 w-full border bg-white p-2 text-sm" /></label><label className="text-xs font-semibold">Biography (Arabic)<textarea dir="rtl" value={selected.bioAr} onChange={(e) => editTranslation('bioAr',e.target.value)} rows={4} className="mt-1 w-full border bg-white p-2 text-sm" /></label></div></div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
                   <h3 className="font-semibold text-slate-900">Review decision</h3>

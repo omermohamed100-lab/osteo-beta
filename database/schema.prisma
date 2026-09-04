@@ -53,6 +53,21 @@ model Course {
   updatedAt   DateTime  @updatedAt
 }
 
+model CourseInterest {
+  id                          String   @id @default(cuid())
+  email                       String
+  topic                       String   @default("")
+  consentNotifications        Boolean
+  notificationStatus          String   @default("pending")
+  notificationAttempts        Int      @default(0)
+  notificationLastAttemptedAt DateTime?
+  notificationSentAt          DateTime?
+  createdAt                   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email, createdAt])
+}
+
 model ContactSubmission {
   id                          String                   @id @default(cuid())
   name                        String
@@ -139,6 +154,10 @@ model PractitionerApplication {
   bio                   String
   bioAr                 String    @default("")
   profileImage          String?
+  primaryLanguage       String    @default("en")
+  photoData             Bytes?
+  photoMediaType        String    @default("")
+  photoOriginalName     String    @default("")
   credentialType        String
   credentialTypeAr      String    @default("")
   credentialNumber      String

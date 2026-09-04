@@ -13,6 +13,14 @@ test('contact validation announces a bilingual summary and focuses the first inv
   assert.doesNotMatch(source, /-left-\[10000px\]/);
 });
 
+test('contact validation summary only remains while populated field errors exist', async () => {
+  const source = await readFile('src/app/contact/page.tsx', 'utf8');
+  assert.match(source, /Object\.values\(fieldErrors\)\.some\(Boolean\)/);
+  assert.match(source, /delete next\[field\]/);
+  assert.match(source, /\{hasFieldErrors && \(/);
+  assert.doesNotMatch(source, /\{ \.\.\.p, (?:name|email|message): undefined \}/);
+});
+
 test('gallery categories and media use semantic landmarks', async () => {
   const source = await readFile('src/app/gallery/page.tsx', 'utf8');
   assert.match(source, /<section key=\{cat\} aria-labelledby=\{headingId\}>/);

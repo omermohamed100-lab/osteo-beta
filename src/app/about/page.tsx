@@ -12,31 +12,31 @@ export async function generateMetadata() {
 
 const values = [
   {
-    title: 'Excellence',
-    titleAr: 'التميّز',
-    desc: 'We support clear professional standards for osteopathic education and clinical practice.',
-    descAr: 'ندعم معايير مهنية واضحة للتعليم والممارسة السريرية في الطب الأوستيوباثي.',
+    title: 'Clarity',
+    titleAr: 'الوضوح',
+    desc: 'We distinguish directory listing review from the status of a recorded credential.',
+    descAr: 'نوضح الفرق بين مراجعة الإدراج في الدليل وحالة المؤهل المسجل.',
     icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z',
   },
   {
-    title: 'Integration',
-    titleAr: 'التكامل',
-    desc: 'We work to embed osteopathic principles into Egypt\'s wider healthcare system, building bridges between disciplines for better patient outcomes.',
-    descAr: 'نعمل على دمج مبادئ الطب الأوستيوباثي في منظومة الرعاية الصحية المصرية وبناء جسور بين التخصصات لتحقيق نتائج أفضل للمرضى.',
+    title: 'Individual review',
+    titleAr: 'المراجعة الفردية',
+    desc: 'Directory applications are reviewed individually and never create a public profile automatically.',
+    descAr: 'تُراجع طلبات الدليل بصورة فردية ولا تنشئ ملفًا عامًا تلقائيًا.',
     icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
   },
   {
-    title: 'Community',
-    titleAr: 'المجتمع المهني',
-    desc: 'Our members share knowledge, mentor one another, and collaborate to support responsible osteopathic practice in Egypt.',
-    descAr: 'يتبادل أعضاؤنا المعرفة والخبرة ويتعاونون لدعم الممارسة المسؤولة للأوستيوباثي في مصر.',
+    title: 'Publication control',
+    titleAr: 'التحكم في النشر',
+    desc: 'Approved new applications become inactive drafts until a separate publication decision is made.',
+    descAr: 'تتحول الطلبات الجديدة الموافق عليها إلى مسودات غير نشطة إلى حين اتخاذ قرار نشر منفصل.',
     icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
   },
   {
-    title: 'Research',
-    titleAr: 'البحث العلمي',
-    desc: 'We champion evidence-based practice and support ongoing research that advances the science and art of osteopathic medicine.',
-    descAr: 'ندعم الممارسة القائمة على الدليل والبحوث المستمرة التي تطوّر علم وفن الطب الأوستيوباثي.',
+    title: 'Corrections',
+    titleAr: 'التصحيحات',
+    desc: 'Visitors and practitioners can use the published contact and application routes to request corrections or profile updates.',
+    descAr: 'يمكن للزوار والممارسين استخدام قنوات التواصل والطلبات المنشورة لطلب التصحيحات أو تحديث الملفات.',
     icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
   },
 ];
@@ -217,14 +217,14 @@ export default async function AboutPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl text-center relative z-10">
           <h2 className="font-display text-[clamp(1.75rem,4vw,3rem)] font-light text-white mb-4">
             <LocalizedText
-              en={<>Ready to join <em className="text-gold">EGSOM?</em></>}
-              ar="هل أنت مستعد للانضمام إلى الجمعية؟"
+              en={<>Explore <em className="text-gold">EGSOM resources</em></>}
+              ar="استكشف موارد الجمعية"
             />
           </h2>
           <p className="text-brand-300/70 mb-8 leading-relaxed">
             <LocalizedText
-              en="Explore professional education, connect with peers, and ask about participating in EGSOM's work."
-              ar="استكشف التعليم المهني وتواصل مع الزملاء واستفسر عن المشاركة في عمل الجمعية."
+              en="Explore published education opportunities, review the directory process, or contact EGSOM with a question."
+              ar="استكشف فرص التعليم المنشورة، وراجع إجراءات الدليل، أو تواصل مع الجمعية لطرح سؤال."
             />
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

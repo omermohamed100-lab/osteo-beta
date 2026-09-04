@@ -21,8 +21,8 @@ test('the directory renders practitioner data on the server before hydration', a
   assert.match(publicData, /approvedOsteopaths\.map\(toPublicDirectoryProfile\)/);
 });
 
-test('the sitemap exposes every approved practitioner profile in both languages', () => {
-  const entries = sitemap();
+test('the sitemap exposes every approved practitioner profile in both languages', async () => {
+  const entries = await sitemap();
 
   for (const profile of approvedOsteopaths) {
     for (const language of ['en', 'ar'] as const) {

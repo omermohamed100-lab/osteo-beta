@@ -19,6 +19,9 @@ export async function POST(
       const application = await transaction.practitionerApplication.findUnique({ where: { id } });
       if (!application) return { kind: 'missing' as const };
       if (application.applicationType !== 'new_listing') return { kind: 'manual' as const };
+      if (![application.name, application.nameAr, application.specialty, application.specialtyAr, application.city, application.cityAr, application.country, application.countryAr, application.location, application.locationAr, application.bio, application.bioAr, application.credentialType, application.credentialTypeAr, application.credentialIssuer, application.credentialIssuerAr].every((value) => value.trim())) {
+        return { kind: 'translation' as const };
+      }
       if (application.draftOsteopathId) {
         return { kind: 'success' as const, draftOsteopathId: application.draftOsteopathId };
       }
@@ -78,6 +81,7 @@ export async function POST(
     if (result.kind === 'manual') {
       return NextResponse.json({ error: 'Profile updates require manual comparison and must not overwrite a live profile.' }, { status: 409 });
     }
+    if (result.kind === 'translation') return NextResponse.json({ error: 'Staff must complete and review both language versions before creating a directory draft.' }, { status: 409 });
     if (result.kind === 'duplicate') {
       return NextResponse.json({ error: 'A profile with this email already exists. Review it manually before changing anything.', profileId: result.profileId }, { status: 409 });
     }

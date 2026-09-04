@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { enforceMutationRequest } from '@/lib/request-security';
 import { mediaUrlSchema } from '@/lib/url-security';
 import { approvedOsteopaths } from '@/data/approved-osteopaths';
+import { withApprovedDirectoryLocations } from '@/lib/public-osteopath';
 import { z } from 'zod';
 
 const osteopathSchema = z.object({
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
     if (publicRequest) {
       const listedEmails = new Set(osteopaths.map((osteopath) => osteopath.email.toLowerCase()));
       return NextResponse.json([
-        ...osteopaths,
+        ...osteopaths.map(withApprovedDirectoryLocations),
         ...approvedOsteopaths.filter((osteopath) => !listedEmails.has(osteopath.email.toLowerCase())),
       ]);
     }

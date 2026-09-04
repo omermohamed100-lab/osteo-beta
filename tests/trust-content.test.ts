@@ -135,8 +135,8 @@ test('approved bilingual public copy and activity terminology stay consistent', 
     readFile('src/app/activities/page.tsx', 'utf8'),
     readFile('src/components/home/HomeShowcase.tsx', 'utf8'),
   ]);
-  assert.match(home, /Advancing osteopathic practice in Egypt/);
-  assert.match(home, /نرتقي بممارسة الأوستيوباثي في مصر/);
+  assert.match(home, /Find an osteopath\. Explore training in Egypt\./);
+  assert.match(home, /ابحث عن ممارس أوستيوباثي\. واستكشف التدريب في مصر\./);
   assert.match(home, /Find an osteopath/);
   assert.match(home, /Explore courses and training/);
   assert.match(navbar, /Find an Osteopath/);
@@ -159,10 +159,10 @@ test('interior empty states provide approved bilingual contact actions', async (
     readFile('src/app/courses/page.tsx', 'utf8'),
     readFile('src/app/activities/page.tsx', 'utf8'),
   ]);
-  assert.match(courses, /href="\/contact"/);
+  assert.match(courses, /inquiryHref\(\{ type: 'upcoming-courses' \}\)/);
   assert.match(courses, /Ask about upcoming programs/);
   assert.match(courses, /استفسر عن البرامج القادمة/);
-  assert.match(activities, /href="\/contact"/);
+  assert.match(activities, /inquiryHref\(\{ type: 'upcoming-activities' \}\)/);
   assert.match(activities, /Ask about upcoming activities/);
   assert.match(activities, /استفسر عن الأنشطة القادمة/);
 });

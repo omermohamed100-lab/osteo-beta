@@ -8,6 +8,7 @@ export const LANGUAGE_REQUEST_HEADER = 'x-egsom-locale';
 export const PUBLIC_PAGE_PATHS = [
   '/',
   '/about',
+  '/standards',
   '/courses',
   '/activities',
   '/find-osteopath',

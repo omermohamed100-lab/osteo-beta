@@ -58,9 +58,23 @@ function toPublicProfile(profile: StoredOsteopath | ApprovedOsteopath): PublicOs
   return profile;
 }
 
+export function withApprovedDirectoryLocations<
+  T extends { email: string; directoryCities?: string[]; directoryCitiesAr?: string[] },
+>(profile: T): T & { directoryCities?: string[]; directoryCitiesAr?: string[] } {
+  const approvedProfile = approvedOsteopaths.find(
+    (approved) => approved.email.toLowerCase() === profile.email.toLowerCase(),
+  );
+  return {
+    ...profile,
+    directoryCities: profile.directoryCities ?? approvedProfile?.directoryCities,
+    directoryCitiesAr: profile.directoryCitiesAr ?? approvedProfile?.directoryCitiesAr,
+  };
+}
+
 function toPublicDirectoryProfile(
   profile: StoredOsteopath | ApprovedOsteopath,
 ): PublicDirectoryOsteopath {
+  const directoryProfile = withApprovedDirectoryLocations(profile);
   return {
     id: profile.id,
     name: profile.name,
@@ -78,8 +92,8 @@ function toPublicDirectoryProfile(
     bio: profile.bio,
     bioAr: profile.bioAr,
     profileImage: profile.profileImage ?? null,
-    directoryCities: 'directoryCities' in profile ? profile.directoryCities : undefined,
-    directoryCitiesAr: 'directoryCitiesAr' in profile ? profile.directoryCitiesAr : undefined,
+    directoryCities: directoryProfile.directoryCities,
+    directoryCitiesAr: directoryProfile.directoryCitiesAr,
   };
 }
 

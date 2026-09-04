@@ -11,15 +11,15 @@ const sections = [
   {
     title: { en: 'Information we handle', ar: 'المعلومات التي نتعامل معها' },
     body: {
-      en: 'When you use the contact form, we receive the name, email address, and message you choose to provide. A practitioner application can also include contact details, professional biography, practice location, credential details, profile links, and an optional approved image link. Public practitioner, course, activity, gallery, and organizational information is managed by authorized administrators. Security controls also process limited technical request data and privacy-preserving derived identifiers to prevent abuse.',
-      ar: 'عند استخدام نموذج التواصل، نستلم الاسم وعنوان البريد الإلكتروني والرسالة التي تختار تقديمها. وقد يتضمن طلب الممارس أيضًا بيانات التواصل والنبذة المهنية وموقع الممارسة وتفاصيل المؤهلات وروابط الملف ورابط صورة معتمد اختياري. ويدير المسؤولون المخولون المعلومات العامة الخاصة بالممارسين والدورات والأنشطة والمعرض والجمعية. كما تعالج ضوابط الأمان قدرًا محدودًا من بيانات الطلب الفنية ومعرّفات مشتقة تراعي الخصوصية لمنع إساءة الاستخدام.',
+      en: 'When you use the contact form, we receive the name, email address, and message you choose to provide. A course notification request contains your email address and any optional topic preference. A practitioner application can also include contact details, professional biography, practice location, credential details, profile links, and a professional photo stored privately for authorized staff review. A submitted photo is not published automatically. Public practitioner, course, activity, gallery, and organizational information is managed by authorized administrators. Security controls also process limited technical request data and privacy-preserving derived identifiers to prevent abuse.',
+      ar: 'عند استخدام نموذج التواصل، نستلم الاسم وعنوان البريد الإلكتروني والرسالة التي تختار تقديمها. ويتضمن طلب إشعار الدورات عنوان بريدك الإلكتروني وأي موضوع مفضل تختار إضافته. وقد يتضمن طلب الممارس أيضًا بيانات التواصل والنبذة المهنية وموقع الممارسة وتفاصيل المؤهلات وروابط الملف ورابط صورة معتمد اختياري. ويدير المسؤولون المخولون المعلومات العامة الخاصة بالممارسين والدورات والأنشطة والمعرض والجمعية. كما تعالج ضوابط الأمان قدرًا محدودًا من بيانات الطلب الفنية ومعرّفات مشتقة تراعي الخصوصية لمنع إساءة الاستخدام.',
     },
   },
   {
     title: { en: 'How information is used', ar: 'كيفية استخدام المعلومات' },
     body: {
-      en: 'Information is used to respond to enquiries, review practitioner applications, operate the practitioner directory and educational services, administer the website, maintain security, and meet applicable legal obligations. Applications do not create or publish a directory profile automatically. EGSOM does not sell submitted information.',
-      ar: 'تُستخدم المعلومات للرد على الاستفسارات ومراجعة طلبات الممارسين وتشغيل دليل الممارسين والخدمات التعليمية وإدارة الموقع والحفاظ على الأمان والوفاء بالالتزامات القانونية المعمول بها. ولا تنشئ الطلبات ملفًا في الدليل أو تنشره تلقائيًا، كما لا تبيع الجمعية المعلومات المقدمة.',
+      en: 'Information is used to respond to enquiries, send consented course-publication notifications, review practitioner applications, operate the practitioner directory and educational services, administer the website, maintain security, and meet applicable legal obligations. Applications do not create or publish a directory profile automatically. EGSOM does not sell submitted information.',
+      ar: 'تُستخدم المعلومات للرد على الاستفسارات وإرسال إشعارات نشر الدورات التي وافقت عليها ومراجعة طلبات الممارسين وتشغيل دليل الممارسين والخدمات التعليمية وإدارة الموقع والحفاظ على الأمان والوفاء بالالتزامات القانونية المعمول بها. ولا تنشئ الطلبات ملفًا في الدليل أو تنشره تلقائيًا، كما لا تبيع الجمعية المعلومات المقدمة.',
     },
   },
   {

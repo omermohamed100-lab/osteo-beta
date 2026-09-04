@@ -47,7 +47,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600"><LocalizedText en="Course overview" ar="نظرة عامة على الدورة" /></p>
               <h2 dir="auto" className="mt-3 font-display text-3xl font-semibold text-brand-950"><LocalizedText en={course.title} ar={getArabicContent(course.titleAr)} /></h2>
               <p dir="auto" className="mt-6 whitespace-pre-line text-base leading-8 text-slate-600"><LocalizedText en={course.description} ar={getArabicContent(course.descriptionAr)} /></p>
-              <div className="mt-8"><PublicRecordActions title={course.title} description={course.description} start={course.startDate.toISOString()} end={course.endDate?.toISOString()} /></div>
+              <div className="mt-8"><PublicRecordActions inquiryType="course" listingId={course.id} title={course.title} titleAr={course.titleAr} description={course.description} start={course.startDate.toISOString()} end={course.endDate?.toISOString()} /></div>
             </article>
 
             <aside className="h-fit border border-brand-950/15 bg-bone p-6 sm:p-8" aria-label="Course information">

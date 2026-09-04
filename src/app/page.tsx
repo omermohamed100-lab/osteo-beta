@@ -12,24 +12,24 @@ import LocalizedText from '@/components/i18n/LocalizedText';
 const STANDARDS = [
   {
     icon: ShieldCheck,
-    title: 'Standards and regulation',
-    titleAr: 'المعايير والتنظيم',
-    body: 'Promoting clear standards for safe, ethical, and effective osteopathic care.',
-    bodyAr: 'تعزيز معايير واضحة لرعاية أوستيوباثية آمنة وأخلاقية وفعّالة.',
+    title: 'Directory review',
+    titleAr: 'مراجعة الدليل',
+    body: 'Reviewing each listing application individually before any profile can be published.',
+    bodyAr: 'مراجعة كل طلب إدراج بصورة فردية قبل إمكان نشر أي ملف مهني.',
   },
   {
     icon: UsersRound,
-    title: 'Leadership and representation',
-    titleAr: 'القيادة والتمثيل',
-    body: 'Representing the profession and advancing osteopathy in Egypt and the region.',
-    bodyAr: 'تمثيل المهنة ودعم تطور الأوستيوباثي في مصر والمنطقة.',
+    title: 'Clear public information',
+    titleAr: 'معلومات عامة واضحة',
+    body: 'Separating a reviewed directory listing from the status of any recorded credential.',
+    bodyAr: 'الفصل بوضوح بين مراجعة ملف الدليل وحالة أي مؤهل مسجل.',
   },
   {
     icon: BookOpenText,
-    title: 'Education and professional development',
-    titleAr: 'التعليم والتطوير المهني',
-    body: 'Supporting structured education and lifelong learning for practitioners.',
-    bodyAr: 'دعم التعليم المنظم والتعلم المستمر للممارسين.',
+    title: 'Corrections route',
+    titleAr: 'مسار التصحيح',
+    body: 'Providing a contact route for questions or correction requests about published information.',
+    bodyAr: 'توفير قناة تواصل للأسئلة أو طلبات تصحيح المعلومات المنشورة.',
   },
 ];
 
@@ -40,23 +40,22 @@ export default function Home() {
         <div className="hero-architecture" aria-hidden="true" />
         <div className="mx-auto grid min-h-0 max-w-[90rem] items-stretch px-5 sm:px-8 lg:min-h-[calc(100svh-4.5rem)] lg:grid-cols-12 lg:px-12 xl:min-h-[calc(100svh-6rem)] xl:px-16 min-[2200px]:min-h-[min(calc(100svh-6rem),60rem)] min-[2200px]:max-w-[120rem] min-[2200px]:px-20">
           <div className="hero-copy-reveal relative z-20 flex flex-col justify-center py-8 min-[375px]:py-10 sm:py-16 lg:col-span-6 lg:pe-12 lg:py-16 xl:col-span-5 xl:pe-8">
-            <h1 className="max-w-[14ch] text-balance font-sans text-[clamp(2.5rem,11vw,3.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950 sm:text-[clamp(3rem,4.25vw,4.65rem)]">
+            <p className="mb-5 max-w-[34rem] text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 sm:mb-6 sm:text-sm">
               <LocalizedText
-                en="Advancing osteopathic practice in Egypt"
-                ar="نرتقي بممارسة الأوستيوباثي في مصر"
+                en="Egyptian Society of Osteopathic Medicine"
+                ar="الجمعية المصرية لطب الأوستيوباثية"
+              />
+            </p>
+            <h1 className="max-w-[17ch] text-balance font-sans text-[clamp(2.5rem,11vw,3.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950 sm:text-[clamp(3rem,4.25vw,4.65rem)]">
+              <LocalizedText
+                en="Find an osteopath. Explore training in Egypt."
+                ar="ابحث عن ممارس أوستيوباثي. واستكشف التدريب في مصر."
               />
             </h1>
 
             <span className="mt-6 h-0.5 w-20 bg-gold sm:mt-7" aria-hidden="true" />
 
-            <p className="mt-6 max-w-[32rem] text-pretty text-[0.96rem] leading-7 text-ink-muted sm:text-base sm:leading-7">
-              <LocalizedText
-                en="EGSOM advances responsible osteopathic practice through professional education, clear standards, and practical information for the public."
-                ar="تعمل الجمعية على تطوير الممارسة المسؤولة للأوستيوباثي من خلال التعليم المهني والمعايير الواضحة والمعلومات المفيدة للجمهور."
-              />
-            </p>
-
-            <div className="mt-7 flex max-w-[21rem] flex-col gap-3 sm:mt-8">
+            <div className="mt-7 flex max-w-[21rem] flex-col gap-3 sm:mt-9">
               <Link
                 href="/find-osteopath"
                 className="group inline-flex min-h-13 items-center justify-between gap-5 bg-brand-950 px-6 py-3.5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-200 ease-out hover:bg-brand-800 active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
@@ -87,19 +86,19 @@ export default function Home() {
         <div className="mx-auto grid max-w-[82rem] gap-10 px-5 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-20 lg:px-12">
           <div className="lg:py-4">
             <h2 id="standards-heading" className="max-w-[13ch] font-display text-[clamp(2.8rem,4.5vw,5rem)] font-medium leading-[0.98] tracking-[-0.03em] text-brand-950">
-              <LocalizedText en="Rooted in standards." ar="راسخون في المعايير." />
+              <LocalizedText en="Clear about our process." ar="نوضح إجراءاتنا." />
               <span className="mt-1 block italic text-gold-deep">
-                <LocalizedText en="Committed to patients." ar="ملتزمون بالمرضى." />
+                <LocalizedText en="Careful with public claims." ar="ونتحرى الدقة في المعلومات العامة." />
               </span>
             </h2>
             <p className="mt-8 max-w-[32rem] text-base leading-8 text-ink-muted">
               <LocalizedText
-                en="We support high standards in osteopathic practice, education, and professional conduct to protect the public and advance the profession in Egypt."
-                ar="ندعم معايير رفيعة في الممارسة والتعليم والسلوك المهني لحماية الجمهور وتطوير المهنة في مصر."
+                en="Directory applications are reviewed individually and are never published automatically. A listing is not certification, and credential status appears only when the required evidence fields are recorded."
+                ar="تُراجع طلبات الدليل بصورة فردية ولا تُنشر تلقائيًا. ولا يُعد الإدراج شهادة اعتماد، ولا تظهر حالة المؤهل إلا عند تسجيل حقول الأدلة المطلوبة."
               />
             </p>
-            <Link href="/about" className="group mt-9 inline-flex min-h-11 items-center gap-3 text-sm font-semibold text-brand-950 outline-none transition-colors hover:text-brand-700 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-bone">
-              <LocalizedText en="Learn more about EGSOM" ar="تعرّف أكثر على الجمعية" />
+            <Link href="/standards" className="group mt-9 inline-flex min-h-11 items-center gap-3 text-sm font-semibold text-brand-950 outline-none transition-colors hover:text-brand-700 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-bone">
+              <LocalizedText en="How directory review works" ar="كيف تعمل مراجعة الدليل" />
               <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold-deep" aria-hidden="true" />
             </Link>
           </div>

@@ -49,7 +49,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600"><LocalizedText en="Activity details" ar="تفاصيل النشاط" /></p>
               <h2 dir="auto" className="mt-3 font-display text-3xl font-semibold text-brand-950"><LocalizedText en={activity.title} ar={getArabicContent(activity.titleAr)} /></h2>
               <p dir="auto" className="mt-6 whitespace-pre-line text-base leading-8 text-slate-600"><LocalizedText en={activity.description} ar={getArabicContent(activity.descriptionAr)} /></p>
-              <div className="mt-8"><PublicRecordActions title={activity.title} description={activity.description} start={activity.date.toISOString()} location={activity.location} /></div>
+              <div className="mt-8"><PublicRecordActions inquiryType="activity" listingId={activity.id} title={activity.title} titleAr={activity.titleAr} description={activity.description} start={activity.date.toISOString()} location={activity.location} /></div>
             </article>
 
             <aside className="h-fit border border-brand-950/15 bg-bone p-6 sm:p-8" aria-label="Activity information">

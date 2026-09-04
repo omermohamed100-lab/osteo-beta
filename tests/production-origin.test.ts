@@ -12,9 +12,9 @@ const SITE_ENVIRONMENT_VARIABLES = [
   'VERCEL_URL',
 ] as const;
 
-function withSiteEnvironment(
+async function withSiteEnvironment(
   values: Partial<Record<(typeof SITE_ENVIRONMENT_VARIABLES)[number], string>>,
-  assertion: () => void,
+  assertion: () => void | Promise<void>,
 ) {
   const previous = Object.fromEntries(
     SITE_ENVIRONMENT_VARIABLES.map((name) => [name, process.env[name]]),
@@ -27,7 +27,7 @@ function withSiteEnvironment(
   }
 
   try {
-    assertion();
+    await assertion();
   } finally {
     for (const name of SITE_ENVIRONMENT_VARIABLES) {
       const value = previous[name];
@@ -37,18 +37,18 @@ function withSiteEnvironment(
   }
 }
 
-test('the verified custom origin drives metadata, robots, and sitemap URLs', () => {
-  withSiteEnvironment(
+test('the verified custom origin drives metadata, robots, and sitemap URLs', async () => {
+  await withSiteEnvironment(
     {
       NEXT_PUBLIC_SITE_URL: 'https://eg-som.com',
       VERCEL: '1',
       VERCEL_PROJECT_PRODUCTION_URL: 'osteo-beta.vercel.app',
       VERCEL_URL: 'osteo-beta-preview.vercel.app',
     },
-    () => {
+    async () => {
       const metadata = buildLocalizedMetadata('/courses', 'en');
       const robotsManifest = robots();
-      const sitemapEntries = sitemap();
+      const sitemapEntries = await sitemap();
 
       assert.equal(getSiteUrl().origin, 'https://eg-som.com');
       assert.equal(metadata.metadataBase?.toString(), 'https://eg-som.com/');
@@ -61,8 +61,8 @@ test('the verified custom origin drives metadata, robots, and sitemap URLs', () 
   );
 });
 
-test('Vercel deployments keep the stable project URL until the custom origin is verified', () => {
-  withSiteEnvironment(
+test('Vercel deployments keep the stable project URL until the custom origin is verified', async () => {
+  await withSiteEnvironment(
     {
       VERCEL: '1',
       VERCEL_PROJECT_PRODUCTION_URL: 'unverified-custom.example',
@@ -74,8 +74,8 @@ test('Vercel deployments keep the stable project URL until the custom origin is 
   );
 });
 
-test('an invalid custom origin falls through safely instead of producing localhost metadata', () => {
-  withSiteEnvironment(
+test('an invalid custom origin falls through safely instead of producing localhost metadata', async () => {
+  await withSiteEnvironment(
     {
       NEXT_PUBLIC_SITE_URL: 'http://eg-som.com/path',
       VERCEL_PROJECT_PRODUCTION_URL: 'osteo-beta.vercel.app',

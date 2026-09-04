@@ -4,6 +4,7 @@ import test from 'node:test';
 import { practitionerApplicationSchema } from '../src/lib/practitioner-application';
 
 const validApplication = {
+  primaryLanguage: 'en',
   applicationType: 'new_listing',
   name: 'Dr Test Practitioner',
   nameAr: 'د. ممارس تجريبي',
@@ -19,7 +20,7 @@ const validApplication = {
   locationAr: 'وسط القاهرة',
   bio: 'A professional biography long enough for an individual review.',
   bioAr: 'نبذة مهنية عربية كافية لمراجعة الطلب بصورة فردية.',
-  profileImage: 'https://images.example.com/practitioner.webp',
+  profileImage: 'data:image/png;base64,iVBORw0KGgo=',
   credentialType: 'Diploma',
   credentialTypeAr: 'دبلوم',
   credentialNumber: 'TEST-123',
@@ -39,7 +40,8 @@ test('practitioner application validation normalizes email and requires consent'
   assert.equal(parsed.email, 'test@example.com');
   assert.equal(parsed.credentialIssuedAt, null);
   assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, consentPrivacy: false }).success, false);
-  assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, nameAr: '' }).success, false);
+  assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, nameAr: '' }).success, true);
+  assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, primaryLanguage: 'ar', nameAr: '' }).success, false);
   assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, profileImage: '' }).success, false);
 });
 
@@ -58,14 +60,44 @@ test('application approval creates only inactive and unverified directory drafts
   assert.doesNotMatch(approval, /isActive: true/);
 });
 
-test('public application is bilingual, privacy-aware, and does not upload files', async () => {
+test('public application is bilingual, privacy-aware, and uploads a bounded private image', async () => {
   const form = await readFile('src/components/practitioners/PractitionerApplicationForm.tsx', 'utf8');
   const page = await readFile('src/app/practitioners/apply/page.tsx', 'utf8');
   assert.match(form, /طلب إدراج ممارس|إرسال الطلب للمراجعة/);
   assert.match(form, /href="\/privacy"/);
   assert.match(`${page}\n${form}`, /never published automatically|لا تُنشر تلقائيًا/i);
-  assert.doesNotMatch(form, /type="file"/);
+  assert.match(form, /type="file"/);
+  assert.match(form, /image\/jpeg,image\/png,image\/webp/);
+  assert.match(form, /2 \* 1024 \* 1024/);
   assert.match(page, /getLocalizedMetadata\('\/practitioners\/apply'\)/);
+});
+
+test('application uses the audited accessible staged order and private admin photo route', async () => {
+  const form = await readFile('src/components/practitioners/PractitionerApplicationForm.tsx', 'utf8');
+  const photo = await readFile('src/app/api/practitioner-applications/[id]/photo/route.ts', 'utf8');
+  const approval = await readFile('src/app/api/practitioner-applications/[id]/approve/route.ts', 'utf8');
+  const contactStep = form.indexOf("'Contact and eligibility'}</li>");
+  const credentialsStep = form.indexOf("'Credentials'}</li>");
+  const profileStep = form.indexOf("'Public profile'}</li>");
+  assert.ok(contactStep >= 0 && contactStep < credentialsStep);
+  assert.ok(credentialsStep < profileStep);
+  assert.match(form, /aria-current=\{step === 0 \? 'step'/);
+  assert.match(form, /goToStep\(step - 1\)/);
+  assert.match(photo, /requireAdmin\(request\)/);
+  assert.match(photo, /private, no-store/);
+  assert.match(photo, /nosniff/);
+  assert.match(approval, /Staff must complete and review both language versions/);
+});
+
+test('visible paired-field requirements follow the selected primary language', async () => {
+  const form = await readFile('src/components/practitioners/PractitionerApplicationForm.tsx', 'utf8');
+
+  assert.match(form, /const requiresEnglish = form\.primaryLanguage === 'en'/);
+  assert.match(form, /const requiresArabic = form\.primaryLanguage === 'ar'/);
+  assert.match(form, /field\('name', copy\.name, \{ required: requiresEnglish/);
+  assert.match(form, /field\('nameAr', copy\.nameAr, \{ required: requiresArabic/);
+  assert.match(form, /required=\{requiresEnglish\}/);
+  assert.match(form, /required=\{requiresArabic\}/);
 });
 
 test('public application exposes localized field errors and deliberate focus targets', async () => {
