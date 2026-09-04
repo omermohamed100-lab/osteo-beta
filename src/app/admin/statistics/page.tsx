@@ -95,7 +95,7 @@ export default function AdminStatisticsPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          {loading ? <p className="p-8 text-gray-500">Loading…</p> : items.length === 0 ? <p className="p-8 text-gray-500">No sourced statistics have been added.</p> : (
+          {loading ? <p role="status" aria-live="polite" className="p-8 text-gray-500">Loading statistics…</p> : items.length === 0 ? <p className="p-8 text-gray-500">No sourced statistics have been added.</p> : (
             <div className="divide-y divide-gray-100">
               {items.map((item) => (
                 <div key={item.id} className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
@@ -105,7 +105,7 @@ export default function AdminStatisticsPage() {
                     <p className="mt-2 text-xs text-gray-500">Source: {item.sourceLabel} · Verified {new Date(item.lastVerifiedAt).toLocaleDateString()}</p>
                   </div>
                   <span className={`self-start rounded-full px-2 py-1 text-xs font-semibold ${item.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}>{item.isPublished ? 'Published' : 'Draft'}</span>
-                  <div className="flex gap-3 text-sm font-medium"><button onClick={() => edit(item)} className="text-brand-700 hover:text-brand-950">Edit</button><button onClick={() => remove(item.id)} className="text-red-600 hover:text-red-800">Delete</button></div>
+                  <div className="flex gap-1 text-sm font-medium"><button type="button" onClick={() => edit(item)} className="min-h-11 px-2 text-brand-700 hover:text-brand-950">Edit <span className="sr-only">{item.label}</span></button><button type="button" onClick={() => remove(item.id)} className="min-h-11 px-2 text-red-600 hover:text-red-800">Delete <span className="sr-only">{item.label}</span></button></div>
                 </div>
               ))}
             </div>
@@ -114,14 +114,14 @@ export default function AdminStatisticsPage() {
 
         <form onSubmit={submit} className="h-fit space-y-4 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-gray-900">{editingId ? 'Edit statistic' : 'Add sourced statistic'}</h2>
-          <div><label className={labelClass}>Displayed value *</label><input required maxLength={32} value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} className={inputClass} placeholder="e.g. 24" /></div>
-          <div><label className={labelClass}>English label *</label><input required value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Arabic label *</label><input required dir="rtl" lang="ar" value={form.labelAr} onChange={(e) => setForm({ ...form, labelAr: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Source name *</label><input required value={form.sourceLabel} onChange={(e) => setForm({ ...form, sourceLabel: e.target.value })} className={inputClass} /></div>
-          <div><label className={labelClass}>Public source URL (optional)</label><input type="url" value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} className={inputClass} placeholder="https://…" /></div>
-          <div className="grid grid-cols-2 gap-4"><div><label className={labelClass}>Verified date *</label><input required type="date" value={form.lastVerifiedAt} onChange={(e) => setForm({ ...form, lastVerifiedAt: e.target.value })} className={inputClass} /></div><div><label className={labelClass}>Sort order</label><input type="number" min={0} max={1000} value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} className={inputClass} /></div></div>
+          <div><label htmlFor="statistic-value" className={labelClass}>Displayed value *</label><input id="statistic-value" required maxLength={32} value={form.value} onChange={(e) => setForm({ ...form, value: e.target.value })} className={inputClass} placeholder="e.g. 24" /></div>
+          <div><label htmlFor="statistic-label" className={labelClass}>English label *</label><input id="statistic-label" required value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className={inputClass} /></div>
+          <div><label htmlFor="statistic-label-ar" className={labelClass}>Arabic label *</label><input id="statistic-label-ar" required dir="rtl" lang="ar" value={form.labelAr} onChange={(e) => setForm({ ...form, labelAr: e.target.value })} className={inputClass} /></div>
+          <div><label htmlFor="statistic-source" className={labelClass}>Source name *</label><input id="statistic-source" required value={form.sourceLabel} onChange={(e) => setForm({ ...form, sourceLabel: e.target.value })} className={inputClass} /></div>
+          <div><label htmlFor="statistic-source-url" className={labelClass}>Public source URL (optional)</label><input id="statistic-source-url" type="url" value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} className={inputClass} placeholder="https://…" /></div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><div><label htmlFor="statistic-verified-date" className={labelClass}>Verified date *</label><input id="statistic-verified-date" required type="date" value={form.lastVerifiedAt} onChange={(e) => setForm({ ...form, lastVerifiedAt: e.target.value })} className={inputClass} /></div><div><label htmlFor="statistic-sort-order" className={labelClass}>Sort order</label><input id="statistic-sort-order" type="number" min={0} max={1000} value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} className={inputClass} /></div></div>
           <label className="flex items-start gap-2 text-sm text-gray-700"><input type="checkbox" checked={form.isPublished} onChange={(e) => setForm({ ...form, isPublished: e.target.checked })} className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-600" /><span>Publish on About page. Confirm the number and source are owner-approved before enabling.</span></label>
-          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">{editingId && <button type="button" onClick={reset} className="rounded-md border border-gray-300 px-4 py-2 text-sm">Cancel</button>}<button disabled={saving} className="rounded-md bg-brand-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{saving ? 'Saving…' : 'Save statistic'}</button></div>
+          <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">{editingId && <button type="button" onClick={reset} className="min-h-11 rounded-md border border-gray-300 px-4 py-2 text-sm">Cancel</button>}<button disabled={saving} aria-busy={saving} className="min-h-11 rounded-md bg-brand-700 px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-50">{saving ? 'Saving…' : 'Save statistic'}</button></div>
         </form>
       </div>
     </div>

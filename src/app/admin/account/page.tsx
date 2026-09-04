@@ -78,8 +78,9 @@ export default function AccountPage() {
         <h2 className="text-base font-semibold text-gray-800 mb-4">Profile</h2>
         <form onSubmit={handleUpdateName} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label htmlFor="account-name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
+              id="account-name"
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -88,8 +89,9 @@ export default function AccountPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label htmlFor="account-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
+              id="account-email"
               type="email"
               value={email}
               disabled
@@ -98,14 +100,15 @@ export default function AccountPage() {
             <p className="text-xs text-gray-400 mt-1">Email cannot be changed.</p>
           </div>
           {nameStatus && (
-            <p className={`text-sm ${nameStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+            <p role={nameStatus.type === 'error' ? 'alert' : 'status'} aria-live="polite" className={`text-sm ${nameStatus.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
               {nameStatus.message}
             </p>
           )}
           <button
             type="submit"
             disabled={isSavingName}
-            className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
+            aria-busy={isSavingName}
+            className="min-h-11 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:cursor-wait disabled:opacity-50 transition-colors"
           >
             {isSavingName ? 'Saving...' : 'Save Changes'}
           </button>
@@ -117,8 +120,10 @@ export default function AccountPage() {
         <h2 className="text-base font-semibold text-gray-800 mb-4">Change Password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
             <input
+              id="current-password"
+              autoComplete="current-password"
               type="password"
               value={currentPassword}
               onChange={e => setCurrentPassword(e.target.value)}
@@ -127,8 +132,11 @@ export default function AccountPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
             <input
+              id="new-password"
+              autoComplete="new-password"
+              aria-describedby="new-password-hint"
               type="password"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
@@ -136,11 +144,13 @@ export default function AccountPage() {
               minLength={8}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
-            <p className="text-xs text-gray-400 mt-1">Minimum 8 characters.</p>
+            <p id="new-password-hint" className="text-xs text-gray-500 mt-1">Minimum 8 characters.</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
             <input
+              id="confirm-password"
+              autoComplete="new-password"
               type="password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
@@ -149,14 +159,15 @@ export default function AccountPage() {
             />
           </div>
           {passwordStatus && (
-            <p className={`text-sm ${passwordStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+            <p role={passwordStatus.type === 'error' ? 'alert' : 'status'} aria-live="polite" className={`text-sm ${passwordStatus.type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
               {passwordStatus.message}
             </p>
           )}
           <button
             type="submit"
             disabled={isSavingPassword}
-            className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
+            aria-busy={isSavingPassword}
+            className="min-h-11 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 disabled:cursor-wait disabled:opacity-50 transition-colors"
           >
             {isSavingPassword ? 'Changing...' : 'Change Password'}
           </button>

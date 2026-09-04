@@ -45,16 +45,16 @@ export default function LoginPage() {
           <div className="flex justify-center">
             <Image src="/logo-clean.webp" alt="EGSOM Logo" width={80} height={80} priority className="h-20 w-20 rounded-full bg-white object-contain p-2 shadow-sm" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-brand-900">
+          <h1 className="mt-6 text-center text-3xl font-extrabold text-brand-900">
             Admin Portal
-          </h2>
+          </h1>
           <p className="mt-2 text-center text-sm text-gray-600">
             Sign in to manage EGSOM website content
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm text-center">
+            <div role="alert" aria-live="assertive" className="bg-red-50 text-red-700 p-3 rounded-md text-sm text-center">
               {error}
             </div>
           )}
@@ -93,7 +93,8 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:opacity-50 transition-colors"
+              aria-busy={isLoading}
+              className="group relative min-h-11 w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-wait disabled:opacity-50 transition-colors"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>

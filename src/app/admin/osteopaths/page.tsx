@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
+import AdminDialog from '@/components/admin/AdminDialog';
 
 type Osteopath = {
   id: string;
@@ -140,7 +141,7 @@ export default function AdminOsteopathsPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-wrap justify-between items-center gap-3 mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Osteopaths</h1>
-        <button onClick={openCreate} className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+        <button type="button" onClick={openCreate} className="min-h-11 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
           Add Osteopath
         </button>
       </div>
@@ -199,8 +200,8 @@ export default function AdminOsteopathsPage() {
                       <span className="text-xs font-semibold text-blue-700">Approved source · sync pending</span>
                     ) : (
                       <>
-                        <button onClick={() => openEdit(o)} className="text-brand-600 hover:text-brand-900 mr-4">Edit</button>
-                        <button onClick={() => handleDelete(o.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                        <button type="button" onClick={() => openEdit(o)} className="min-h-11 px-2 text-brand-600 hover:text-brand-900">Edit <span className="sr-only">{o.name}</span></button>
+                        <button type="button" onClick={() => handleDelete(o.id)} className="min-h-11 px-2 text-red-600 hover:text-red-900">Delete <span className="sr-only">{o.name}</span></button>
                       </>
                     )}
                   </td>
@@ -213,94 +214,92 @@ export default function AdminOsteopathsPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <AdminDialog onClose={() => setIsModalOpen(false)} titleId="osteopath-dialog-title">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Osteopath' : 'Add Osteopath'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <h2 id="osteopath-dialog-title" className="text-xl font-bold text-gray-900">{editingId ? 'Edit Osteopath' : 'Add Osteopath'}</h2>
+              <button data-dialog-initial-focus type="button" aria-label="Close osteopath editor" onClick={() => setIsModalOpen(false)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                <svg aria-hidden="true" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Full Name *</label>
-                  <input required type="text" value={formData.name} onChange={e => set({ name: e.target.value })} className={inputCls} />
+                  <label htmlFor="osteopath-name" className={labelCls}>Full Name *</label>
+                  <input id="osteopath-name" required type="text" value={formData.name} onChange={e => set({ name: e.target.value })} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Specialty *</label>
-                  <input required type="text" value={formData.specialty} onChange={e => set({ specialty: e.target.value })} className={inputCls} placeholder="e.g. Structural Osteopathy" />
+                  <label htmlFor="osteopath-specialty" className={labelCls}>Specialty *</label>
+                  <input id="osteopath-specialty" required type="text" value={formData.specialty} onChange={e => set({ specialty: e.target.value })} className={inputCls} placeholder="e.g. Structural Osteopathy" />
                 </div>
               </div>
-              <div><label className={labelCls}>Full Name (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.nameAr} onChange={e => set({ nameAr: e.target.value })} className={inputCls} /></div>
-              <div><label className={labelCls}>Specialty (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.specialtyAr} onChange={e => set({ specialtyAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="osteopath-name-ar" className={labelCls}>Full Name (Arabic)</label><input id="osteopath-name-ar" dir="rtl" lang="ar" type="text" value={formData.nameAr} onChange={e => set({ nameAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="osteopath-specialty-ar" className={labelCls}>Specialty (Arabic)</label><input id="osteopath-specialty-ar" dir="rtl" lang="ar" type="text" value={formData.specialtyAr} onChange={e => set({ specialtyAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>City *</label>
-                  <input required type="text" value={formData.city} onChange={e => set({ city: e.target.value })} className={inputCls} />
+                  <label htmlFor="osteopath-city" className={labelCls}>City *</label>
+                  <input id="osteopath-city" required type="text" value={formData.city} onChange={e => set({ city: e.target.value })} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Country *</label>
-                  <input required type="text" value={formData.country} onChange={e => set({ country: e.target.value })} className={inputCls} />
+                  <label htmlFor="osteopath-country" className={labelCls}>Country *</label>
+                  <input id="osteopath-country" required type="text" value={formData.country} onChange={e => set({ country: e.target.value })} className={inputCls} />
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div><label className={labelCls}>City (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.cityAr} onChange={e => set({ cityAr: e.target.value })} className={inputCls} /></div>
-                <div><label className={labelCls}>Country (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.countryAr} onChange={e => set({ countryAr: e.target.value })} className={inputCls} /></div>
+                <div><label htmlFor="osteopath-city-ar" className={labelCls}>City (Arabic)</label><input id="osteopath-city-ar" dir="rtl" lang="ar" type="text" value={formData.cityAr} onChange={e => set({ cityAr: e.target.value })} className={inputCls} /></div>
+                <div><label htmlFor="osteopath-country-ar" className={labelCls}>Country (Arabic)</label><input id="osteopath-country-ar" dir="rtl" lang="ar" type="text" value={formData.countryAr} onChange={e => set({ countryAr: e.target.value })} className={inputCls} /></div>
               </div>
               <div>
-                <label className={labelCls}>Location / Address</label>
-                <input type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} placeholder="e.g. Maadi, Cairo" />
+                <label htmlFor="osteopath-location" className={labelCls}>Location / Address</label>
+                <input id="osteopath-location" type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} placeholder="e.g. Maadi, Cairo" />
               </div>
-              <div><label className={labelCls}>Location / Address (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="osteopath-location-ar" className={labelCls}>Location / Address (Arabic)</label><input id="osteopath-location-ar" dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Phone</label>
-                  <input type="text" value={formData.phone} onChange={e => set({ phone: e.target.value })} className={inputCls} />
+                  <label htmlFor="osteopath-phone" className={labelCls}>Phone</label>
+                  <input id="osteopath-phone" type="tel" value={formData.phone} onChange={e => set({ phone: e.target.value })} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Email</label>
-                  <input type="email" value={formData.email} onChange={e => set({ email: e.target.value })} className={inputCls} />
+                  <label htmlFor="osteopath-email" className={labelCls}>Email</label>
+                  <input id="osteopath-email" type="email" value={formData.email} onChange={e => set({ email: e.target.value })} className={inputCls} />
                 </div>
               </div>
               <div>
-                <label className={labelCls}>Bio</label>
-                <textarea rows={3} value={formData.bio} onChange={e => set({ bio: e.target.value })} className={inputCls} />
+                <label htmlFor="osteopath-bio" className={labelCls}>Bio</label>
+                <textarea id="osteopath-bio" rows={3} value={formData.bio} onChange={e => set({ bio: e.target.value })} className={inputCls} />
               </div>
-              <div><label className={labelCls}>Bio (Arabic)</label><textarea dir="rtl" lang="ar" rows={3} value={formData.bioAr} onChange={e => set({ bioAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="osteopath-bio-ar" className={labelCls}>Bio (Arabic)</label><textarea id="osteopath-bio-ar" dir="rtl" lang="ar" rows={3} value={formData.bioAr} onChange={e => set({ bioAr: e.target.value })} className={inputCls} /></div>
               <div>
-                <label className={labelCls}>Profile Image URL</label>
-                <input type="url" value={formData.profileImage} onChange={e => set({ profileImage: e.target.value })} className={inputCls} placeholder="https://…" />
+                <label htmlFor="osteopath-image-url" className={labelCls}>Profile Image URL</label>
+                <input id="osteopath-image-url" type="url" value={formData.profileImage} onChange={e => set({ profileImage: e.target.value })} className={inputCls} placeholder="https://…" />
               </div>
               <fieldset className="space-y-4 border-t border-gray-200 pt-5">
                 <legend className="text-base font-semibold text-gray-900">Credential evidence</legend>
                 <p className="text-xs leading-5 text-gray-500">Keep the status unverified until the credential number, issuer, and verification date have been checked against supporting evidence.</p>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div><label className={labelCls}>Credential type</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialType} onChange={e => set({ credentialType: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Credential type (Arabic)</label><input dir="rtl" lang="ar" value={formData.credentialTypeAr} onChange={e => set({ credentialTypeAr: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Credential number</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialNumber} onChange={e => set({ credentialNumber: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Issuing organization</label><input required={formData.credentialStatus === 'verified'} value={formData.credentialIssuer} onChange={e => set({ credentialIssuer: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Issuing organization (Arabic)</label><input dir="rtl" lang="ar" value={formData.credentialIssuerAr} onChange={e => set({ credentialIssuerAr: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Verification status</label><select value={formData.credentialStatus} onChange={e => set({ credentialStatus: e.target.value as typeof formData.credentialStatus })} className={inputCls}><option value="unverified">Unverified</option><option value="verified">Verified</option><option value="expired">Expired</option></select></div>
-                  <div><label className={labelCls}>Verification date</label><input required={formData.credentialStatus === 'verified'} type="date" value={formData.credentialVerifiedAt} onChange={e => set({ credentialVerifiedAt: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Expiry date</label><input type="date" value={formData.credentialExpiresAt} onChange={e => set({ credentialExpiresAt: e.target.value })} className={inputCls} /></div>
-                  <div><label className={labelCls}>Profile review date</label><input type="date" value={formData.profileReviewedAt} onChange={e => set({ profileReviewedAt: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-type" className={labelCls}>Credential type</label><input id="credential-type" required={formData.credentialStatus === 'verified'} value={formData.credentialType} onChange={e => set({ credentialType: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-type-ar" className={labelCls}>Credential type (Arabic)</label><input id="credential-type-ar" dir="rtl" lang="ar" value={formData.credentialTypeAr} onChange={e => set({ credentialTypeAr: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-number" className={labelCls}>Credential number</label><input id="credential-number" required={formData.credentialStatus === 'verified'} value={formData.credentialNumber} onChange={e => set({ credentialNumber: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-issuer" className={labelCls}>Issuing organization</label><input id="credential-issuer" required={formData.credentialStatus === 'verified'} value={formData.credentialIssuer} onChange={e => set({ credentialIssuer: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-issuer-ar" className={labelCls}>Issuing organization (Arabic)</label><input id="credential-issuer-ar" dir="rtl" lang="ar" value={formData.credentialIssuerAr} onChange={e => set({ credentialIssuerAr: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-status" className={labelCls}>Verification status</label><select id="credential-status" value={formData.credentialStatus} onChange={e => set({ credentialStatus: e.target.value as typeof formData.credentialStatus })} className={inputCls}><option value="unverified">Unverified</option><option value="verified">Verified</option><option value="expired">Expired</option></select></div>
+                  <div><label htmlFor="credential-verified-date" className={labelCls}>Verification date</label><input id="credential-verified-date" required={formData.credentialStatus === 'verified'} type="date" value={formData.credentialVerifiedAt} onChange={e => set({ credentialVerifiedAt: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="credential-expiry-date" className={labelCls}>Expiry date</label><input id="credential-expiry-date" type="date" value={formData.credentialExpiresAt} onChange={e => set({ credentialExpiresAt: e.target.value })} className={inputCls} /></div>
+                  <div><label htmlFor="profile-review-date" className={labelCls}>Profile review date</label><input id="profile-review-date" type="date" value={formData.profileReviewedAt} onChange={e => set({ profileReviewedAt: e.target.value })} className={inputCls} /></div>
                 </div>
               </fieldset>
               <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="isActive" checked={formData.isActive} onChange={e => set({ isActive: e.target.checked })} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
-                <label htmlFor="isActive" className="text-sm text-gray-900">Active (visible to public)</label>
+                <input type="checkbox" id="osteopath-is-active" checked={formData.isActive} onChange={e => set({ isActive: e.target.checked })} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
+                <label htmlFor="osteopath-is-active" className="text-sm text-gray-900">Active (visible to public)</label>
               </div>
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-                <button type="submit" disabled={isSaving} className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:opacity-50">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="min-h-11 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
+                <button type="submit" disabled={isSaving} aria-busy={isSaving} className="min-h-11 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:cursor-wait disabled:opacity-50">
                   {isSaving ? 'Saving…' : 'Save'}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+        </AdminDialog>
       )}
     </div>
   );

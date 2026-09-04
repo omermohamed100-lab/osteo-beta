@@ -133,7 +133,7 @@ export default function Navbar() {
 
   return (
     <>
-    <div className="h-[4.5rem] xl:hidden" aria-hidden="true" />
+    <div className="site-navbar-spacer h-[4.5rem] xl:hidden" aria-hidden="true" />
     <nav
       className={`site-navbar fixed top-0 z-50 w-full xl:sticky ${isScrolled ? 'is-scrolled' : ''}`}
       aria-label={isArabic ? 'التنقل الرئيسي' : 'Main navigation'}

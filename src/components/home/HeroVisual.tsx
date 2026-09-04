@@ -1,52 +1,18 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
-
-const DesktopHero = dynamic(() => import('./HeroRemotion'), {
-  ssr: false,
-});
-
 export default function HeroVisual() {
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [mobileAnimationStarted, setMobileAnimationStarted] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 768px)');
-    const updateViewport = () => setIsDesktop(mediaQuery.matches);
-
-    updateViewport();
-    mediaQuery.addEventListener('change', updateViewport);
-
-    return () => mediaQuery.removeEventListener('change', updateViewport);
-  }, []);
-
-  useEffect(() => {
-    if (isDesktop) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setMobileAnimationStarted(true);
-    }, 70);
-
-    return () => window.clearTimeout(timer);
-  }, [isDesktop]);
-
   return (
     <>
-      <div
-        className={`hero-mobile-visual ${
-          mobileAnimationStarted ? 'is-visible' : 'is-waiting'
-        }`}
-        aria-hidden="true"
-      >
+      <div className="hero-mobile-visual is-visible" aria-hidden="true">
         <div className="hero-mobile-glow" />
         <div className="hero-mobile-seal" />
         <div className="hero-mobile-hands" />
       </div>
 
-      {isDesktop ? <DesktopHero /> : null}
+      <div className="hero-static-visual" dir="ltr" aria-hidden="true">
+        <div className="hero-static-glow" />
+        <div className="hero-static-shadow" />
+        <div className="hero-static-seal" />
+        <div className="hero-static-hands" />
+      </div>
     </>
   );
 }

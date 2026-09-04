@@ -3,7 +3,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
 
 const navItems = [
   {
@@ -69,17 +78,30 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
   const router = useRouter();
   const [userName, setUserName] = useState('');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
+    setLogoutError('');
 
     try {
       const response = await fetch('/api/auth/logout', { method: 'POST' });
       if (response.ok) {
         router.replace('/admin/login');
         router.refresh();
+      } else {
+        setLogoutError('Logout failed. Please try again.');
       }
+    } catch {
+      setLogoutError('Logout failed. Check your connection and try again.');
     } finally {
       setIsLoggingOut(false);
     }
@@ -95,6 +117,52 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousOverflow = document.body.style.overflow;
+    const focusFrame = window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !drawerRef.current) return;
+
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, [isOpen]);
+
   const navContent = (
     <>
       {/* Logo */}
@@ -108,20 +176,21 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
       {/* Nav */}
       <div className="p-4 flex-grow overflow-y-auto">
         <div className="text-xs font-semibold text-brand-400 uppercase tracking-wider mb-4 px-2">Menu</div>
-        <nav className="space-y-1">
+        <nav className="space-y-1" aria-label="Admin navigation">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={isActive ? 'page' : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${
                   isActive
                     ? 'bg-brand-800 text-white font-medium'
                     : 'text-brand-200 hover:bg-brand-900 hover:text-white'
                 }`}
               >
-                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg aria-hidden="true" className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
                   {item.extraPath && (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.extraPath} />
@@ -146,11 +215,17 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-xs text-brand-400 hover:text-white text-left transition-colors"
+              aria-busy={isLoggingOut}
+              className="min-h-11 text-xs text-brand-300 hover:text-white text-left transition-colors disabled:cursor-wait disabled:opacity-70"
             >
               {isLoggingOut ? 'Logging out…' : 'Logout'}
             </button>
           </div>
+          {logoutError && (
+            <p role="alert" className="mt-2 px-3 text-xs leading-5 text-red-200">
+              {logoutError}
+            </p>
+          )}
         </div>
       </div>
     </>
@@ -163,32 +238,39 @@ export default function AdminSidebar({ isOpen, onClose }: Props) {
         {navContent}
       </div>
 
-      {/* ── Mobile backdrop ── */}
-      <div
-        className={`admin-mobile-backdrop lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={onClose}
-      />
+      {isOpen && (
+        <>
+          {/* ── Mobile backdrop ── */}
+          <div
+            className="admin-mobile-backdrop fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            onMouseDown={onClose}
+            aria-hidden="true"
+          />
 
-      {/* ── Mobile drawer ── */}
-      <div
-        className={`admin-mobile-drawer lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-brand-950 text-white flex flex-col border-r border-brand-900 transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-1 text-brand-400 transition-[color,transform] duration-150 active:scale-[0.96] hover:text-white"
-          aria-label="Close menu"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        {navContent}
-      </div>
+          {/* ── Mobile drawer ── */}
+          <div
+            ref={drawerRef}
+            id="admin-mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Admin menu"
+            className="admin-mobile-drawer fixed inset-y-0 left-0 z-50 flex w-72 max-w-[calc(100vw-2rem)] flex-col border-r border-brand-900 bg-brand-950 text-white lg:hidden"
+          >
+            <button
+              ref={closeButtonRef}
+              type="button"
+              onClick={onClose}
+              className="absolute right-3 top-3 z-10 inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-brand-300 transition-[color,transform] duration-150 hover:bg-brand-900 hover:text-white active:scale-[0.96]"
+              aria-label="Close menu"
+            >
+              <svg aria-hidden="true" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            {navContent}
+          </div>
+        </>
+      )}
     </>
   );
 }

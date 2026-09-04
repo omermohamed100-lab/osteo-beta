@@ -42,6 +42,36 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
+@keyframes heroHandsRise {
+  from { opacity: 0.15; transform: translateY(40%) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes heroSealRise {
+  from { opacity: 0; transform: translate(-50%, 26%) scale(0.84); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes heroGlowIn {
+  from { opacity: 0; transform: scale(0.78); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes adminBackdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes adminDrawerIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes adminDialogIn {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @keyframes directoryCardIn {
   from { opacity: 0; transform: translateY(0.75rem); }
   to   { opacity: 1; transform: translateY(0); }
@@ -110,6 +140,32 @@
     letter-spacing: normal;
     text-transform: none;
   }
+
+  .admin-shell :where(a, button, input, select, textarea):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px white, 0 0 0 5px var(--color-brand-600);
+  }
+
+  .admin-shell :where(input:not([type='checkbox']):not([type='radio']), select) {
+    min-height: 2.75rem;
+  }
+
+  .admin-mobile-backdrop,
+  .admin-dialog-backdrop {
+    animation: adminBackdropIn var(--motion-deliberate) var(--ease-out-quart) both;
+  }
+
+  .admin-mobile-drawer {
+    animation: adminDrawerIn var(--motion-deliberate) var(--ease-out-quart) both;
+  }
+
+  .admin-dialog-panel {
+    animation: adminDialogIn var(--motion-deliberate) var(--ease-out-expo) both;
+  }
+}
+
+body:has(.admin-shell) > :is(.skip-link, .site-navbar-spacer, .site-navbar, footer) {
+  display: none;
 }
 
 @layer utilities {
@@ -656,7 +712,7 @@
       linear-gradient(270deg, rgb(8 47 73 / 0%) 46%, rgb(3 105 161 / 8%) 100%);
   }
 
-  .hero-remotion-player {
+  .hero-static-visual {
     position: absolute;
     bottom: -15%;
     left: 63.5%;
@@ -666,6 +722,71 @@
     pointer-events: none;
     transform: translateX(-50%);
     filter: saturate(0.82) contrast(1.025);
+    overflow: hidden;
+  }
+
+  .hero-static-glow {
+    position: absolute;
+    top: 13.9%;
+    left: 17.6%;
+    width: 64.8%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgb(255 252 245 / 96%) 0%, rgb(205 168 82 / 12%) 48%, transparent 72%);
+    animation: heroGlowIn 620ms var(--ease-out-expo) 120ms both;
+  }
+
+  .hero-static-shadow {
+    position: absolute;
+    bottom: 5.7%;
+    left: 23.1%;
+    width: 53.7%;
+    height: 7.4%;
+    border-radius: 9999px;
+    background: radial-gradient(ellipse, rgb(2 12 27 / 34%) 0%, transparent 70%);
+    animation: heroGlowIn 520ms var(--ease-out-expo) 140ms both;
+  }
+
+  .hero-static-hands {
+    position: absolute;
+    top: 17.6%;
+    left: 12%;
+    z-index: 3;
+    width: 75.9%;
+    aspect-ratio: 807 / 836;
+    background: url('/hero-hands-rising.webp') center / contain no-repeat;
+    transform-origin: 50% 100%;
+    animation: heroHandsRise 700ms var(--ease-out-expo) both;
+  }
+
+  .hero-static-seal {
+    position: absolute;
+    top: 22.8%;
+    left: 50%;
+    z-index: 2;
+    width: 35%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: url('/logo-clean.webp') center / contain no-repeat;
+    filter: drop-shadow(0 24px 34px rgb(2 12 27 / 28%));
+    animation: heroSealRise 680ms var(--ease-out-expo) 70ms both;
+  }
+
+  .hero-static-seal::before,
+  .hero-static-seal::after {
+    position: absolute;
+    content: '';
+    border-radius: inherit;
+  }
+
+  .hero-static-seal::before {
+    inset: -9%;
+    border: 1px solid rgb(205 168 82 / 18%);
+  }
+
+  .hero-static-seal::after {
+    inset: -18%;
+    border: 2px solid rgb(201 168 76 / 24%);
   }
 
   .hero-mobile-visual {
@@ -684,7 +805,7 @@
     mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 100%);
   }
 
-  .hero-remotion-player {
+  .hero-static-visual {
     bottom: 2%;
     left: 59%;
     width: min(47rem, 138vw);
@@ -728,7 +849,7 @@
     inset: 5% -18% -9%;
   }
 
-  .hero-remotion-player {
+  .hero-static-visual {
     display: none;
   }
 
@@ -881,7 +1002,7 @@
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .hero-remotion-player {
+  .hero-static-visual {
     bottom: -5%;
     left: 59%;
     width: 44rem;
@@ -903,21 +1024,21 @@
 }
 
 @media (min-width: 1024px) {
-  .hero-remotion-player {
+  .hero-static-visual {
     left: 63.5%;
   }
 
-  html[dir='rtl'] .hero-remotion-player {
+  html[dir='rtl'] .hero-static-visual {
     left: 36.5%;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1279px) {
-  .hero-remotion-player {
+  .hero-static-visual {
     left: 57%;
   }
 
-  html[dir='rtl'] .hero-remotion-player {
+  html[dir='rtl'] .hero-static-visual {
     left: 43%;
   }
 }
@@ -1024,6 +1145,29 @@
   }
 
   .hero-mobile-visual:is(.is-waiting, .is-visible) .hero-mobile-seal {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .hero-static-glow,
+  .hero-static-shadow,
+  .hero-static-hands,
+  .hero-static-seal,
+  .admin-mobile-backdrop,
+  .admin-mobile-drawer,
+  .admin-dialog-backdrop,
+  .admin-dialog-panel {
+    animation: none;
+  }
+
+  .hero-static-glow,
+  .hero-static-shadow,
+  .hero-static-hands {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-static-seal {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
   }

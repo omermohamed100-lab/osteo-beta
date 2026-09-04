@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
+import AdminDialog from '@/components/admin/AdminDialog';
 
 type GalleryItem = {
   id: string;
@@ -109,14 +110,14 @@ export default function AdminGalleryPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-wrap justify-between items-center gap-3 mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Gallery</h1>
-        <button onClick={openCreate} className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+        <button type="button" onClick={openCreate} className="min-h-11 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
           Add Image
         </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading…</div>
+          <div role="status" aria-live="polite" className="p-8 text-center text-gray-500">Loading gallery…</div>
         ) : items.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No gallery images yet. Add one!</div>
         ) : (
@@ -146,8 +147,8 @@ export default function AdminGalleryPage() {
                     {new Date(item.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onClick={() => openEdit(item)} className="text-brand-600 hover:text-brand-900 mr-4">Edit</button>
-                    <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                    <button type="button" onClick={() => openEdit(item)} className="min-h-11 px-2 text-brand-600 hover:text-brand-900">Edit <span className="sr-only">{item.caption || 'gallery image'}</span></button>
+                    <button type="button" onClick={() => handleDelete(item.id)} className="min-h-11 px-2 text-red-600 hover:text-red-900">Delete <span className="sr-only">{item.caption || 'gallery image'}</span></button>
                   </td>
                 </tr>
               ))}
@@ -158,42 +159,40 @@ export default function AdminGalleryPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div role="dialog" aria-modal="true" aria-labelledby="gallery-dialog-title" className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-xl">
+        <AdminDialog onClose={() => setIsModalOpen(false)} titleId="gallery-dialog-title" className="max-w-lg">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center">
               <h2 id="gallery-dialog-title" className="text-xl font-bold text-gray-900">{editingId ? 'Edit Image' : 'Add Image'}</h2>
-              <button type="button" aria-label="Close image editor" onClick={() => setIsModalOpen(false)} className="min-h-11 min-w-11 text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <button data-dialog-initial-focus type="button" aria-label="Close image editor" onClick={() => setIsModalOpen(false)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                <svg aria-hidden="true" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className={labelCls}>Image URL *</label>
-                <input required type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
+                <label htmlFor="gallery-image-url" className={labelCls}>Image URL *</label>
+                <input id="gallery-image-url" required type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
                 {formData.imageUrl && (
                   <div className="mt-3"><GalleryPreview key={formData.imageUrl} src={formData.imageUrl} alt="New gallery image preview" large /></div>
                 )}
               </div>
               <div>
-                <label className={labelCls}>Caption</label>
-                <input type="text" value={formData.caption} onChange={e => set({ caption: e.target.value })} className={inputCls} />
+                <label htmlFor="gallery-caption" className={labelCls}>Caption</label>
+                <input id="gallery-caption" type="text" value={formData.caption} onChange={e => set({ caption: e.target.value })} className={inputCls} />
               </div>
-              <div><label className={labelCls}>Caption (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.captionAr} onChange={e => set({ captionAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="gallery-caption-ar" className={labelCls}>Caption (Arabic)</label><input id="gallery-caption-ar" dir="rtl" lang="ar" type="text" value={formData.captionAr} onChange={e => set({ captionAr: e.target.value })} className={inputCls} /></div>
               <div>
-                <label className={labelCls}>Category</label>
-                <input type="text" value={formData.category} onChange={e => set({ category: e.target.value })} className={inputCls} placeholder="e.g. Conference, Training, Outreach" />
+                <label htmlFor="gallery-category" className={labelCls}>Category</label>
+                <input id="gallery-category" type="text" value={formData.category} onChange={e => set({ category: e.target.value })} className={inputCls} placeholder="e.g. Conference, Training, Outreach" />
               </div>
-              <div><label className={labelCls}>Category (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.categoryAr} onChange={e => set({ categoryAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="gallery-category-ar" className={labelCls}>Category (Arabic)</label><input id="gallery-category-ar" dir="rtl" lang="ar" type="text" value={formData.categoryAr} onChange={e => set({ categoryAr: e.target.value })} className={inputCls} /></div>
               <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-                <button type="submit" disabled={isSaving} className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:opacity-50">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="min-h-11 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
+                <button type="submit" disabled={isSaving} aria-busy={isSaving} className="min-h-11 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:cursor-wait disabled:opacity-50">
                   {isSaving ? 'Saving…' : 'Save'}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+        </AdminDialog>
       )}
     </div>
   );

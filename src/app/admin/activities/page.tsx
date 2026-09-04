@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
+import AdminDialog from '@/components/admin/AdminDialog';
 
 type Activity = {
   id: string;
@@ -105,14 +106,14 @@ export default function AdminActivitiesPage() {
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-wrap justify-between items-center gap-3 mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Activities</h1>
-        <button onClick={openCreate} className="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+        <button type="button" onClick={openCreate} className="min-h-11 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
           Add Activity
         </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">Loading…</div>
+          <div role="status" aria-live="polite" className="p-8 text-center text-gray-500">Loading activities…</div>
         ) : items.length === 0 ? (
           <div className="p-8 text-center text-gray-500">No activities yet. Add one!</div>
         ) : (
@@ -143,8 +144,8 @@ export default function AdminActivitiesPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onClick={() => openEdit(a)} className="text-brand-600 hover:text-brand-900 mr-4">Edit</button>
-                    <button onClick={() => handleDelete(a.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                    <button type="button" onClick={() => openEdit(a)} className="min-h-11 px-2 text-brand-600 hover:text-brand-900">Edit <span className="sr-only">{a.title}</span></button>
+                    <button type="button" onClick={() => handleDelete(a.id)} className="min-h-11 px-2 text-red-600 hover:text-red-900">Delete <span className="sr-only">{a.title}</span></button>
                   </td>
                 </tr>
               ))}
@@ -155,39 +156,38 @@ export default function AdminActivitiesPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <AdminDialog onClose={() => setIsModalOpen(false)} titleId="activity-dialog-title">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Activity' : 'Add Activity'}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <h2 id="activity-dialog-title" className="text-xl font-bold text-gray-900">{editingId ? 'Edit Activity' : 'Add Activity'}</h2>
+              <button data-dialog-initial-focus type="button" aria-label="Close activity editor" onClick={() => setIsModalOpen(false)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+                <svg aria-hidden="true" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className={labelCls}>Title *</label>
-                <input required type="text" value={formData.title} onChange={e => set({ title: e.target.value })} className={inputCls} />
+                <label htmlFor="activity-title" className={labelCls}>Title *</label>
+                <input id="activity-title" required type="text" value={formData.title} onChange={e => set({ title: e.target.value })} className={inputCls} />
               </div>
-              <div><label className={labelCls}>Title (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.titleAr} onChange={e => set({ titleAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="activity-title-ar" className={labelCls}>Title (Arabic)</label><input id="activity-title-ar" dir="rtl" lang="ar" type="text" value={formData.titleAr} onChange={e => set({ titleAr: e.target.value })} className={inputCls} /></div>
               <div>
-                <label className={labelCls}>Description *</label>
-                <textarea required rows={3} value={formData.description} onChange={e => set({ description: e.target.value })} className={inputCls} />
+                <label htmlFor="activity-description" className={labelCls}>Description *</label>
+                <textarea id="activity-description" required rows={3} value={formData.description} onChange={e => set({ description: e.target.value })} className={inputCls} />
               </div>
-              <div><label className={labelCls}>Description (Arabic)</label><textarea dir="rtl" lang="ar" rows={3} value={formData.descriptionAr} onChange={e => set({ descriptionAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="activity-description-ar" className={labelCls}>Description (Arabic)</label><textarea id="activity-description-ar" dir="rtl" lang="ar" rows={3} value={formData.descriptionAr} onChange={e => set({ descriptionAr: e.target.value })} className={inputCls} /></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Date *</label>
-                  <input required type="date" value={formData.date} onChange={e => set({ date: e.target.value })} className={inputCls} />
+                  <label htmlFor="activity-date" className={labelCls}>Date *</label>
+                  <input id="activity-date" required type="date" value={formData.date} onChange={e => set({ date: e.target.value })} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Location *</label>
-                  <input required type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} />
+                  <label htmlFor="activity-location" className={labelCls}>Location *</label>
+                  <input id="activity-location" required type="text" value={formData.location} onChange={e => set({ location: e.target.value })} className={inputCls} />
                 </div>
               </div>
-              <div><label className={labelCls}>Location (Arabic)</label><input dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
+              <div><label htmlFor="activity-location-ar" className={labelCls}>Location (Arabic)</label><input id="activity-location-ar" dir="rtl" lang="ar" type="text" value={formData.locationAr} onChange={e => set({ locationAr: e.target.value })} className={inputCls} /></div>
               <div>
-                <label className={labelCls}>Image URL</label>
-                <input type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
+                <label htmlFor="activity-image-url" className={labelCls}>Image URL</label>
+                <input id="activity-image-url" type="url" value={formData.imageUrl} onChange={e => set({ imageUrl: e.target.value })} className={inputCls} placeholder="https://…" />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="actIsActive" checked={formData.isActive} onChange={e => set({ isActive: e.target.checked })} className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
@@ -195,14 +195,13 @@ export default function AdminActivitiesPage() {
               </div>
               <ArabicContentWarning missingFields={getMissingArabicFields(formData)} />
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
-                <button type="submit" disabled={isSaving} className="px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:opacity-50">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="min-h-11 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm">Cancel</button>
+                <button type="submit" disabled={isSaving} aria-busy={isSaving} className="min-h-11 px-4 py-2 bg-brand-600 text-white rounded-md hover:bg-brand-700 text-sm disabled:cursor-wait disabled:opacity-50">
                   {isSaving ? 'Saving…' : 'Save'}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+        </AdminDialog>
       )}
     </div>
   );
