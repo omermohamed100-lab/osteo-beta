@@ -6,6 +6,7 @@ import { db } from '@/lib/db';
 import {
   PRACTITIONER_APPLICATION_BODY_MAX_BYTES,
   PRACTITIONER_APPLICATION_DEDUPE_WINDOW_MS,
+  PRACTITIONER_APPLICATION_STATUSES,
   practitionerApplicationSchema,
 } from '@/lib/practitioner-application';
 import {
@@ -22,6 +23,9 @@ import {
   readBoundedJsonBody,
   RequestBodyTooLargeError,
 } from '@/lib/request-security';
+import { adminPage, InvalidPaginationError, newestFirst, readAdminPagination } from '@/lib/admin-pagination';
+import { adminApplicationSelect } from '@/lib/admin-application-select';
+import { isSubmissionDuplicate, submissionDedupeKey } from '@/lib/submission-dedupe';
 
 function decodePhoto(value: string) {
   const match = value.match(/^data:image\/(jpeg|png|webp);base64,(.+)$/);
@@ -44,17 +48,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { limit, where } = readAdminPagination(request.nextUrl.searchParams);
+    const status = request.nextUrl.searchParams.get('status') ?? 'all';
+    if (!['all', 'open', ...PRACTITIONER_APPLICATION_STATUSES].includes(status)) {
+      return NextResponse.json({ error: 'Invalid application filter' }, { status: 400 });
+    }
     const applications = await db.practitionerApplication.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 250,
-      include: {
-        draftOsteopath: { select: { id: true, name: true, isActive: true } },
-      },
+      where: { ...where, ...(status === 'all' ? {} : { status: status === 'open' ? { in: ['pending', 'needs_information'] } : status }) },
+      orderBy: [...newestFirst],
+      take: limit + 1,
+      select: adminApplicationSelect,
     });
-    return NextResponse.json(applications, {
+    return NextResponse.json(adminPage(applications, limit), {
       headers: { 'Cache-Control': 'no-store, max-age=0' },
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof InvalidPaginationError) return NextResponse.json({ error: 'Invalid pagination' }, { status: 400 });
     return NextResponse.json({ error: 'Applications are temporarily unavailable' }, { status: 500 });
   }
 }
@@ -97,18 +106,15 @@ export async function POST(request: NextRequest) {
       return rateLimitUnavailableResponse();
     }
 
-    const duplicate = await db.practitionerApplication.findFirst({
-      where: {
-        email: data.email,
-        applicationType: data.applicationType,
-        createdAt: { gte: new Date(Date.now() - PRACTITIONER_APPLICATION_DEDUPE_WINDOW_MS) },
-      },
-      select: { id: true },
-    });
-    if (duplicate) return acceptedResponse(202);
+    const now = new Date();
+    await db.practitionerApplicationDedupe.deleteMany({ where: { expiresAt: { lte: now } } });
 
     await db.practitionerApplication.create({
       data: {
+        dedupeReservation: { create: {
+          keyHash: submissionDedupeKey('practitioner-application', data),
+          expiresAt: new Date(now.getTime() + PRACTITIONER_APPLICATION_DEDUPE_WINDOW_MS),
+        } },
         primaryLanguage: data.primaryLanguage,
         applicationType: data.applicationType,
         name: data.name,
@@ -145,6 +151,7 @@ export async function POST(request: NextRequest) {
 
     return acceptedResponse();
   } catch (error) {
+    if (isSubmissionDuplicate(error)) return acceptedResponse(202);
     if (error instanceof RequestBodyTooLargeError) {
       return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
     }

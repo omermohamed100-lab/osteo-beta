@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import AdminPagination from '@/components/admin/AdminPagination';
+import { useAdminPage } from '@/components/admin/useAdminPage';
+import { withRequestTimeout } from '@/lib/fetch-with-timeout';
 
 type Message = {
   id: string;
@@ -31,38 +34,26 @@ const notificationPresentation = {
 } as const;
 
 export default function AdminMessagesPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const page = useAdminPage<Message>('/api/contact');
+  const { items: messages, setItems: setMessages, isLoading } = page;
+  const [deleteError, setDeleteError] = useState('');
+
   const [expanded, setExpanded] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch('/api/contact')
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) setMessages(data);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this message? This cannot be undone.')) return;
     setDeleting(id);
+    setDeleteError('');
     try {
-      const res = await fetch(`/api/contact/${id}`, { method: 'DELETE' });
+      const res = await withRequestTimeout((signal) => fetch(`/api/contact/${id}`, { method: 'DELETE', signal }));
+      if (!res.ok) throw new Error();
       if (res.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== id));
         if (expanded === id) setExpanded(null);
       }
+    } catch {
+      setDeleteError('The message could not be deleted. Refresh the list before trying again.');
     } finally {
       setDeleting(null);
     }
@@ -76,14 +67,16 @@ export default function AdminMessagesPage() {
           <p className="text-sm text-gray-500 mt-1">Contact form submissions from the website</p>
         </div>
         <span className="bg-brand-100 text-brand-700 text-sm font-semibold px-3 py-1 rounded-full">
-          {messages.length} {messages.length === 1 ? 'message' : 'messages'}
+          {messages.length} on this page
         </span>
       </div>
 
+      <AdminPagination {...page} isLoading={isLoading || deleting !== null} />
+      {(page.error || deleteError) && <p role="alert" className="mb-5 text-sm text-red-700">{page.error || deleteError} <button onClick={page.refresh} className="min-h-11 px-2 font-semibold underline">Try again</button></p>}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-gray-500">Loading…</div>
-        ) : messages.length === 0 ? (
+        ) : page.error ? null : messages.length === 0 ? (
           <div className="p-12 text-center text-gray-400">
             <svg className="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -131,8 +124,9 @@ export default function AdminMessagesPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleDelete(msg.id)}
-                      disabled={deleting === msg.id}
+                      disabled={deleting !== null}
                       title="Delete message"
+                      aria-label={`Delete message from ${msg.name}`}
                       className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40"
                     >
                       {deleting === msg.id ? (
@@ -147,6 +141,8 @@ export default function AdminMessagesPage() {
                       )}
                     </button>
                     <button
+                      aria-label={expanded === msg.id ? 'Collapse message' : 'Expand message'}
+                      aria-expanded={expanded === msg.id}
                       onClick={() => setExpanded(expanded === msg.id ? null : msg.id)}
                       className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
                     >
@@ -175,7 +171,7 @@ export default function AdminMessagesPage() {
                       </a>
                       <button
                         onClick={() => handleDelete(msg.id)}
-                        disabled={deleting === msg.id}
+                        disabled={deleting !== null}
                         className="inline-flex items-center gap-1.5 text-sm text-red-600 hover:text-red-800 font-medium disabled:opacity-40"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

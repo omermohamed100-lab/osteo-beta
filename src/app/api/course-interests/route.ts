@@ -7,15 +7,19 @@ import { db } from '@/lib/db';
 import { sendEmail } from '@/lib/email';
 import { cleanupExpiredRateLimits, consumeRateLimit, getClientAddress, normalizeRateLimitIdentity, rateLimitExceededResponse, rateLimitUnavailableResponse } from '@/lib/rate-limit';
 import { enforceMutationRequest, InvalidJsonBodyError, readBoundedJsonBody, RequestBodyTooLargeError } from '@/lib/request-security';
+import { adminPage, InvalidPaginationError, newestFirst, readAdminPagination } from '@/lib/admin-pagination';
+import { isSubmissionDuplicate, submissionDedupeKey, SUBMISSION_DEDUPE_WINDOW_MS } from '@/lib/submission-dedupe';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
     if (!(await requireAdmin(request))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    const interests = await db.courseInterest.findMany({ orderBy: { createdAt: 'desc' }, take: 250 });
-    return NextResponse.json(interests, { headers: { 'Cache-Control': 'no-store, max-age=0' } });
-  } catch {
+    const { limit, where } = readAdminPagination(request.nextUrl.searchParams);
+    const interests = await db.courseInterest.findMany({ where, orderBy: [...newestFirst], take: limit + 1 });
+    return NextResponse.json(adminPage(interests, limit), { headers: { 'Cache-Control': 'private, no-store' } });
+  } catch (error) {
+    if (error instanceof InvalidPaginationError) return NextResponse.json({ error: 'Invalid pagination' }, { status: 400 });
     return NextResponse.json({ error: 'Course interests are temporarily unavailable' }, { status: 500 });
   }
 }
@@ -42,7 +46,15 @@ export async function POST(request: NextRequest) {
     }
 
     // The durable receipt is authoritative and must exist before notification is attempted.
-    const interest = await db.courseInterest.create({ data: { email: data.email, topic: data.topic, consentNotifications: data.consentNotifications } });
+    const now = new Date();
+    await db.courseInterestDedupe.deleteMany({ where: { expiresAt: { lte: now } } });
+    const interest = await db.courseInterest.create({ data: {
+      email: data.email, topic: data.topic, consentNotifications: data.consentNotifications,
+      dedupeReservation: { create: {
+        keyHash: submissionDedupeKey('course-interest', data),
+        expiresAt: new Date(now.getTime() + SUBMISSION_DEDUPE_WINDOW_MS),
+      } },
+    } });
     let delivery: Awaited<ReturnType<typeof sendEmail>> = { success: false, reason: 'transport' };
     try {
       const settings = await db.siteSettings.findUnique({ where: { id: 'global' } });
@@ -59,6 +71,7 @@ export async function POST(request: NextRequest) {
     if (!delivery.success) console.error(`Course interest notification failed (${delivery.reason}).`);
     return acceptedResponse();
   } catch (error) {
+    if (isSubmissionDuplicate(error)) return acceptedResponse(202);
     if (error instanceof RequestBodyTooLargeError) return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });
     if (error instanceof InvalidJsonBodyError) return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     if (error instanceof z.ZodError) return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });

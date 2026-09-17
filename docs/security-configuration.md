@@ -45,6 +45,8 @@ Roll back the application before removing the additive schema. The application v
 
 ## Dependency rollback
 
+The production dependency audit on 2026-09-17 reported zero vulnerabilities after updating Next.js and its ESLint configuration to 16.3.5, Nodemailer to 9.1.1, Sharp to 0.35.4, and baseline-browser-mapping to 2.11.24. This is a point-in-time npm advisory check of production dependencies, not a complete security assessment. Keep the lockfile changes with the package updates.
+
 Next.js, its ESLint configuration, and Nodemailer were upgraded as explicit package versions. Roll back one dependency group at a time by restoring its previous version and the matching lockfile, then rerun the production audit, security tests, lint, TypeScript, and build. Do not roll back to a version with a reachable high-severity advisory.
 
 ## Header rollout

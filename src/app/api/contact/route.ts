@@ -24,17 +24,18 @@ import {
   RequestBodyTooLargeError,
 } from '@/lib/request-security';
 import { z } from 'zod';
+import { adminPage, InvalidPaginationError, newestFirst, readAdminPagination } from '@/lib/admin-pagination';
 
 export async function GET(request: NextRequest) {
   try {
     const admin = await requireAdmin(request);
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const submissions = await db.contactSubmission.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-    return NextResponse.json(submissions);
-  } catch {
+    const { limit, where } = readAdminPagination(request.nextUrl.searchParams);
+    const submissions = await db.contactSubmission.findMany({ where, orderBy: [...newestFirst], take: limit + 1 });
+    return NextResponse.json(adminPage(submissions, limit), { headers: { 'Cache-Control': 'private, no-store' } });
+  } catch (error) {
+    if (error instanceof InvalidPaginationError) return NextResponse.json({ error: 'Invalid pagination' }, { status: 400 });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

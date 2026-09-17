@@ -1,5 +1,8 @@
 'use client';
 
+import { fetchJsonWithTimeout, RequestTimeoutError } from '@/lib/fetch-with-timeout';
+import { submissionFeedback } from '@/lib/submission-feedback';
+
 import { useEffect, useRef, useState } from 'react';
 import Link from '@/components/i18n/LocalizedLink';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
@@ -91,6 +94,10 @@ export default function PractitionerApplicationForm() {
   const [submissionError, setSubmissionError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [step, setStep] = useState(0);
+  const pendingRef = useRef(false);
+  const requestRef = useRef<AbortController | null>(null);
+  useEffect(() => () => requestRef.current?.abort(), []);
+
   const firstFieldRef = useRef<HTMLInputElement>(null);
   const successTitleRef = useRef<HTMLHeadingElement>(null);
 
@@ -265,6 +272,7 @@ export default function PractitionerApplicationForm() {
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (pendingRef.current) return;
     setSubmissionError('');
 
     const errors: FieldErrors = {};
@@ -295,14 +303,16 @@ export default function PractitionerApplicationForm() {
     }
 
     setFieldErrors({});
+    pendingRef.current = true;
+    requestRef.current = new AbortController();
     setStatus('sending');
     try {
-      const response = await fetch('/api/practitioner-applications', {
+      const { response, data: body } = await fetchJsonWithTimeout<{ details?: { path?: unknown[] }[] }>('/api/practitioner-applications', {
+        signal: requestRef.current.signal,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      const body = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (response.status === 400) {
           const serverErrors: FieldErrors = {};
@@ -321,7 +331,7 @@ export default function PractitionerApplicationForm() {
             setSubmissionError(copy.serverValidation);
           }
         } else {
-          setSubmissionError(copy.generic);
+          setSubmissionError(response.status === 429 ? submissionFeedback('rate-limit', isArabic) : copy.generic);
         }
         setStatus('idle');
         return;
@@ -331,9 +341,13 @@ export default function PractitionerApplicationForm() {
       clearSessionDraft(APPLICATION_DRAFT_KEY);
       setForm(INITIAL_FORM);
       setFieldErrors({});
-    } catch {
-      setSubmissionError(copy.generic);
+    } catch (error) {
+      if (requestRef.current?.signal.aborted) return;
+      setSubmissionError(error instanceof RequestTimeoutError ? submissionFeedback('timeout', isArabic) : copy.generic);
       setStatus('idle');
+    } finally {
+      pendingRef.current = false;
+      requestRef.current = null;
     }
   };
 
@@ -396,6 +410,7 @@ export default function PractitionerApplicationForm() {
           aria-busy={status === 'sending'}
           className="space-y-6"
         >
+          <fieldset disabled={status === 'sending'} className="min-w-0 space-y-6">
           <div className="surface-panel p-4"><p className="text-sm font-semibold" aria-live="polite">{isArabic ? `الخطوة ${step + 1} من 3` : `Step ${step + 1} of 3`}</p><ol className="mt-2 grid grid-cols-3 gap-2 text-xs text-slate-600"><li aria-current={step === 0 ? 'step' : undefined}>{isArabic ? 'التواصل والأهلية' : 'Contact and eligibility'}</li><li aria-current={step === 1 ? 'step' : undefined}>{isArabic ? 'المؤهلات' : 'Credentials'}</li><li aria-current={step === 2 ? 'step' : undefined}>{isArabic ? 'الملف العام' : 'Public profile'}</li></ol></div>
           <div className="surface-panel p-5"><label htmlFor="primaryLanguage" className="block text-sm font-semibold text-brand-950">{isArabic ? 'لغة الطلب الأساسية' : 'Primary submission language'}</label><select id="primaryLanguage" value={form.primaryLanguage} onChange={(event) => set({ primaryLanguage: event.target.value as 'en' | 'ar' })} className="mt-2 min-h-11 rounded-lg border border-brand-950/20 bg-white px-3"><option value="en">English</option><option value="ar">العربية</option></select><p className="mt-2 text-xs text-slate-600">{isArabic ? 'تُطلب حقول اللغة الأساسية فقط عند التقديم. يجب أن يكمل المسؤول الترجمة ويراجعها قبل إنشاء مسودة.' : 'Only the primary-language profile fields are required initially. Staff must complete and review the translation before creating a draft.'}</p></div>
           <div className="sr-only" aria-hidden="true"><label htmlFor="website">Website</label><input id="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => set({ website: event.target.value })} /></div>
@@ -487,6 +502,7 @@ export default function PractitionerApplicationForm() {
           </fieldset>
 
           <div className="flex flex-wrap gap-3">{step > 0 && <button type="button" onClick={() => goToStep(step - 1)} className="min-h-12 border border-brand-700 px-6 font-semibold text-brand-800">{isArabic ? 'السابق' : 'Back'}</button>}{step < 2 ? <button type="button" onClick={nextStep} className="min-h-12 bg-brand-700 px-6 font-semibold text-white">{isArabic ? 'التالي' : 'Next'}</button> : <button type="submit" disabled={status === 'sending'} className="inline-flex min-h-12 items-center justify-center bg-brand-700 px-6 font-semibold text-white disabled:opacity-60">{status === 'sending' ? copy.sending : copy.submit}</button>}</div>
+          </fieldset>
         </form>
       </div>
     </section>

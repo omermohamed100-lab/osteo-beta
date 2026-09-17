@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { practitionerApplicationReviewSchema } from '@/lib/practitioner-application';
+import { adminApplicationSelect } from '@/lib/admin-application-select';
 import {
   enforceMutationRequest,
   InvalidJsonBodyError,
@@ -32,11 +33,9 @@ export async function PATCH(
         ...Object.fromEntries(Object.entries(data).filter(([key]) => key !== 'status' && key !== 'reviewNotes')),
         reviewedAt: data.status === 'pending' ? null : new Date(),
       },
-      include: {
-        draftOsteopath: { select: { id: true, name: true, isActive: true } },
-      },
+      select: adminApplicationSelect,
     });
-    return NextResponse.json(application);
+    return NextResponse.json(application, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     if (error instanceof RequestBodyTooLargeError) {
       return NextResponse.json({ error: 'Request body is too large' }, { status: 413 });

@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
+import AdminPagination from '@/components/admin/AdminPagination';
+import { useAdminPage } from '@/components/admin/useAdminPage';
+import { fetchJsonWithTimeout } from '@/lib/fetch-with-timeout';
 
 type Status = 'pending' | 'needs_information' | 'approved' | 'rejected';
 type Application = {
@@ -22,7 +25,6 @@ type Application = {
   locationAr: string;
   bio: string;
   bioAr: string;
-  profileImage: string | null;
   credentialType: string;
   credentialTypeAr: string;
   credentialNumber: string;
@@ -62,62 +64,16 @@ function Detail({ label, value, dir }: { label: string; value?: string | null; d
 }
 
 export default function AdminApplicationsPage() {
-  const [applications, setApplications] = useState<Application[]>([]);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'open' | 'all' | Status>('open');
-  const [isLoading, setIsLoading] = useState(true);
+  const page = useAdminPage<Application>(`/api/practitioner-applications?status=${filter}`);
+  const { items: applications, setItems: setApplications, isLoading } = page;
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [reviewStatus, setReviewStatus] = useState<Status>('pending');
   const [reviewNotes, setReviewNotes] = useState('');
 
-  const load = useCallback(async () => {
-    setIsLoading(true);
-    setError('');
-    try {
-      const response = await fetch('/api/practitioner-applications', { cache: 'no-store' });
-      if (!response.ok) throw new Error('Could not load practitioner applications.');
-      const data: unknown = await response.json();
-      if (!Array.isArray(data)) throw new Error('The application response was invalid.');
-      setApplications(data as Application[]);
-      setSelectedId((current) => current ?? (data[0] as Application | undefined)?.id ?? null);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : 'Could not load applications.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/practitioner-applications', { cache: 'no-store' })
-      .then(async (response) => {
-        if (!response.ok) throw new Error('Could not load practitioner applications.');
-        const data: unknown = await response.json();
-        if (!Array.isArray(data)) throw new Error('The application response was invalid.');
-        if (cancelled) return;
-        const items = data as Application[];
-        setApplications(items);
-        if (items[0]) {
-          setSelectedId(items[0].id);
-          setReviewStatus(items[0].status);
-          setReviewNotes(items[0].reviewNotes);
-        }
-      })
-      .catch((loadError) => {
-        if (!cancelled) setError(loadError instanceof Error ? loadError.message : 'Could not load applications.');
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, []);
-
-  const filtered = useMemo(() => applications.filter((application) => {
-    if (filter === 'all') return true;
-    if (filter === 'open') return application.status === 'pending' || application.status === 'needs_information';
-    return application.status === filter;
-  }), [applications, filter]);
   const selected = applications.find((application) => application.id === selectedId) ?? null;
 
   const selectApplication = (application: Application) => {
@@ -131,14 +87,20 @@ export default function AdminApplicationsPage() {
     setIsSaving(true);
     setError('');
     try {
-      const response = await fetch(`/api/practitioner-applications/${selected.id}`, {
+      const { response, data: updated } = await fetchJsonWithTimeout<Application>(`/api/practitioner-applications/${selected.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: reviewStatus, reviewNotes, name: selected.name, nameAr: selected.nameAr, specialty: selected.specialty, specialtyAr: selected.specialtyAr, city: selected.city, cityAr: selected.cityAr, country: selected.country, countryAr: selected.countryAr, location: selected.location, locationAr: selected.locationAr, bio: selected.bio, bioAr: selected.bioAr, credentialType: selected.credentialType, credentialTypeAr: selected.credentialTypeAr, credentialIssuer: selected.credentialIssuer, credentialIssuerAr: selected.credentialIssuerAr }),
       });
       if (!response.ok) throw new Error('The review could not be saved.');
-      const updated = await response.json() as Application;
+
       setApplications((items) => items.map((item) => item.id === updated.id ? updated : item));
+      if (filter !== 'all' && (filter === 'open'
+        ? !['pending', 'needs_information'].includes(updated.status)
+        : updated.status !== filter)) {
+        setSelectedId(null);
+        page.refresh();
+      }
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'The review could not be saved.');
     } finally {
@@ -153,10 +115,9 @@ export default function AdminApplicationsPage() {
     setIsSaving(true);
     setError('');
     try {
-      const response = await fetch(`/api/practitioner-applications/${selected.id}/approve`, { method: 'POST' });
-      const body = await response.json().catch(() => ({}));
+      const { response, data: body } = await fetchJsonWithTimeout<{ error?: string }>(`/api/practitioner-applications/${selected.id}/approve`, { method: 'POST' });
       if (!response.ok) throw new Error(typeof body.error === 'string' ? body.error : 'The draft could not be created.');
-      await load();
+      page.refresh();
       setSelectedId(selected.id);
     } catch (draftError) {
       setError(draftError instanceof Error ? draftError.message : 'The draft could not be created.');
@@ -172,14 +133,18 @@ export default function AdminApplicationsPage() {
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Practitioner Applications</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Review new directory requests and profile updates. Creating a draft never publishes it.</p>
         </div>
-        <button type="button" onClick={() => void load()} className="min-h-11 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50">Refresh</button>
       </div>
 
+      <AdminPagination {...page} isLoading={isLoading || isSaving}
+        next={() => { setSelectedId(null); setError(''); page.next(); }}
+        previous={() => { setSelectedId(null); setError(''); page.previous(); }}
+        refresh={() => { setSelectedId(null); setError(''); page.refresh(); }} />
+      {page.error && <div role="alert" className="mb-5 text-sm text-rose-800">{page.error} <button onClick={page.refresh} className="min-h-11 px-2 font-semibold underline">Try again</button></div>}
       {error && <div role="alert" className="mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</div>}
 
       <div className="mb-5 flex flex-wrap gap-2" aria-label="Filter applications">
         {(['open', 'all', 'pending', 'needs_information', 'approved', 'rejected'] as const).map((option) => (
-          <button key={option} type="button" onClick={() => setFilter(option)} className={`min-h-10 rounded-full border px-4 text-sm font-medium ${filter === option ? 'border-brand-700 bg-brand-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}>
+          <button key={option} type="button" disabled={isSaving} aria-pressed={filter === option} onClick={() => { page.reset(); setFilter(option); setSelectedId(null); setError(''); }} className={`min-h-11 rounded-full border px-4 text-sm font-medium ${filter === option ? 'border-brand-700 bg-brand-700 text-white' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}>
             {option === 'open' ? 'Open' : option === 'all' ? 'All' : STATUS_LABELS[option]}
           </button>
         ))}
@@ -187,11 +152,11 @@ export default function AdminApplicationsPage() {
 
       <div className="grid gap-5 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <section aria-label="Application list" className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          {isLoading ? <p className="p-6 text-sm text-slate-500">Loading applications…</p> : filtered.length === 0 ? <p className="p-6 text-sm text-slate-500">No applications match this filter.</p> : (
+          {isLoading ? <p className="p-6 text-sm text-slate-500">Loading applications…</p> : page.error ? null : applications.length === 0 ? <p className="p-6 text-sm text-slate-500">No applications match this filter.</p> : (
             <ul className="max-h-[70vh] divide-y divide-slate-100 overflow-y-auto">
-              {filtered.map((application) => (
+              {applications.map((application) => (
                 <li key={application.id}>
-                  <button type="button" onClick={() => selectApplication(application)} className={`w-full px-4 py-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-600 ${selectedId === application.id ? 'bg-brand-50' : 'bg-white'}`}>
+                  <button type="button" disabled={isSaving} onClick={() => selectApplication(application)} className={`w-full px-4 py-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-600 ${selectedId === application.id ? 'bg-brand-50' : 'bg-white'}`}>
                     <span className="flex items-start justify-between gap-3"><span className="font-semibold text-slate-900">{application.name}</span><span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[application.status]}`}>{STATUS_LABELS[application.status]}</span></span>
                     <span className="mt-1 block text-sm text-slate-600">{application.applicationType === 'new_listing' ? 'New listing' : 'Profile update'} · {application.specialty}</span>
                     <span className="mt-2 block text-xs text-slate-500">{new Date(application.createdAt).toLocaleString()}</span>

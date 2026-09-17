@@ -1,5 +1,8 @@
 'use client';
 
+import { fetchJsonWithTimeout, RequestTimeoutError } from '@/lib/fetch-with-timeout';
+import { submissionFeedback } from '@/lib/submission-feedback';
+
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/layout/PageHeader';
@@ -68,6 +71,10 @@ export default function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState('');
+  const pendingRef = useRef(false);
+  const requestRef = useRef<AbortController | null>(null);
+  useEffect(() => () => requestRef.current?.abort(), []);
+
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
@@ -120,6 +127,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (pendingRef.current) return;
     setServerError('');
 
     const errors = validate();
@@ -133,9 +141,12 @@ export default function ContactPage() {
       return;
     }
 
+    pendingRef.current = true;
+    requestRef.current = new AbortController();
     setStatus('sending');
     try {
-      const res = await fetch('/api/contact', {
+      const { response: res } = await fetchJsonWithTimeout('/api/contact', {
+        signal: requestRef.current.signal,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -152,15 +163,16 @@ export default function ContactPage() {
         setForm(INITIAL_FORM);
         setFieldErrors({});
       } else {
-        const data = await res.json();
-        setServerError(
-          isArabic ? copy.genericError : data.error || copy.genericError,
-        );
+        setServerError(res.status === 429 ? submissionFeedback('rate-limit', isArabic) : copy.genericError);
         setStatus('error');
       }
-    } catch {
-      setServerError(copy.networkError);
+    } catch (error) {
+      if (requestRef.current?.signal.aborted) return;
+      setServerError(error instanceof RequestTimeoutError ? submissionFeedback('timeout', isArabic) : copy.networkError);
       setStatus('error');
+    } finally {
+      pendingRef.current = false;
+      requestRef.current = null;
     }
   };
 
@@ -198,7 +210,8 @@ export default function ContactPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <form onSubmit={handleSubmit} noValidate aria-busy={status === 'sending'}>
+              <fieldset disabled={status === 'sending'} className="min-w-0 space-y-6">
               <div className="sr-only" aria-hidden="true">
                 <label htmlFor="website">Website</label>
                 <input
@@ -307,6 +320,7 @@ export default function ContactPage() {
               >
                 {status === 'sending' ? copy.sending : copy.send}
               </button>
+              </fieldset>
             </form>
           )}
 
