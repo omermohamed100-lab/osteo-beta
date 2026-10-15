@@ -135,10 +135,10 @@ test('approved bilingual public copy and activity terminology stay consistent', 
     readFile('src/app/activities/page.tsx', 'utf8'),
     readFile('src/components/home/HomeShowcase.tsx', 'utf8'),
   ]);
-  assert.match(home, /Find an osteopath\. Explore training in Egypt\./);
-  assert.match(home, /ابحث عن ممارس أوستيوباثي\. واستكشف التدريب في مصر\./);
-  assert.match(home, /Find an osteopath/);
-  assert.match(home, /Explore courses and training/);
+  assert.match(home, /hero\.heroHeadline/);
+  assert.match(home, /hero\.heroDescription/);
+  assert.match(home, /hero\.heroPrimaryLabel/);
+  assert.match(home, /hero\.heroSecondaryLabel/);
   assert.match(navbar, /Find an Osteopath/);
   assert.match(navbar, /ابحث عن ممارس/);
   assert.match(navbar, /Activities & Events/);

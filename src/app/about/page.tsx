@@ -5,6 +5,7 @@ import LocalizedDate from '@/components/i18n/LocalizedDate';
 import { getLocalizedMetadata } from '@/lib/localized-metadata';
 import { db } from '@/lib/db';
 import { getPublicData } from '@/lib/public-data';
+import Image from 'next/image';
 
 export async function generateMetadata() {
   return getLocalizedMetadata('/about');
@@ -41,7 +42,49 @@ const values = [
   },
 ];
 
-export default async function AboutPage() {
+type BoardMemberCard = {
+  id: string;
+  name: string;
+  nameAr: string;
+  position: string;
+  positionAr: string;
+  biography: string;
+  biographyAr: string;
+  email: string;
+  linkedin: string;
+  photoUrl: string | null;
+};
+
+const localBoardPreview: BoardMemberCard[] = [
+  { id: 'preview-hesham-khalil', name: 'Hesham Khalil', nameAr: 'هشام خليل', position: 'President', positionAr: 'رئيس مجلس الإدارة', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/hesham-khalil-transparent.png' },
+  { id: 'preview-ahmed-hosny', name: 'Ahmed Hosny', nameAr: 'أحمد حسني', position: 'Vice President', positionAr: 'نائب رئيس مجلس الإدارة', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/ahmed-hosny-transparent.png' },
+  { id: 'preview-mohamed-gomaa', name: 'Mohamed Gomaa', nameAr: 'محمد جمعة', position: 'Secretary', positionAr: 'أمين السر', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/mohamed-gomaa-transparent.png' },
+];
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+function getBoardMemberLayoutClass(index: number, total: number) {
+  const base = 'lg:col-span-2';
+  const isLast = index === total - 1;
+
+  if (total % 3 === 1 && isLast) {
+    return `${base} md:col-span-2 md:w-[calc(50%-0.75rem)] md:justify-self-center lg:col-start-3 lg:w-auto`;
+  }
+
+  if (total % 3 === 2 && index === total - 2) {
+    return `${base} lg:col-start-2`;
+  }
+
+  if (total % 2 === 1 && isLast) {
+    return `${base} md:col-span-2 md:w-[calc(50%-0.75rem)] md:justify-self-center lg:w-auto`;
+  }
+
+  return base;
+}
+
+export default async function AboutPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams;
+  const isLocalBoardPreview = process.env.NODE_ENV === 'development' && params.preview === 'board';
   const { data: statistics } = await getPublicData(
     () => db.publicStatistic.findMany({
       where: { isPublished: true },
@@ -50,6 +93,19 @@ export default async function AboutPage() {
     }),
     [],
   );
+  const boardMembers: BoardMemberCard[] = isLocalBoardPreview
+    ? localBoardPreview
+    : (await getPublicData(
+      () => db.boardMember.findMany({
+        where: { isPublished: true },
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+        select: { id: true, name: true, nameAr: true, position: true, positionAr: true, biography: true, biographyAr: true, email: true, linkedin: true, photoUpdatedAt: true },
+      }),
+      [],
+    )).data.map((member) => ({
+      ...member,
+      photoUrl: member.photoUpdatedAt ? `/api/board-members/${member.id}/photo?v=${member.photoUpdatedAt.getTime()}` : null,
+    }));
 
   return (
     <div className="flex-grow">
@@ -210,6 +266,44 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {boardMembers.length > 0 && (
+        <section className="bg-[#f8f6f0] py-[clamp(4rem,9vw,7rem)]" aria-labelledby="board-members-heading">
+          <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            {isLocalBoardPreview && <p className="mb-8 border-s-2 border-gold-deep bg-brand-950 px-4 py-3 text-sm leading-6 text-white"><LocalizedText en="Local preview — portraits and layout are ready to publish from the board CMS once the database is connected." ar="معاينة محلية — أصبحت الصور والتخطيط جاهزين للنشر من لوحة المجلس عند ربط قاعدة البيانات." /></p>}
+            <div className="mb-12 max-w-2xl sm:mb-16">
+              <p className="mb-4 text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-gold-deep"><LocalizedText en="EGSOM Leadership" ar="قيادة الجمعية" /></p>
+              <h2 id="board-members-heading" className="font-display text-balance text-[clamp(2.3rem,5vw,4.25rem)] font-light leading-[0.95] text-brand-950"><LocalizedText en="Board Members" ar="أعضاء مجلس الإدارة" /></h2>
+            </div>
+            <div className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-6 lg:gap-x-8 lg:gap-y-16">
+              {boardMembers.map((member, index) => (
+                <article key={member.id} className={getBoardMemberLayoutClass(index, boardMembers.length)}>
+                  {member.photoUrl && (
+                    <div className="relative flex h-[22rem] items-end justify-center sm:h-[24rem]" aria-hidden="true">
+                      <div className="absolute inset-x-0 bottom-0 h-[calc(100%-3rem)] bg-brand-950" />
+                      <div className="absolute inset-x-0 bottom-0 h-px bg-gold-deep/70" />
+                      <Image
+                        src={member.photoUrl}
+                        alt=""
+                        width={720}
+                        height={960}
+                        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                        className="relative z-10 h-full w-full object-contain object-bottom drop-shadow-[0_18px_24px_rgba(3,24,48,0.28)]"
+                      />
+                    </div>
+                  )}
+                  <div className="border-b border-brand-950/15 py-6 sm:py-7">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold-deep"><LocalizedText en={member.position} ar={member.positionAr} /></p>
+                    <h3 className="mt-2 font-display text-[clamp(1.55rem,2.5vw,1.9rem)] font-medium leading-tight text-brand-950"><LocalizedText en={member.name} ar={member.nameAr} /></h3>
+                    {(member.biography || member.biographyAr) && <p className="mt-5 max-w-[38ch] border-t border-brand-950/15 pt-5 text-sm leading-7 text-slate-600"><LocalizedText en={member.biography} ar={member.biographyAr} /></p>}
+                    {(member.email || member.linkedin) && <div className="mt-5 flex gap-4 border-t border-brand-950/15 pt-5 text-sm font-medium text-brand-700"><LocalizedText en={<>{member.email && <a href={`mailto:${member.email}`} className="underline decoration-brand-300 underline-offset-4 hover:text-brand-950">Email</a>}{member.email && member.linkedin && ' · '}{member.linkedin && <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-300 underline-offset-4 hover:text-brand-950">LinkedIn</a>}</>} ar={<>{member.email && <a href={`mailto:${member.email}`} className="underline decoration-brand-300 underline-offset-4 hover:text-brand-950">البريد الإلكتروني</a>}{member.email && member.linkedin && ' · '}{member.linkedin && <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-300 underline-offset-4 hover:text-brand-950">لينكدإن</a>}</>} /></div>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-14 sm:py-20 bg-brand-950 text-white relative overflow-hidden">

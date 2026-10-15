@@ -51,6 +51,7 @@ const managedMediaPaths = [
   '/path-practitioner-emblem.png',
   '/closing-emblem-ankh-two-snakes.png',
   '/closing-egypt-skyline-gold.png',
+  '/images/board-members/:path*',
   '/images/osteopaths/:path*',
 ];
 

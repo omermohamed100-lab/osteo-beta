@@ -5,6 +5,9 @@ import { db } from '@/lib/db';
 import { getPublicData } from '@/lib/public-data';
 import LocalizedText from '@/components/i18n/LocalizedText';
 import PublicDataUnavailable from '@/components/public/PublicDataUnavailable';
+import SocialLinks from '@/components/layout/SocialLinks';
+import { getSocialLinks } from '@/lib/social-links';
+import { siteSettingsDefaults } from '@/lib/site-settings';
 
 export default async function Footer() {
   const { data: settings, unavailable: settingsUnavailable } = await getPublicData<SiteSettings | null>(
@@ -12,16 +15,12 @@ export default async function Footer() {
     null,
   );
 
-  const email   = settings?.email   || null;
+  const email   = settings?.email   || siteSettingsDefaults.email;
   const phone   = settings?.phone   || null;
   const address = settings?.address || null;
   const addressAr = settings?.addressAr
     || (address === 'Cairo, Egypt' ? 'القاهرة، مصر' : 'متاح باللغة الإنجليزية');
-  const facebook  = settings?.facebook  || null;
-  const instagram = settings?.instagram || null;
-  const linkedin  = settings?.linkedin  || null;
-
-  const hasSocial = facebook || instagram || linkedin;
+  const socialLinks = getSocialLinks({ ...siteSettingsDefaults, ...settings });
 
   return (
     <footer className="bg-brand-950 text-white border-t border-brand-900 mt-auto">
@@ -46,40 +45,7 @@ export default async function Footer() {
                 ar="تدعم الجمعية تعليم الأوستيوباثي والمعايير المهنية والتوعية العامة في مصر."
               />
             </p>
-            {hasSocial && (
-              <div className="flex items-center gap-3">
-                {facebook && (
-                    <a href={facebook} target="_blank" rel="noopener noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <span className="sr-only"><LocalizedText en="Visit EGSOM on Facebook" ar="زيارة صفحة الجمعية على فيسبوك" /></span>
-                    <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
-                    </svg>
-                  </a>
-                )}
-                {instagram && (
-                  <a href={instagram} target="_blank" rel="noopener noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <span className="sr-only"><LocalizedText en="Visit EGSOM on Instagram" ar="زيارة صفحة الجمعية على إنستغرام" /></span>
-                    <svg aria-hidden="true" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                      <circle cx="12" cy="12" r="4" />
-                      <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
-                    </svg>
-                  </a>
-                )}
-                {linkedin && (
-                  <a href={linkedin} target="_blank" rel="noopener noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-700 text-brand-300 outline-none transition-colors hover:border-white/40 hover:text-white focus-visible:ring-2 focus-visible:ring-gold">
-                    <span className="sr-only"><LocalizedText en="Visit EGSOM on LinkedIn" ar="زيارة صفحة الجمعية على لينكدإن" /></span>
-                    <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
-                      <circle cx="4" cy="4" r="2" />
-                    </svg>
-                  </a>
-                )}
-              </div>
-            )}
+            {socialLinks.length > 0 && <SocialLinks links={socialLinks} />}
           </div>
 
           {/* Quick Links */}

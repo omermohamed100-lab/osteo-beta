@@ -50,6 +50,17 @@ test('profile updates require the current public profile URL', () => {
   assert.equal(practitionerApplicationSchema.safeParse({ ...validApplication, applicationType: 'profile_update', existingProfileUrl: 'https://eg-som.com/en/find-osteopath/test' }).success, true);
 });
 
+test('saved public applications notify the configured support recipient without emailing credential details', async () => {
+  const route = await readFile('src/app/api/practitioner-applications/route.ts', 'utf8');
+  const saved = route.indexOf('db.practitionerApplication.create');
+  const notification = route.indexOf('sendEmail({');
+
+  assert.ok(saved >= 0 && saved < notification);
+  assert.match(route, /DEFAULT_NOTIFICATION_RECIPIENT/);
+  assert.match(route, /New practitioner application/);
+  assert.doesNotMatch(route.slice(notification), /credentialNumber/);
+});
+
 test('application approval creates only inactive and unverified directory drafts', async () => {
   const approval = await readFile('src/app/api/practitioner-applications/[id]/approve/route.ts', 'utf8');
   assert.match(approval, /applicationType !== 'new_listing'/);

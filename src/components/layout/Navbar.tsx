@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from 'react';
 import LanguageToggle from '@/components/i18n/LanguageToggle';
 import { useLanguage } from '@/components/i18n/LanguageProvider';
 import { getPublicPathFromPathname } from '@/lib/i18n-routing';
+import SocialLinks from '@/components/layout/SocialLinks';
+import { getSocialLinks, type SocialLink } from '@/lib/social-links';
 
 const links = [
   { href: '/about', en: 'About EGSOM', ar: 'عن الجمعية' },
@@ -25,6 +27,7 @@ export default function Navbar() {
   const reduceMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuPanelRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +36,13 @@ export default function Navbar() {
     updateScrolledState();
     window.addEventListener('scroll', updateScrolledState, { passive: true });
     return () => window.removeEventListener('scroll', updateScrolledState);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((response) => response.ok ? response.json() : null)
+      .then((settings) => setSocialLinks(getSocialLinks(settings)))
+      .catch(() => setSocialLinks([]));
   }, []);
 
   useEffect(() => {
@@ -188,13 +198,16 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            <Link
-              href="/contact"
-              aria-current={publicPathname === '/contact' ? 'page' : undefined}
-              className="ms-1 border border-gold bg-gold px-4 py-2.5 text-[0.78rem] font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-150 hover:border-gold-light hover:bg-gold-light active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-gold-light focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950 2xl:px-5"
-            >
-              {isArabic ? 'تواصل معنا' : 'Contact'}
-            </Link>
+            <div className="relative ms-1 flex flex-col items-center">
+              <Link
+                href="/contact"
+                aria-current={publicPathname === '/contact' ? 'page' : undefined}
+                className="border border-gold bg-gold px-4 py-2.5 text-[0.78rem] font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-150 hover:border-gold-light hover:bg-gold-light active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-gold-light focus-visible:ring-offset-2 focus-visible:ring-offset-brand-950 2xl:px-5"
+              >
+                {isArabic ? 'تواصل معنا' : 'Contact'}
+              </Link>
+              {socialLinks.length > 0 && <div className="absolute top-full mt-1 rounded-full bg-brand-950/95 px-1 py-0.5 shadow-lg"><SocialLinks links={socialLinks} isArabic={isArabic} compact /></div>}
+            </div>
             <LanguageToggle />
           </div>
 
@@ -294,6 +307,7 @@ export default function Navbar() {
                 >
                   {isArabic ? 'تواصل معنا' : 'Contact'}
                 </Link>
+                {socialLinks.length > 0 && <div className="flex justify-center py-3"><SocialLinks links={socialLinks} isArabic={isArabic} compact /></div>}
               </div>
             </motion.div>
           </div>

@@ -1,130 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import ArabicContentWarning from '@/components/admin/ArabicContentWarning';
+import { useEffect, useState } from 'react';
 
-export default function ContactInfoSettingsPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState('');
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    phone: '',
-    address: '',
-    addressAr: '',
-    facebook: '',
-    instagram: '',
-    linkedin: '',
-  });
+const initial = {
+  email: '', phone: '', address: '', addressAr: '', facebook: '', youtube: '', linkedin: '', x: '', whatsapp: '',
+  facebookEnabled: true, youtubeEnabled: true, linkedinEnabled: true, xEnabled: true, whatsappEnabled: true,
+  facebookOrder: 0, youtubeOrder: 1, linkedinOrder: 2, xOrder: 3, whatsappOrder: 4,
+  heroEyebrow: '', heroEyebrowAr: '', heroHeadline: '', heroHeadlineAr: '', heroDescription: '', heroDescriptionAr: '',
+  heroPrimaryLabel: '', heroPrimaryLabelAr: '', heroPrimaryHref: '/about', heroSecondaryLabel: '', heroSecondaryLabelAr: '', heroSecondaryHref: '/find-osteopath',
+};
+type Form = typeof initial;
+const platforms = [['facebook', 'Facebook URL', 'Facebook'], ['youtube', 'YouTube URL', 'YouTube'], ['linkedin', 'LinkedIn URL', 'LinkedIn'], ['x', 'X URL', 'X'], ['whatsapp', 'WhatsApp number', 'WhatsApp']] as const;
 
-  useEffect(() => {
-    fetch('/api/settings')
-      .then(res => res.json())
-      .then(data => {
-        if (data) {
-          setFormData({
-            email: data.email || '',
-            phone: data.phone || '',
-            address: data.address || '',
-            addressAr: data.addressAr || (data.address === 'Cairo, Egypt' ? 'القاهرة، مصر' : ''),
-            facebook: data.facebook || '',
-            instagram: data.instagram || '',
-            linkedin: data.linkedin || '',
-          });
-        }
-        setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    setMessage('');
-
-    try {
-      const res = await fetch('/api/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        setMessage('Settings saved successfully!');
-      } else {
-        setMessage('Failed to save settings.');
-      }
-    } catch {
-      setMessage('Error saving settings.');
-    } finally {
-      setIsSaving(false);
-      setTimeout(() => setMessage(''), 3000);
-    }
-  };
-
-  if (isLoading) return <div role="status" aria-live="polite">Loading settings…</div>;
-
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Site Settings</h1>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <form onSubmit={handleSubmit} className="p-4 sm:p-8">
-          <h2 className="text-lg font-medium text-gray-900 mb-6">Contact Information</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label htmlFor="settings-email" className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-              <input id="settings-email" aria-describedby="settings-email-hint" type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-              <p id="settings-email-hint" className="mt-1 text-xs text-gray-500">Contact form submissions will be sent to this email.</p>
-            </div>
-            <div>
-              <label htmlFor="settings-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-              <input id="settings-phone" type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label htmlFor="settings-address" className="block text-sm font-medium text-gray-700 mb-1">Office Address</label>
-              <input id="settings-address" type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-            </div>
-            <div className="md:col-span-2"><label htmlFor="settings-address-ar" className="block text-sm font-medium text-gray-700 mb-1">Office Address (Arabic)</label><input id="settings-address-ar" dir="rtl" lang="ar" type="text" value={formData.addressAr} onChange={e => setFormData({...formData, addressAr: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" /></div>
-            <div className="md:col-span-2">
-              <ArabicContentWarning missingFields={formData.address.trim() && !formData.addressAr.trim() ? ['office address'] : []} />
-            </div>
-          </div>
-
-          <h2 className="text-lg font-medium text-gray-900 mb-6 border-t border-gray-100 pt-8">Social Links</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label htmlFor="settings-facebook" className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-              <input id="settings-facebook" type="url" value={formData.facebook} onChange={e => setFormData({...formData, facebook: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-            </div>
-            <div>
-              <label htmlFor="settings-instagram" className="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-              <input id="settings-instagram" type="url" value={formData.instagram} onChange={e => setFormData({...formData, instagram: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-            </div>
-            <div>
-              <label htmlFor="settings-linkedin" className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-              <input id="settings-linkedin" type="url" value={formData.linkedin} onChange={e => setFormData({...formData, linkedin: e.target.value})} className="w-full border border-gray-300 rounded-md p-2 focus:ring-brand-500 focus:border-brand-500" />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end border-t border-gray-100 pt-6">
-            {message && <span role={message.includes('success') ? 'status' : 'alert'} aria-live="polite" className={`mr-4 ${message.includes('success') ? 'text-green-700' : 'text-red-700'}`}>{message}</span>}
-            <button 
-              type="submit" 
-              disabled={isSaving}
-              aria-busy={isSaving}
-              className="min-h-11 bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:cursor-wait disabled:opacity-50"
-            >
-              {isSaving ? 'Saving...' : 'Save Settings'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+export default function SiteSettingsPage() {
+  const [form, setForm] = useState<Form>(initial); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [message, setMessage] = useState('');
+  const update = <K extends keyof Form>(key: K, value: Form[K]) => setForm((current) => ({ ...current, [key]: value }));
+  useEffect(() => { fetch('/api/settings').then((response) => response.json()).then((data) => setForm((current) => ({ ...current, ...data }))).catch(() => setMessage('Unable to load settings.')).finally(() => setLoading(false)); }, []);
+  const save = async (event: React.FormEvent) => { event.preventDefault(); setSaving(true); setMessage(''); try { const response = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) }); const data = await response.json(); if (!response.ok) throw new Error(data.details?.[0]?.message || data.error || 'Unable to save settings.'); setForm((current) => ({ ...current, ...data })); setMessage('Settings saved successfully.'); } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to save settings.'); } finally { setSaving(false); } };
+  if (loading) return <div role="status" aria-live="polite">Loading settings…</div>;
+  return <div className="mx-auto max-w-4xl"><div className="mb-8"><h1 className="text-3xl font-bold text-gray-900">Website Settings</h1><p className="mt-2 text-gray-600">Manage public contact details, social links, and homepage hero content.</p></div>{message && <p role={message.includes('success') ? 'status' : 'alert'} className={`mb-5 rounded-md p-3 text-sm ${message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{message}</p>}<form onSubmit={save} className="space-y-6">
+    <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8"><h2 className="text-xl font-semibold text-gray-900">Contact Information</h2><div className="mt-5 grid gap-5 sm:grid-cols-2"><Field label="Contact email" type="email" value={form.email} onChange={(value) => update('email', value)} /><Field label="Phone number" type="tel" value={form.phone} onChange={(value) => update('phone', value)} /><div className="sm:col-span-2"><Field label="Office address" value={form.address} onChange={(value) => update('address', value)} /></div><div className="sm:col-span-2"><Field label="عنوان المكتب (العربية)" value={form.addressAr} onChange={(value) => update('addressAr', value)} dir="rtl" /></div></div></section>
+    <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8"><h2 className="text-xl font-semibold text-gray-900">Social Media Settings</h2><p dir="rtl" className="mt-1 text-sm text-gray-500">إعدادات وسائل التواصل الاجتماعي</p><p className="mt-3 text-sm text-gray-600">Disabled channels are hidden from the public website. WhatsApp is converted to a secure wa.me link automatically.</p><div className="mt-6 space-y-4">{platforms.map(([key, label, title]) => <div key={key} className="grid items-end gap-3 rounded-lg border border-gray-100 p-4 sm:grid-cols-[1fr_6rem_auto]"><Field label={label} type={key === 'whatsapp' ? 'tel' : 'url'} value={form[key]} onChange={(value) => update(key, value)} placeholder={key === 'whatsapp' ? '+20 112 881 1128' : 'https://'} /><Field label="Order" type="number" value={String(form[`${key}Order`])} onChange={(value) => update(`${key}Order`, Number(value))} /><label className="flex min-h-11 items-center gap-2 text-sm font-medium text-gray-700"><input type="checkbox" checked={form[`${key}Enabled`]} onChange={(event) => update(`${key}Enabled`, event.target.checked)} className="h-4 w-4" /> Show {title}</label></div>)}</div></section>
+    <section className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8"><h2 className="text-xl font-semibold text-gray-900">Homepage Hero Settings</h2><p dir="rtl" className="mt-1 text-sm text-gray-500">إعدادات واجهة الصفحة الرئيسية</p><div className="mt-5 grid gap-5 sm:grid-cols-2"><Field label="Eyebrow (English)" value={form.heroEyebrow} onChange={(value) => update('heroEyebrow', value)} required /><Field label="العنوان التمهيدي (العربية)" value={form.heroEyebrowAr} onChange={(value) => update('heroEyebrowAr', value)} dir="rtl" required /><TextArea label="Headline (English)" value={form.heroHeadline} onChange={(value) => update('heroHeadline', value)} required /><TextArea label="العنوان الرئيسي (العربية)" value={form.heroHeadlineAr} onChange={(value) => update('heroHeadlineAr', value)} dir="rtl" required /><TextArea label="Description (English)" value={form.heroDescription} onChange={(value) => update('heroDescription', value)} required /><TextArea label="الوصف (العربية)" value={form.heroDescriptionAr} onChange={(value) => update('heroDescriptionAr', value)} dir="rtl" required /><Field label="Primary button (English)" value={form.heroPrimaryLabel} onChange={(value) => update('heroPrimaryLabel', value)} required /><Field label="الزر الأساسي (العربية)" value={form.heroPrimaryLabelAr} onChange={(value) => update('heroPrimaryLabelAr', value)} dir="rtl" required /><Destination label="Primary destination" value={form.heroPrimaryHref} onChange={(value) => update('heroPrimaryHref', value)} /><Field label="Secondary button (English)" value={form.heroSecondaryLabel} onChange={(value) => update('heroSecondaryLabel', value)} required /><Field label="الزر الثانوي (العربية)" value={form.heroSecondaryLabelAr} onChange={(value) => update('heroSecondaryLabelAr', value)} dir="rtl" required /><Destination label="Secondary destination" value={form.heroSecondaryHref} onChange={(value) => update('heroSecondaryHref', value)} /></div></section>
+    <div className="flex justify-end"><button disabled={saving} aria-busy={saving} className="min-h-11 rounded-lg bg-brand-600 px-6 py-2 font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-60">{saving ? 'Saving…' : 'Save settings'}</button></div>
+  </form></div>;
 }
+function Field({ label, value, onChange, type = 'text', placeholder, dir, required }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string; dir?: 'rtl'; required?: boolean }) { return <label className="block text-sm font-medium text-gray-700">{label}<input required={required} dir={dir} lang={dir ? 'ar' : undefined} type={type} min={type === 'number' ? 0 : undefined} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-brand-500 focus:ring-brand-500" /></label>; }
+function TextArea({ label, value, onChange, dir, required }: { label: string; value: string; onChange: (value: string) => void; dir?: 'rtl'; required?: boolean }) { return <label className="block text-sm font-medium text-gray-700">{label}<textarea required={required} dir={dir} lang={dir ? 'ar' : undefined} rows={4} value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:border-brand-500 focus:ring-brand-500" /></label>; }
+function Destination({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="block text-sm font-medium text-gray-700">{label}<select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 min-h-10 w-full rounded-md border border-gray-300 p-2 focus:border-brand-500 focus:ring-brand-500"><option value="/about">About</option><option value="/find-osteopath">Find an Osteopath</option><option value="/courses">Courses</option><option value="/contact">Contact</option><option value="/practitioners">Practitioners</option></select></label>; }

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth';
 import { COURSE_INTEREST_BODY_MAX_BYTES, courseInterestSchema } from '@/lib/course-interest';
 import { db } from '@/lib/db';
-import { sendEmail } from '@/lib/email';
+import { DEFAULT_NOTIFICATION_RECIPIENT, sendEmail } from '@/lib/email';
 import { cleanupExpiredRateLimits, consumeRateLimit, getClientAddress, normalizeRateLimitIdentity, rateLimitExceededResponse, rateLimitUnavailableResponse } from '@/lib/rate-limit';
 import { enforceMutationRequest, InvalidJsonBodyError, readBoundedJsonBody, RequestBodyTooLargeError } from '@/lib/request-security';
 import { adminPage, InvalidPaginationError, newestFirst, readAdminPagination } from '@/lib/admin-pagination';
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     try {
       const settings = await db.siteSettings.findUnique({ where: { id: 'global' } });
       delivery = await sendEmail({
-        to: settings?.email ?? '',
+        to: settings?.email || DEFAULT_NOTIFICATION_RECIPIENT,
         subject: 'New course notification request',
         text: `Email: ${data.email}\nTopic preference: ${data.topic || 'Not provided'}\nConsent to course notifications: yes`,
       });

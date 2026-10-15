@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
-import { sendEmail } from '@/lib/email';
+import { DEFAULT_NOTIFICATION_RECIPIENT, sendEmail } from '@/lib/email';
 import { requireAdmin } from '@/lib/auth';
 import {
   CONTACT_BODY_MAX_BYTES,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     try {
       const settings = await db.siteSettings.findUnique({ where: { id: 'global' } });
       deliveryResult = await sendEmail({
-        to: settings?.email ?? '',
+        to: settings?.email || DEFAULT_NOTIFICATION_RECIPIENT,
         subject: 'New website contact submission',
         text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
       });

@@ -8,6 +8,9 @@ import Link from '@/components/i18n/LocalizedLink';
 import HeroVisual from '@/components/home/HeroVisual';
 import { ClosingStatement, PathwaysShowcase } from '@/components/home/HomeShowcase';
 import LocalizedText from '@/components/i18n/LocalizedText';
+import { db } from '@/lib/db';
+import { getPublicData } from '@/lib/public-data';
+import { siteSettingsDefaults } from '@/lib/site-settings';
 
 const STANDARDS = [
   {
@@ -33,7 +36,13 @@ const STANDARDS = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const { data: settings } = await getPublicData(
+    () => db.siteSettings.findUnique({ where: { id: 'global' } }),
+    null,
+  );
+  const hero = { ...siteSettingsDefaults, ...settings };
+
   return (
     <div className="home-concept flex flex-col bg-bone text-ink">
       <section className="hero-stage relative isolate overflow-hidden border-b border-brand-950/10">
@@ -42,32 +51,36 @@ export default function Home() {
           <div className="hero-copy-reveal relative z-20 flex flex-col justify-center py-8 min-[375px]:py-10 sm:py-16 lg:col-span-6 lg:pe-12 lg:py-16 xl:col-span-5 xl:pe-8">
             <p className="mb-5 max-w-[34rem] text-xs font-semibold uppercase tracking-[0.16em] text-brand-700 sm:mb-6 sm:text-sm">
               <LocalizedText
-                en="Egyptian Society of Osteopathic Medicine"
-                ar="الجمعية المصرية لطب الأوستيوباثية"
+                en={hero.heroEyebrow}
+                ar={hero.heroEyebrowAr}
               />
             </p>
             <h1 className="max-w-[17ch] text-balance font-sans text-[clamp(2.5rem,11vw,3.65rem)] font-medium leading-[1.01] tracking-[-0.048em] text-brand-950 sm:text-[clamp(3rem,4.25vw,4.65rem)]">
               <LocalizedText
-                en="Find an osteopath. Explore training in Egypt."
-                ar="ابحث عن ممارس أوستيوباثي. واستكشف التدريب في مصر."
+                en={hero.heroHeadline}
+                ar={hero.heroHeadlineAr}
               />
             </h1>
 
             <span className="mt-6 h-0.5 w-20 bg-gold sm:mt-7" aria-hidden="true" />
 
+            <p className="mt-6 max-w-[38rem] text-sm leading-7 text-ink-muted sm:mt-7 sm:text-base sm:leading-8">
+              <LocalizedText en={hero.heroDescription} ar={hero.heroDescriptionAr} />
+            </p>
+
             <div className="mt-7 flex max-w-[21rem] flex-col gap-3 sm:mt-9">
               <Link
-                href="/find-osteopath"
+                href={hero.heroPrimaryHref}
                 className="group inline-flex min-h-13 items-center justify-between gap-5 bg-brand-950 px-6 py-3.5 text-sm font-semibold text-bone outline-none transition-[background-color,transform] duration-200 ease-out hover:bg-brand-800 active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
-                <LocalizedText en="Find an osteopath" ar="ابحث عن ممارس أوستيوباثي" />
+                <LocalizedText en={hero.heroPrimaryLabel} ar={hero.heroPrimaryLabelAr} />
                 <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold" aria-hidden="true" />
               </Link>
               <Link
-                href="/courses"
+                href={hero.heroSecondaryHref}
                 className="group inline-flex min-h-13 items-center justify-between gap-5 border border-brand-950/55 bg-bone/82 px-6 py-3.5 text-sm font-semibold text-brand-950 outline-none transition-[background-color,border-color,transform] duration-200 ease-out hover:border-brand-950 hover:bg-paper active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
               >
-                <LocalizedText en="Explore courses and training" ar="استكشف الدورات والتدريب" />
+                <LocalizedText en={hero.heroSecondaryLabel} ar={hero.heroSecondaryLabelAr} />
                 <ArrowUpRight className="interactive-arrow rtl-flip h-4 w-4 text-gold-deep" aria-hidden="true" />
               </Link>
             </div>

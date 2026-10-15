@@ -97,14 +97,60 @@ model ContactSubmissionDedupe {
 }
 
 model SiteSettings {
-  id        String @id @default("global")
-  phone     String @default("")
-  email     String @default("")
-  address   String @default("")
-  addressAr String @default("")
-  facebook  String @default("")
-  instagram String @default("")
-  linkedin  String @default("")
+  id                      String @id @default("global")
+  phone                   String @default("")
+  email                   String @default("support@eg-som.com")
+  address                 String @default("")
+  addressAr               String @default("")
+  facebook                String @default("")
+  instagram               String @default("")
+  linkedin                String @default("")
+  youtube                 String @default("")
+  x                       String @default("")
+  whatsapp                String @default("")
+  facebookEnabled         Boolean @default(true)
+  youtubeEnabled          Boolean @default(true)
+  linkedinEnabled         Boolean @default(true)
+  xEnabled                Boolean @default(true)
+  whatsappEnabled         Boolean @default(true)
+  facebookOrder           Int @default(0)
+  youtubeOrder            Int @default(1)
+  linkedinOrder           Int @default(2)
+  xOrder                  Int @default(3)
+  whatsappOrder           Int @default(4)
+  heroEyebrow             String @default("EGYPTIAN SOCIETY OF OSTEOPATHIC MEDICINE")
+  heroEyebrowAr           String @default("الجمعية المصرية لطب الأوستيوباثي")
+  heroHeadline            String @default("Find an osteopath. Explore training in Egypt.")
+  heroHeadlineAr          String @default("ابحث عن ممارس أوستيوباثي. واستكشف التدريب في مصر.")
+  heroDescription         String @default("EGSOM advances awareness, education, and professional osteopathic practice in Egypt, supporting practitioners across Egypt and the Middle East through training, knowledge exchange, and international partnerships.")
+  heroDescriptionAr       String @default("تعمل الجمعية المصرية لطب الأوستيوباثي على نشر الوعي بالأوستيوباثي ودعم تعليمه وممارسته المهنية في مصر والشرق الأوسط، عبر التدريب وتبادل الخبرات والشراكات الدولية.")
+  heroPrimaryLabel        String @default("About")
+  heroPrimaryLabelAr      String @default("من نحن")
+  heroPrimaryHref         String @default("/about")
+  heroSecondaryLabel      String @default("Find an Osteopath")
+  heroSecondaryLabelAr    String @default("ابحث عن أخصائي أوستيوباثي")
+  heroSecondaryHref       String @default("/find-osteopath")
+}
+
+model BoardMember {
+  id             String   @id @default(cuid())
+  name            String
+  nameAr          String
+  position        String
+  positionAr      String
+  biography       String   @default("")
+  biographyAr     String   @default("")
+  email           String   @default("")
+  linkedin        String   @default("")
+  sortOrder       Int      @default(0)
+  isPublished     Boolean  @default(false)
+  photoData       Bytes?
+  photoMediaType  String   @default("")
+  photoUpdatedAt  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
 }
 
 model Osteopath {

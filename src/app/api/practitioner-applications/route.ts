@@ -26,6 +26,7 @@ import {
 import { adminPage, InvalidPaginationError, newestFirst, readAdminPagination } from '@/lib/admin-pagination';
 import { adminApplicationSelect } from '@/lib/admin-application-select';
 import { isSubmissionDuplicate, submissionDedupeKey } from '@/lib/submission-dedupe';
+import { DEFAULT_NOTIFICATION_RECIPIENT, sendEmail } from '@/lib/email';
 
 function decodePhoto(value: string) {
   const match = value.match(/^data:image\/(jpeg|png|webp);base64,(.+)$/);
@@ -148,6 +149,18 @@ export async function POST(request: NextRequest) {
         consentPrivacy: data.consentPrivacy,
       },
     });
+
+    try {
+      const settings = await db.siteSettings.findUnique({ where: { id: 'global' } });
+      const delivery = await sendEmail({
+        to: settings?.email || DEFAULT_NOTIFICATION_RECIPIENT,
+        subject: 'New practitioner application',
+        text: `Application type: ${data.applicationType}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nSpecialty: ${data.specialty}\nCity: ${data.city}\n\nReview the complete application in the EGSOM admin dashboard.`,
+      });
+      if (!delivery.success) console.error(`Practitioner application notification failed (${delivery.reason}).`);
+    } catch {
+      // The saved application remains available for review even when email delivery is unavailable.
+    }
 
     return acceptedResponse();
   } catch (error) {
