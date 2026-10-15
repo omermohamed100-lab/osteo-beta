@@ -55,7 +55,7 @@ type BoardMemberCard = {
   photoUrl: string | null;
 };
 
-const localBoardPreview: BoardMemberCard[] = [
+const starterBoardMembers: BoardMemberCard[] = [
   { id: 'preview-hesham-khalil', name: 'Hesham Khalil', nameAr: 'هشام خليل', position: 'President', positionAr: 'رئيس مجلس الإدارة', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/hesham-khalil-transparent.png' },
   { id: 'preview-ahmed-hosny', name: 'Ahmed Hosny', nameAr: 'أحمد حسني', position: 'Vice President', positionAr: 'نائب رئيس مجلس الإدارة', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/ahmed-hosny-transparent.png' },
   { id: 'preview-mohamed-gomaa', name: 'Mohamed Gomaa', nameAr: 'محمد جمعة', position: 'Secretary', positionAr: 'أمين السر', biography: '', biographyAr: '', email: '', linkedin: '', photoUrl: '/images/board-members/mohamed-gomaa-transparent.png' },
@@ -93,19 +93,21 @@ export default async function AboutPage({ searchParams }: { searchParams: Search
     }),
     [],
   );
-  const boardMembers: BoardMemberCard[] = isLocalBoardPreview
-    ? localBoardPreview
-    : (await getPublicData(
-      () => db.boardMember.findMany({
-        where: { isPublished: true },
-        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-        select: { id: true, name: true, nameAr: true, position: true, positionAr: true, biography: true, biographyAr: true, email: true, linkedin: true, photoUpdatedAt: true },
-      }),
-      [],
-    )).data.map((member) => ({
-      ...member,
-      photoUrl: member.photoUpdatedAt ? `/api/board-members/${member.id}/photo?v=${member.photoUpdatedAt.getTime()}` : null,
-    }));
+  const storedBoardMembers = await getPublicData(
+    () => db.boardMember.findMany({
+      where: { isPublished: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+      select: { id: true, name: true, nameAr: true, position: true, positionAr: true, biography: true, biographyAr: true, email: true, linkedin: true, photoUpdatedAt: true },
+    }),
+    [],
+  );
+  const publishedBoardMembers: BoardMemberCard[] = storedBoardMembers.data.map((member) => ({
+    ...member,
+    photoUrl: member.photoUpdatedAt ? `/api/board-members/${member.id}/photo?v=${member.photoUpdatedAt.getTime()}` : null,
+  }));
+  const boardMembers = isLocalBoardPreview || (!storedBoardMembers.unavailable && publishedBoardMembers.length === 0)
+    ? starterBoardMembers
+    : publishedBoardMembers;
 
   return (
     <div className="flex-grow">

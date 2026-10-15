@@ -154,6 +154,15 @@ test('approved bilingual public copy and activity terminology stay consistent', 
   assert.match(pathways, /ابحث عن ممارس أوستيوباثي/);
 });
 
+test('the initial board is visible until published CMS members replace it', async () => {
+  const about = await readFile('src/app/about/page.tsx', 'utf8');
+
+  assert.match(about, /const starterBoardMembers/);
+  assert.match(about, /storedBoardMembers\.unavailable/);
+  assert.match(about, /publishedBoardMembers\.length === 0/);
+  assert.match(about, /hesham-khalil-transparent\.png/);
+});
+
 test('interior empty states provide approved bilingual contact actions', async () => {
   const [courses, activities] = await Promise.all([
     readFile('src/app/courses/page.tsx', 'utf8'),
